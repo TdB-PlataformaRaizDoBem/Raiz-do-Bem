@@ -1,104 +1,99 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Button } from "../ui/Button";
 
-import TDB from '../../assets/svgs/TDB_logo.svg'
-import Fiap from '../../assets/svgs/fiap.svg'
-import Menu from '../../assets/svgs/menu_hamburguer.svg';
+import TDB from "../../assets/svgs/TDB_logo.svg";
+import Fiap from "../../assets/svgs/fiap.svg";
+import Menu from "../../assets/svgs/menu_hamburguer.svg";
+
+const navLinks = [
+  { path: "/", label: "Início" },
+  { path: "/sobre", label: "Sobre" },
+  { path: "/integrantes", label: "Integrantes" },
+  { path: "/faq", label: "FAQ" },
+  { path: "/contato", label: "Contato" },
+];
 
 export function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  return (
-    <header
-      className="
-        bg-[var(--color-cream)]
-        h-[100px]
-        flex
-        items-center
-        flex-wrap
-        px-[5vw]
-        gap-5
-        relative
-      "
-    >
-      <Link
-        to="/"
-        className="flex items-center"
-        aria-label="Página inicial - Turma do Bem"
-      >
-        <img
-          src={TDB}
-          alt="Turma do Bem"
-          className="w-[90px] h-[38px] sm:w-[120px] sm:h-[50px]"
-        />
-        <span className="inline-block w-[2px] h-[50px] mx-5 bg-[#333]" />
-      </Link>
+  const NavLinkStyle = `
+    font-sans text-[1.125rem] relative transition-colors duration-300 
+    [&.active]:text-orange [&.active]:font-bold
+    [&.active]:after:content-[''] [&.active]:after:absolute [&.active]:after:bottom-[-5px] 
+    [&.active]:after:left-0 [&.active]:after:w-full [&.active]:after:h-[2px] 
+    [&.active]:after:bg-orange [&.active]:after:rounded-[2px]
+  `;
 
-      <img
-        src={Fiap}
-        alt="Logo Fiap"
-        className="w-[90px] h-[38px] sm:w-[100px] sm:h-[80px]"
-      />
+  const NavLinkMobileStyle = `
+    font-sans text-[1.125rem] relative inline-block py-2 [&.active]:text-orange [&.active]:font-bold 
+    [&.active]:after:content-[''] [&.active]:after:absolute [&.active]:after:bottom-0 
+    [&.active]:after:left-1/2 [&.active]:after:-translate-x-1/2 
+    [&.active]:after:w-12 [&.active]:after:h-[2px] [&.active]:after:bg-orange
+  `;
+
+  return (
+    <header className="bg-cream h-[100px] flex items-center px-[5vw] gap-5 relative">
+      <div className="flex place-items-center gap-4 shrink-0">
+        <NavLink to="/" className="flex items-center">
+          <img
+            src={TDB}
+            alt="Turma do Bem"
+            className="w-[100px] sm:w-[120px] h-auto block pb-4"
+          />
+        </NavLink>
+
+
+        <div className="hidden md:flex items-center gap-4">
+          <span className="w-[1.5px] h-[60px] bg-black/20" />
+          <img
+            src={Fiap}
+            alt="Logo Fiap"
+            className="w-[90px] sm:w-[120px] h-auto block"
+          />
+        </div>
+      </div>
 
       <nav className="hidden xl:block mx-auto">
         <ul className="flex gap-10">
-          <li><Link to="/" className="text-[1.125rem]">Início</Link></li>
-          <li><Link to="/sobre" className="text-[1.125rem]">Sobre</Link></li>
-          <li><Link to="/integrantes" className="text-[1.125rem]">Integrantes</Link></li>
-          <li><Link to="/faq" className="text-[1.125rem]">FAQ</Link></li>
-          <li><Link to="/contato" className="text-[1.125rem]">Contato</Link></li>
+          {navLinks.map((link) => (
+            <li key={link.path}>
+              <NavLink to={link.path} className={NavLinkStyle}>
+                {link.label}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </nav>
 
-      <div className="hidden xl:flex">
-        <Button className="mr-[15px]">
-          Seja Voluntário
-        </Button>
-
-        <Button>
-          Entrar
-        </Button>
+      <div className="hidden xl:flex gap-[15px]">
+        <Button>Seja Voluntário</Button>
+        <Button>Entrar</Button>
       </div>
 
       {/* Mobile */}
       <button
         className="xl:hidden ml-auto"
-        aria-label="Abrir menu"
-        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Menu"
       >
-        <img
-          src={Menu}
-          alt="Menu"
-          className="w-6"
-        />
+        <img src={Menu} alt="Menu" className="w-6" />
       </button>
 
       {isOpen && (
-        <nav
-          className="
-            xl:hidden
-            flex
-            flex-col
-            absolute
-            top-[80px]
-            right-0
-            w-full
-            text-center
-            py-8
-            z-10
-            bg-[rgba(11,61,51,0.8)]
-            backdrop-blur-md
-            shadow-lg
-          "
-        >
+        <nav className="xl:hidden flex flex-col absolute top-[100px] left-0 w-full text-center py-8 z-10 bg-darkgreen/85 backdrop-blur-md shadow-lg">
           <ul className="flex flex-col gap-5 mb-6 text-white">
-            <li><Link to="/">Início</Link></li>
-            <li><Link to="/sobre">Sobre</Link></li>
-            <li><Link to="/integrantes">Integrantes</Link></li>
-            <li><Link to="/faq">FAQ</Link></li>
-            <li><Link to="/contato">Contato</Link></li>
+            {navLinks.map((link) => (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  className={NavLinkMobileStyle}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
           </ul>
 
           <div className="flex justify-center gap-[30px]">

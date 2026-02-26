@@ -1,20 +1,17 @@
 @import "tailwindcss";
 
-/* Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Poppins:ital,wght@0,100;...&display=swap");
-
 @theme {
-  /* Fonts */
+  /* As fontes precisam ser mapeadas assim na v4 */
   --font-sans: "Poppins", sans-serif;
-  --font-title: "Fredoka", sans-serif;
+  --font-fredoka: "Fredoka", sans-serif;
 
-  /* Colors */
+  /* As cores precisam ter o prefixo --color- */
   --color-darkgreen: #006a4e;
   --color-lightgreen: #98ca3c;
   --color-gold: #e5bf6d;
   --color-orange: #f78f24;
   --color-cream: #fae9c6;
   --color-amber: #fbae17;
-  --color-black: #333;
-  --color-gray: #666;
+  --color-black: #333333;
+  --color-gray: #666666;
 }
