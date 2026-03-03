@@ -4,7 +4,7 @@ import DentinhoIntegrantes from "../../assets/img/dentinhoIntegrantes.png";
 import LinkedinIcon from "../../assets/svgs/mdi_linkedin_2.svg";
 import GithubIcon from "../../assets/svgs/mdi_github.svg";
 
-const Integrantes = () => {
+const Team = () => {
   const sectionTitle = "text-center font-title text-white font-bold";
   const socialIcon = "h-[60px] w-[60px] md:h-[80px] md:w-[80px] transition-transform duration-200 hover:scale-105 mx-[10px]";
 
@@ -64,4 +64,4 @@ const Integrantes = () => {
   );
 };
 
-export default Integrantes;
+export default Team;
