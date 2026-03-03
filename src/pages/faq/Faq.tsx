@@ -1,12 +1,12 @@
-import React from 'react'
-import { Header } from '../../components/layout/Header'
+import React from "react";
+import { Header } from "../../components/header/Header";
 
 const Faq = () => {
   return (
     <>
-    <Header />
+      <Header />
     </>
-  )
-}
+  );
+};
 
-export default Faq
+export default Faq;
