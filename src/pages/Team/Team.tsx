@@ -1,8 +1,9 @@
 import React from "react";
-import { Header } from "../../components/header/Header";
 
 const Team = () => {
-  return <Header />;
+  return (
+    <></>
+  );
 };
 
 export default Team;
