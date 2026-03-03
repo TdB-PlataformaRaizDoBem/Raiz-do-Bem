@@ -1,10 +1,8 @@
-import React from 'react'
-import { Header } from '../../components/layout/Header'
+import React from "react";
+import { Header } from "../../components/header/Header";
 
 const Team = () => {
-  return (
-    <Header />
-  )
-}
+  return <Header />;
+};
 
-export default Team
+export default Team;
