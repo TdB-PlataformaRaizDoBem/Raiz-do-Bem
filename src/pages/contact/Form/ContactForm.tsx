@@ -3,6 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/Button";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
+import { validateAge } from "./validateAge";
 
 export interface ContactFormData {
   nome: string;
@@ -24,6 +25,21 @@ export interface ContactFormData {
 const ContactForm = () => {
   const [step, setStep] = React.useState(1);
   const methods = useForm<ContactFormData>({ mode: "onBlur" });
+  const nascimento = methods.watch("nascimento");
+  const sexo = methods.watch("sexo");
+  const violencia = methods.watch("violenciaDomestica");
+
+  const idade = nascimento ? validateAge(nascimento) : 0;
+
+  const isHomemAdulto = sexo === "masculino" && idade >= 18;
+  const isMulherInativa =
+    sexo === "feminino" && idade >= 18 && violencia === "nao";
+
+  const mensagemErro = isHomemAdulto
+    ? "O atendimento para homens é restrito a menores de 18 anos."
+    : isMulherInativa
+      ? "Para mulheres acima de 18 anos, o projeto é exclusivo para vítimas de violência."
+      : null;
 
   const onSubmit = (data: ContactFormData) => {
     console.log("Dados Finais:", data);
@@ -32,15 +48,15 @@ const ContactForm = () => {
 
   const handleNextStep = async () => {
     const fieldsToValidate: (keyof ContactFormData)[] = [
-      "nome", 
-      "cpf", 
-      "nascimento", 
+      "nome",
+      "cpf",
+      "nascimento",
       "sexo",
       "celular",
       "email",
       "cep",
       "cidade",
-      "estado"
+      "estado",
     ];
 
     const isStepOneValid = await methods.trigger(fieldsToValidate);
@@ -58,6 +74,12 @@ const ContactForm = () => {
       >
         {step === 1 ? <StepOne /> : <StepTwo />}
 
+        {mensagemErro && (
+          <div className="text-center p-4 bg-red-400 text-white font-bold rounded-md mb-4">
+            {mensagemErro}
+          </div>
+        )}
+
         <div className="flex gap-4 justify-center mt-8">
           {step === 2 && (
             <Button
@@ -72,8 +94,13 @@ const ContactForm = () => {
           {step === 1 ? (
             <Button
               type="button"
+              disabled={!!mensagemErro}
               onClick={handleNextStep}
-              className="bg-orange"
+              className={`bg-orange ${
+                mensagemErro
+                  ? "opacity-70 cursor-not-allowed"
+                  : "hover:bg-amber"
+              }`}
             >
               Próxima Etapa
             </Button>
