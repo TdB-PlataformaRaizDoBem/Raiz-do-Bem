@@ -21,8 +21,7 @@ const Footer = () => {
     {
       title: "Tome uma Atitude",
       links: [
-        { label: "Doar", to: "/" },
-        { label: "Seja Voluntário", to: "/seja-voluntario" },
+        { label: "Seja Voluntário", to: "/voluntario" },
         { label: "Preciso de Ajuda", to: "/contato" },
       ],
     },
@@ -30,7 +29,7 @@ const Footer = () => {
       title: "Sobre Nós",
       links: [
         { label: "Início", to: "/" },
-        { label: "Nossa História", to: "/about" },
+        { label: "Nossa História", to: "/sobre" },
         { label: "Integrantes", to: "/integrantes" },
         { label: "FAQ", to: "/faq" },
       ],

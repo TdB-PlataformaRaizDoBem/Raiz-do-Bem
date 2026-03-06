@@ -45,8 +45,8 @@ export function Header() {
   `;
 
   return (
-    <header className="bg-cream h-[100px] w-full flex items-center fixed z-10 xl:absolute border-b-2 border-lightgreen">
-      <div className="container mx-auto px-2 flex items-center justify-between relative h-full">
+    <header className="bg-cream h-[100px] w-full flex items-center sticky top-0 z-50 border-b-2 border-lightgreen">
+      <div className="container mx-auto px-6 md:px-4 flex items-center justify-between relative h-full">
         <div className="flex place-items-center gap-4 shrink-0">
           <NavLink to="/" className="flex items-center">
             <img
