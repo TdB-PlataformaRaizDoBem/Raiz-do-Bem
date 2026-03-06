@@ -1,4 +1,3 @@
-import React from "react";
 import ContactForm from "./Form/ContactForm";
 import Dentinho from "../../assets/img/dentinhoContato.png";
 

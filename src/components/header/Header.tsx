@@ -1,6 +1,5 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Button } from "../ui/Button";
 
 import TDB from "../../assets/svgs/TDB_logo.svg";
 import Fiap from "../../assets/svgs/fiap.svg";
@@ -82,7 +81,9 @@ export function Header() {
           <Link to="/voluntario" className={LinkStyles}>
             Seja um Voluntário
           </Link>
-          <Button>Entrar</Button>
+          <Link to="/auth/login" className={LinkStyles}>
+            Entrar
+          </Link>
         </div>
 
         {/* Mobile */}
@@ -114,7 +115,9 @@ export function Header() {
               <Link to="/voluntario" className={LinkStyles}>
                 Seja um Voluntário
               </Link>
-              <Button size="sm">Entrar</Button>
+              <Link to="/auth/login" className={LinkStyles}>
+                Entrar
+              </Link>
             </div>
           </nav>
         )}
