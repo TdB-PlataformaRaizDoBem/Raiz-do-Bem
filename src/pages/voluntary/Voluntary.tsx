@@ -1,4 +1,3 @@
-import React from "react";
 import VoluntaryForm from "./form/VoluntaryForm";
 import DentistaImg from "../../assets/img/dentistaConfiante.png"
 

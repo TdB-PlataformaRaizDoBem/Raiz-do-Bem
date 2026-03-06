@@ -10,6 +10,9 @@ import { routes, type AppRoute } from "./Routes/Routes";
 import { AppLayout, AuthLayout, PublicLayout } from "./layout/Layout";
 import { ProtectedRoutes } from "./Routes/ProtectedRoutes";
 import ScrollToTop from "./layout/ScrollToTop";
+import Login from "./pages/login/Login";
+import Admin from "./pages/admin/Admin";
+import Coord from "./pages/coord/Coord";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -32,13 +35,13 @@ const AppRoutes = () => {
       </Route>
 
       <Route path="/auth" element={<AuthLayout />}>
-        <Route path="login" element={<div>Página de Login</div>} />
+        <Route path="login" element={<Login />} />
       </Route>
 
       <Route element={<ProtectedRoutes />}>
         <Route element={<AppLayout />}>
-          <Route path="/admin/*" element={<div>Admin</div>} />
-          <Route path="/coord/*" element={<div>Coordenador</div>} />
+          <Route path="/admin/*" element={<Admin />} />
+          <Route path="/coord/*" element={<Coord />} />
         </Route>
       </Route>
     </Routes>

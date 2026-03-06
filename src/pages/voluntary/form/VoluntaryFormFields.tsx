@@ -1,4 +1,3 @@
-import React from "react";
 import { useFormContext } from "react-hook-form";
 import { type DentistFormData } from "./VoluntaryFormData";
 import { useCep } from "../../../hooks/useCep";
