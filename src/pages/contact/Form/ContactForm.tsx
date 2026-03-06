@@ -70,7 +70,7 @@ const ContactForm = () => {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="bg-darkgreen p-8 rounded-xl shadow-2xl max-w-[860px] mx-auto"
+        className="bg-darkgreen p-8 rounded-xl shadow-2xl w-full md:w-[860px] mx-auto min-h-[500px] flex flex-col"
       >
         {step === 1 ? <StepOne /> : <StepTwo />}
 
