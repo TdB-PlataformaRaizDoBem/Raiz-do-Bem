@@ -8,7 +8,8 @@ import {
 } from "react-router-dom";
 import { routes, type AppRoute } from "./Routes/Routes";
 import { AppLayout, AuthLayout, PublicLayout } from "./layout/Layout";
-import { ProtectedRoutes } from "./Routes/ProtectedRoutes"
+import { ProtectedRoutes } from "./Routes/ProtectedRoutes";
+import ScrollToTop from "./layout/ScrollToTop";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -46,6 +47,7 @@ const AppRoutes = () => {
 
 const App = () => (
   <BrowserRouter>
+    <ScrollToTop />
     <AppRoutes />
   </BrowserRouter>
 );
