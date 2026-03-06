@@ -21,7 +21,7 @@ const VoluntaryForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[60px] mt-[60px] w-full max-w-[1060px]">
             <Link 
-              to="/home" 
+              to="/" 
               className="flex items-center justify-center bg-orange h-[40px] rounded-[8px] text-white text-[1.125rem] font-bold transition-all duration-300 hover:scale-[1.01]"
             >
               Voltar Para A Página Inicial
