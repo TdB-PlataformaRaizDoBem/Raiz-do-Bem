@@ -3,17 +3,18 @@ import React, { forwardRef } from "react";
 type InputProps = React.ComponentProps<"input"> & {
   label: string;
   error?: string | null;
+  labelClassName?: string;
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, ...rest }, ref) => {
+  ({ label, labelClassName = "text-black", error, ...rest }, ref) => {
     const baseStyleInput = `border border-gray-200 block w-full p-3 rounded-md bg-gray-200 focus:outline-none hover:border-[#fb1] transition-all ${error ? "border-red-600" : ""}`;
 
     return (
       <div className="mb-4">
         <label
           htmlFor={rest.name}
-          className="block mb-1 font-medium text-white"
+          className={`block mb-1 font-medium ${labelClassName}`}
         >
           {label}
         </label>

@@ -21,12 +21,14 @@ const StepOne = () => {
       <div className="col-span-full">
         <Input
           label="Nome Completo: *"
+          labelClassName="text-white"
           {...register("nome", { required: "O nome é obrigatório." })}
           error={errors.nome?.message}
         />
       </div>
       <Input
         label="CPF: *"
+        labelClassName="text-white"
         placeholder="000.000.000-00"
         {...register("cpf", {
           required: "CPF é obrigatório.",
@@ -39,6 +41,7 @@ const StepOne = () => {
       />
       <Input
         label="Data de Nascimento: *"
+        labelClassName="text-white"
         type="date"
         {...register("nascimento", {
           required: "A data de nascimento é obrigatório.",
@@ -81,6 +84,7 @@ const StepOne = () => {
       <div className="col-span-full">
         <Input
           label="Email: *"
+          labelClassName="text-white"
           type="email"
           {...register("email", {
             required: "O email é obrigatório.",
@@ -95,6 +99,7 @@ const StepOne = () => {
 
       <Input
         label="Celular: *"
+        labelClassName="text-white"
         placeholder="+55 (11) 00000-0000"
         {...register("celular", {
           required: "O número do celular é obrigatório",
@@ -110,6 +115,7 @@ const StepOne = () => {
 
       <Input
         label="CEP: *"
+        labelClassName="text-white"
         placeholder="000000-000"
         {...register("cep", {
           required: "O CEP é obrigatório",
@@ -124,6 +130,7 @@ const StepOne = () => {
 
       <Input
         label="Estado: *"
+        labelClassName="text-white"
         {...register("estado", {
           required: "O estado é obrigatório",
         })}
@@ -132,6 +139,7 @@ const StepOne = () => {
 
       <Input
         label="Cidade: *"
+        labelClassName="text-white"
         {...register("cidade", {
           required: "A cidade é obrigatório",
         })}

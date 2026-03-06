@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import Input from "../../../components/form/Input";
-import TextArea from "../../../components/form/TextArea"; // Se você tiver esse componente
+import TextArea from "../../../components/form/TextArea";
 import { type ContactFormData } from "./ContactForm";
 
 const StepTwo = () => {
@@ -35,6 +35,7 @@ const StepTwo = () => {
 
       <Input
         label="Principais problemas percebidos: *"
+        labelClassName="text-white"
         placeholder="Ex: Dor, dentes ausentes, sangramento..."
         {...register("problemas", { required: "Descreva brevemente o que sente." })}
         error={errors.problemas?.message}
@@ -42,6 +43,7 @@ const StepTwo = () => {
 
       <TextArea
         label="Conte um pouco sobre sua situação (Opcional)"
+        labelClassName="text-white"
         placeholder="Espaço para detalhes adicionais que queira compartilhar..."
         rows={4}
         {...register("mensagem")}

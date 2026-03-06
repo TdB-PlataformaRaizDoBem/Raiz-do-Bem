@@ -3,6 +3,7 @@ import React, { forwardRef } from 'react';
 type TextAreaProps = React.ComponentProps<'textarea'> & {
   label: string;
   error?: string | null;
+  labelClassName?: string;
 };
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
