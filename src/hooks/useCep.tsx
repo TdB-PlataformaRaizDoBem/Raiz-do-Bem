@@ -1,30 +1,48 @@
-import { useFormContext } from "react-hook-form"
+import { useFormContext } from "react-hook-form";
+import type { FieldValues, Path, PathValue } from "react-hook-form";
 
-export const useCep = () => {
-  const {setValue, setError, clearErrors} = useFormContext();
+export const useCep = <T extends FieldValues>() => {
+  const { setValue, setError, clearErrors } = useFormContext<T>();
 
-  const buscarCep = async (cep : string) => {
-    const cepClear = cep.replace(/\D/g, "");
+  const buscarCep = async (cep: string) => {
+    const cepLimpo = cep.replace(/\D/g, "");
 
-    if (cepClear.length !== 8) return;
+    if (cepLimpo.length !== 8) return;
 
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cepClear}/json/`);
-      const data = await response.json()
+      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await response.json();
 
-      if (data.error) {
-        setError("cep", { type: "manual", message: "CEP não encontrado na busca automática." });
+      if (data.erro) {
+        setError("cep" as Path<T>, { 
+          type: "manual", 
+          message: "CEP não encontrado." 
+        });
         return;
       }
-
-      setValue("cidade", data.localidade, { shouldValidate: true });
-      setValue("estado", data.uf, { shouldValidate: true });
-      clearErrors("cep");
+      
+      setValue(
+        "cidade" as Path<T>, 
+        data.localidade as PathValue<T, Path<T>>, 
+        { shouldValidate: true }
+      );
+      
+      setValue(
+        "estado" as Path<T>, 
+        data.uf as PathValue<T, Path<T>>, 
+        { shouldValidate: true }
+      );
+      
+      clearErrors("cep" as Path<T>);
+      
     } catch (error) {
       console.error("Erro ao buscar CEP:", error);
-      setError("cep", { type: "manual", message: "Erro ao consultar o CEP. Verifique se está correto e preencha manualmente" });
+      setError("cep" as Path<T>, { 
+        type: "manual", 
+        message: "Erro ao consultar o CEP." 
+      });
     }
-  }
+  };
 
   return { buscarCep };
-}
+};

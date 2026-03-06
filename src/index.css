@@ -1,11 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  /* As fontes precisam ser mapeadas assim na v4 */
   --font-sans: "Poppins", sans-serif;
   --font-fredoka: "Fredoka", sans-serif;
 
-  /* As cores precisam ter o prefixo --color- */
   --color-darkgreen: #006a4e;
   --color-lightgreen: #98ca3c;
   --color-gold: #e5bf6d;

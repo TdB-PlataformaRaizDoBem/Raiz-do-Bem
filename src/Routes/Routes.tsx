@@ -4,6 +4,7 @@ import About from "../pages/about/About";
 import Team from "../pages/Team/Team";
 import Faq from "../pages/faq/Faq";
 import Contact from "../pages/contact/Contact";
+import Voluntary from "../pages/voluntary/Voluntary";
 
 export interface AppRoute {
   path: string;
@@ -36,5 +37,10 @@ export const routes : AppRoute[] = [
     path: "/contato",
     element: <Contact />,
     title: "Contato | Raiz do Bem",
+  },
+  {
+    path: "/voluntario",
+    element: <Voluntary />,
+    title: "Seja Voluntário | Raiz do Bem",
   },
 ];

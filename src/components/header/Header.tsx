@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Button } from "../ui/Button";
 
 import TDB from "../../assets/svgs/TDB_logo.svg";
@@ -32,8 +32,20 @@ export function Header() {
     [&.active]:after:w-12 [&.active]:after:h-[2px] [&.active]:after:bg-orange
   `;
 
+  const LinkStyles = `
+    bg-[var(--color-orange)]
+    text-[var(--color-white)]
+    rounded-lg
+    font-semibold
+    transition-all
+    duration-300
+    hover:bg-[#e07c1c]
+    px-[15px]
+    py-[10px]
+  `;
+
   return (
-    <header className="bg-cream h-[100px] w-full flex items-center">
+    <header className="bg-cream h-[100px] w-full flex items-center fixed z-10 xl:absolute border-b-2 border-lightgreen">
       <div className="container mx-auto px-2 flex items-center justify-between relative h-full">
         <div className="flex place-items-center gap-4 shrink-0">
           <NavLink to="/" className="flex items-center">
@@ -67,7 +79,9 @@ export function Header() {
         </nav>
 
         <div className="hidden xl:flex gap-[15px]">
-          <Button>Seja Voluntário</Button>
+          <Link to="/voluntario" className={LinkStyles}>
+            Seja um Voluntário
+          </Link>
           <Button>Entrar</Button>
         </div>
 
@@ -81,7 +95,7 @@ export function Header() {
         </button>
 
         {isOpen && (
-          <nav className="xl:hidden flex flex-col absolute top-[100px] left-0 w-full text-center py-8 z-10 bg-darkgreen/85 backdrop-blur-md shadow-lg">
+          <nav className="xl:hidden flex flex-col fixed top-[100px] left-0 w-screen text-center py-8 z-50 bg-darkgreen/85 backdrop-blur-md shadow-lg xl:absolute">
             <ul className="flex flex-col gap-5 mb-6 text-white">
               {navLinks.map((link) => (
                 <li key={link.path}>
@@ -97,7 +111,9 @@ export function Header() {
             </ul>
 
             <div className="flex justify-center gap-[30px]">
-              <Button size="sm">Seja Voluntário</Button>
+              <Link to="/voluntario" className={LinkStyles}>
+                Seja um Voluntário
+              </Link>
               <Button size="sm">Entrar</Button>
             </div>
           </nav>
