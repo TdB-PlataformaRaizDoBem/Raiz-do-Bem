@@ -7,9 +7,13 @@ import Logout from "../../assets/svgs/logout.svg";
 import Search from "../../assets/svgs/search.svg";
 import menuHamburguer from "../../assets/svgs/menu_hamburguer_interno.svg";
 
-const Sidebar = () => {
+interface SidebarProps {
+  isCollapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
   const navigate = useNavigate();
-  const [isCollapsed, setCollapsed] = React.useState(false);
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
 
   const userData = JSON.parse(localStorage.getItem("@RaizDoBem:user") || "{}");
@@ -57,17 +61,22 @@ const Sidebar = () => {
             </div>
 
             <button
-              onClick={() =>
-                isMobileOpen
-                  ? setIsMobileOpen(false)
-                  : setCollapsed(!isCollapsed)
-              }
-              className="p-1 hover:bg-gray-100 rounded shrink-0"
+              onClick={() => {
+                if (isMobileOpen) {
+                  setIsMobileOpen(false);
+                } else {
+                  setCollapsed(!isCollapsed);
+                }
+              }}
+              className="p-1 hover:bg-gray-100 rounded shrink-0 z-[1002]"
             >
               <img
                 src={Collapsed}
                 alt="Fechar"
-                className={`w-6 h-6 transition-transform ${isCollapsed ? "rotate-180" : ""}`}
+                className={`w-6 h-6 transition-transform 
+                ${isCollapsed && !isMobileOpen ? "rotate-180" : ""} 
+                ${isMobileOpen ? "rotate-0" : ""}
+                `}
               />
             </button>
           </div>
