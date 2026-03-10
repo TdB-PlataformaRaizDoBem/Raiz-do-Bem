@@ -2,16 +2,9 @@ import React from "react";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-10">
-      <div className="bg-white p-20 rounded-3xl shadow-xl border-t-8 border-orange text-center">
-        <h1 className="text-5xl font-bold text-darkgreen font-fredoka mb-4 uppercase tracking-tighter">
-          Dashboard [ADMIN]
-        </h1>
-      </div>
-      <p className="text-gray-500 font-sans text-lg">
-        Acesso total ao sistema de gestão Raiz do Bem.
-      </p>
-    </div>
+   <div>
+      <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas excepturi quo sed mollitia non exercitationem est unde ducimus, ad vel fugiat impedit quasi at perspiciatis vero expedita earum atque molestias. Lorem ipsum dolor sit amet consectetur adipisicing elit. In, cum dolorem quisquam doloribus optio, molestiae excepturi itaque dolores est ducimus possimus eaque, quis esse minima nihil recusandae unde soluta ratione!</h1>
+   </div>
   );
 };
 

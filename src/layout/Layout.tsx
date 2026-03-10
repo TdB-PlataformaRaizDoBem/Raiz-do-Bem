@@ -25,10 +25,19 @@ export const AuthLayout = () => {
 };
 
 export const AppLayout = () => {
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+
   return (
-    <div className="min-h-screen bg-white">
-      <Sidebar />
-      <main >
+    <div className="min-h-screen bg-white flex">
+      <Sidebar isCollapsed={isCollapsed} setCollapsed={setIsCollapsed} />
+      
+      <main
+        className={`
+          flex-1 transition-all duration-300 min-h-screen
+          ${isCollapsed ? "lg:ml-24" : "lg:ml-[300px]"} 
+          max-lg:ml-0 max-lg:pb-[100px] p-6 lg:p-10 lg:pt-20
+        `}
+      >
         <Outlet />
       </main>
     </div>
