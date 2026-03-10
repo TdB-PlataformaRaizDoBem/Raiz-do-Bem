@@ -3,6 +3,7 @@ import { Header } from "../components/header/Header";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/footer/Footer";
 import Sidebar from "../components/asidebar/Sidebar";
+import UserHeader from "../components/userHeader/UserHeader";
 
 export const PublicLayout = () => {
   return (
@@ -38,6 +39,7 @@ export const AppLayout = () => {
           max-lg:ml-0 max-lg:pb-[100px] p-6 lg:p-10 lg:pt-20
         `}
       >
+        <UserHeader />
         <Outlet />
       </main>
     </div>
