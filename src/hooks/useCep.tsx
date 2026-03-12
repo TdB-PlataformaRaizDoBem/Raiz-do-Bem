@@ -1,48 +1,51 @@
 import { useFormContext } from "react-hook-form";
 import type { FieldValues, Path, PathValue } from "react-hook-form";
+import useFetch from "../hooks/useFetch";
+
+type ViaCepResponse = {
+  cep: string;
+  localidade: string;
+  uf: string;
+  erro?: boolean;
+};
 
 export const useCep = <T extends FieldValues>() => {
   const { setValue, setError, clearErrors } = useFormContext<T>();
+  const { request, loading } = useFetch<ViaCepResponse>();
 
   const buscarCep = async (cep: string) => {
     const cepLimpo = cep.replace(/\D/g, "");
 
     if (cepLimpo.length !== 8) return;
 
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-      const data = await response.json();
+    const { json } = await request(
+      `https://viacep.com.br/ws/${cepLimpo}/json/`
+    );
 
-      if (data.erro) {
-        setError("cep" as Path<T>, { 
-          type: "manual", 
-          message: "CEP não encontrado." 
-        });
-        return;
-      }
-      
-      setValue(
-        "cidade" as Path<T>, 
-        data.localidade as PathValue<T, Path<T>>, 
-        { shouldValidate: true }
-      );
-      
-      setValue(
-        "estado" as Path<T>, 
-        data.uf as PathValue<T, Path<T>>, 
-        { shouldValidate: true }
-      );
-      
-      clearErrors("cep" as Path<T>);
-      
-    } catch (error) {
-      console.error("Erro ao buscar CEP:", error);
-      setError("cep" as Path<T>, { 
-        type: "manual", 
-        message: "Erro ao consultar o CEP." 
+    if (!json) return;
+
+    if (json.erro) {
+      setError("cep" as Path<T>, {
+        type: "manual",
+        message: "Ops! Não localizamos esse CEP. Confira se digitou corretamente. Caso tenha certeza digite o endereço manualmente.",
       });
+      return;
     }
+
+    setValue(
+      "cidade" as Path<T>,
+      json.localidade as PathValue<T, Path<T>>,
+      { shouldValidate: true }
+    );
+
+    setValue(
+      "estado" as Path<T>,
+      json.uf as PathValue<T, Path<T>>,
+      { shouldValidate: true }
+    );
+
+    clearErrors("cep" as Path<T>);
   };
 
-  return { buscarCep };
+  return { buscarCep, loading };
 };
