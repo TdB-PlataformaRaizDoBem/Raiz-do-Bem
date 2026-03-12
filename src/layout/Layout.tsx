@@ -31,7 +31,7 @@ export const AppLayout = () => {
   return (
     <div className="min-h-screen bg-white flex">
       <Sidebar isCollapsed={isCollapsed} setCollapsed={setIsCollapsed} />
-      
+
       <main
         className={`
           flex-1 transition-all duration-300 min-h-screen
@@ -40,7 +40,7 @@ export const AppLayout = () => {
         `}
       >
         <UserHeader />
-        <Outlet />
+          <Outlet />
       </main>
     </div>
   );

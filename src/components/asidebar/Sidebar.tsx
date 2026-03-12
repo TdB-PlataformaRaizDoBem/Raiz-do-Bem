@@ -4,8 +4,8 @@ import { Menu_Data } from "./MenuData";
 
 import Collapsed from "../../assets/svgs/icon-park_to-left.svg";
 import Logout from "../../assets/svgs/logout.svg";
-import Search from "../../assets/svgs/search.svg";
 import menuHamburguer from "../../assets/svgs/menu_hamburguer_interno.svg";
+import Search from "../ui/Search";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -80,20 +80,9 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
               />
             </button>
           </div>
-
+                  
           {(!isCollapsed || isMobileOpen) && (
-            <div className="relative mb-10">
-              <img
-                src={Search}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 opacity-50"
-                alt=""
-              />
-              <input
-                type="search"
-                placeholder="Pesquisar..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange"
-              />
-            </div>
+              <Search placeholder="Pesquisar" />
           )}
 
           <nav className="flex-1 overflow-y-auto no-scrollbar">
@@ -145,7 +134,7 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
       </aside>
 
       {/* Menu Mobile Fixo */}
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full h-[90px] bg-[#f5f4f3] border-t-2 border-gray-200 rounded-t-[12px] z-[1000]">
+      <nav className="lg:hidden fixed bottom-0 left-0 w-full h-[90px] bg-[#f5f4f3] border-t-2 border-gray-200 rounded-t-[12px] z-40">
         <ul className="flex items-center justify-around h-full px-4">
           <li>
             <NavLink to={menuLinks[0]?.path || "#"}>
