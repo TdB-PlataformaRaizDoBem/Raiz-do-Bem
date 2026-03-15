@@ -1,11 +1,11 @@
 import React from "react";
 
-export function useScrollLock(isOpen: boolean) {
+export function useScrollLock(isOpen: boolean, forceLock: boolean = false) {
   React.useEffect(() => {
     const handleScrollLock = () => {
       const isModalMode = window.innerWidth < 1280;
 
-      if (isOpen && isModalMode) {
+      if (isOpen && (isModalMode || forceLock)) {
         document.body.style.overflow = "hidden";
       } else {
         document.body.style.overflow = "unset";
