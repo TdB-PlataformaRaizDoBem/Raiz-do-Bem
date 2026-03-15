@@ -36,7 +36,7 @@ export function UserManagementPage<T>({
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_450px] gap-8 items-start">
 
-        <div className="flex flex-col gap-4 w-full max-w-[650px] mx-auto xl:mx-0">
+        <div className="flex flex-col gap-4 w-full max-w-[900px] xl:mx-0">
           {users.map((user) => {
 
             const id = getId(user);

@@ -5,6 +5,7 @@ import UserInformation from "../../components/userInformation/UserInformation";
 import UserActions from "../../components/userActions/UserActions";
 import { Button } from "../../components/ui/Button";
 import DeleteUserButton from "../../components/ui/buttonFilters/DeleteUserButton";
+import EditCoordButton from "../../components/ui/buttonFilters/EditCoordButton";
 
 export default function CoordenadorPage() {
   return (
@@ -109,7 +110,7 @@ export default function CoordenadorPage() {
                 }}
               />
 
-              <Button variant="primary">Editar Dados</Button>
+              <EditCoordButton user={selectedCoord} />
 
               <Button variant="primary" onClick={close}>
                 Fechar
