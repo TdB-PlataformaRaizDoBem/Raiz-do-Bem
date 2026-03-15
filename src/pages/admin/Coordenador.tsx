@@ -4,6 +4,7 @@ import UserCard from "../../components/userCard/UserCard";
 import UserInformation from "../../components/userInformation/UserInformation";
 import UserActions from "../../components/userActions/UserActions";
 import { Button } from "../../components/ui/Button";
+import DeleteUserButton from "../../components/ui/buttonFilters/DeleteUserButton";
 
 export default function CoordenadorPage() {
   return (
@@ -48,61 +49,65 @@ export default function CoordenadorPage() {
       renderDetails={(selectedCoord, close) => (
         <UserInformation>
           <div className="flex-1 overflow-y-auto">
-
             <div className="flex flex-col mb-6 relative">
-            <span className="font-bold text-2xl text-darkgray">
-              {selectedCoord.nome}
-            </span>
+              <span className="font-bold text-2xl text-darkgray">
+                {selectedCoord.nome}
+              </span>
 
-            <div className="h-1 w-20 bg-darkgreen mt-2 rounded-full" />
-          </div>
-
-          <section className="flex flex-col gap-3">
-            <h4 className="text-lg uppercase tracking-widest text-amber font-bold mt-6">
-              Informações Pessoais
-            </h4>
-
-            <div className="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-100">
-              <p className="text-sm">
-                <b>Email:</b> {selectedCoord.email}
-              </p>
-
-              <p className="text-sm">
-                <b>Data de Contratação:</b> {selectedCoord.data_contratacao}
-              </p>
+              <div className="h-1 w-20 bg-darkgreen mt-2 rounded-full" />
             </div>
-          </section>
 
-          <section className="flex flex-col gap-3 mb-6">
-            <h4 className="text-lg uppercase tracking-widest text-amber font-bold mt-6">
-              Endereço
-            </h4>
+            <section className="flex flex-col gap-3">
+              <h4 className="text-lg uppercase tracking-widest text-amber font-bold mt-6">
+                Informações Pessoais
+              </h4>
 
-            <div className="grid grid-cols-1 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
-              <p className="text-sm">
-                <b>Logradouro:</b> {selectedCoord.logradouro},{" "}
-                {selectedCoord.numero}
-              </p>
+              <div className="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <p className="text-sm">
+                  <b>Email:</b> {selectedCoord.email}
+                </p>
 
-              <p className="text-sm">
-                <b>Cidade:</b> {selectedCoord.cidade}
-              </p>
+                <p className="text-sm">
+                  <b>Data de Contratação:</b> {selectedCoord.data_contratacao}
+                </p>
+              </div>
+            </section>
 
-              <p className="text-sm">
-                <b>Estado:</b> {selectedCoord.estado}
-              </p>
+            <section className="flex flex-col gap-3 mb-6">
+              <h4 className="text-lg uppercase tracking-widest text-amber font-bold mt-6">
+                Endereço
+              </h4>
 
-              <p className="text-sm">
-                <b>CEP:</b> {selectedCoord.cep}
-              </p>
-            </div>
-          </section>
+              <div className="grid grid-cols-1 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <p className="text-sm">
+                  <b>Logradouro:</b> {selectedCoord.logradouro},{" "}
+                  {selectedCoord.numero}
+                </p>
 
+                <p className="text-sm">
+                  <b>Cidade:</b> {selectedCoord.cidade}
+                </p>
+
+                <p className="text-sm">
+                  <b>Estado:</b> {selectedCoord.estado}
+                </p>
+
+                <p className="text-sm">
+                  <b>CEP:</b> {selectedCoord.cep}
+                </p>
+              </div>
+            </section>
           </div>
 
           <UserActions>
             <div className="flex flex-wrap gap-4 items-center justify-center">
-              <Button variant="danger">Deletar Coordenador</Button>
+              <DeleteUserButton
+                userId={selectedCoord.id}
+                userName={selectedCoord.nome}
+                onDelete={() => {
+                  close();
+                }}
+              />
 
               <Button variant="primary">Editar Dados</Button>
 
