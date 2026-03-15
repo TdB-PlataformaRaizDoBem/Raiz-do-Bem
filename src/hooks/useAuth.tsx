@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { USERS, AUTH_KEYS } from '../pages/login/auth';
+import { USERS, AUTH_KEYS } from '../data/auth';
 
 export const useAuth = () => {
   const navigate = useNavigate();

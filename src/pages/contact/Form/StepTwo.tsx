@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import Input from "../../../components/form/Input";
-import TextArea from "../../../components/form/TextArea";
+import Input from "../../../components/formElements/Input";
+import TextArea from "../../../components/formElements/TextArea";
 import { type ContactFormData } from "./ContactForm";
 
 const StepTwo = () => {
@@ -29,7 +29,9 @@ const StepTwo = () => {
           <option value="nao">Não</option>
         </select>
         {errors.acompanhamento && (
-          <p className="text-orange text-xs mt-1">{errors.acompanhamento.message}</p>
+          <p className="text-orange text-xs mt-1">
+            {errors.acompanhamento.message}
+          </p>
         )}
       </div>
 
@@ -37,7 +39,9 @@ const StepTwo = () => {
         label="Principais problemas percebidos: *"
         labelClassName="text-white"
         placeholder="Ex: Dor, dentes ausentes, sangramento..."
-        {...register("problemas", { required: "Descreva brevemente o que sente." })}
+        {...register("problemas", {
+          required: "Descreva brevemente o que sente.",
+        })}
         error={errors.problemas?.message}
       />
 

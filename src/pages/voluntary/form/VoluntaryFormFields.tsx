@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { type DentistFormData } from "./VoluntaryFormData";
 import { useCep } from "../../../hooks/useCep";
-import Input from "../../../components/form/Input";
+import Input from "../../../components/formElements/Input";
 
 const VoluntaryFormFields = () => {
   const {

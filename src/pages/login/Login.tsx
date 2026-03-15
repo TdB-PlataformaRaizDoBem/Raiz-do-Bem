@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Button } from '../../components/ui/Button';
-import Input from '../../components/form/Input';
+import Input from '../../components/formElements/Input';
 import ImagemLogin from "../../assets/img/imagemLogin.png";
 import { useAuth } from '../../hooks/useAuth';
 

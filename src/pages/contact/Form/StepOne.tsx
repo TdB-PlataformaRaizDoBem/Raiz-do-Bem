@@ -1,5 +1,5 @@
 import React from "react";
-import Input from "../../../components/form/Input";
+import Input from "../../../components/formElements/Input";
 import { type ContactFormData } from "./ContactForm";
 import { useFormContext } from "react-hook-form";
 import { useCep } from "../../../hooks/useCep";
@@ -11,7 +11,7 @@ const StepOne = () => {
     watch,
   } = useFormContext<ContactFormData>();
   const sexo = watch("sexo");
-  const { buscarCep } = useCep(); 
+  const { buscarCep } = useCep();
 
   return (
     <div className="animate-fadeIn grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -123,7 +123,7 @@ const StepOne = () => {
             value: /^[0-9]{5}-?[0-9]{3}$/,
             message: "O CEP deve conter apenas caracteres númericos",
           },
-          onBlur: (e) => buscarCep(e.target.value)
+          onBlur: (e) => buscarCep(e.target.value),
         })}
         error={errors.cep?.message}
       />
