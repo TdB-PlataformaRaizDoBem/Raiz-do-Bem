@@ -65,10 +65,9 @@ export function UserManagementPage<T>({
                 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
                 w-[92%] lg:w-[40%] max-h-[90vh] overflow-y-auto bg-white
                 rounded-2xl shadow-2xl
-
                 xl:static xl:translate-x-0 xl:translate-y-0
                 xl:w-full xl:max-w-none xl:max-h-none
-                xl:shadow-none xl:border xl:border-gray-100
+                xl:shadow-none
                 xl:bg-transparent xl:overflow-visible
                 "
               >

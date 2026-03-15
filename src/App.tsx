@@ -13,6 +13,7 @@ import ScrollToTop from "./layout/ScrollToTop";
 import Login from "./pages/login/Login";
 import Admin from "./pages/admin/Admin";
 import Coord from "./pages/coord/Coord";
+import { NotificationProvider } from "./components/context/NotificationProvider";
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -50,8 +51,10 @@ const AppRoutes = () => {
 
 const App = () => (
   <BrowserRouter>
-    <ScrollToTop />
-    <AppRoutes />
+    <NotificationProvider>
+      <ScrollToTop />
+      <AppRoutes />
+    </NotificationProvider>
   </BrowserRouter>
 );
 
