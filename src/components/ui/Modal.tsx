@@ -1,4 +1,6 @@
 import React from "react";
+import { createPortal } from "react-dom";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 type ModalProps = {
   open: boolean;
@@ -7,11 +9,12 @@ type ModalProps = {
 };
 
 export const Modal = ({ open, onClose, children }: ModalProps) => {
+  useScrollLock(open, true);
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 flex items-center xl:-mr-14 justify-center bg-black/50 backdrop-blur-sm z-[100]" 
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[999]" 
       onClick={onClose}
     >
       <div 
@@ -20,6 +23,7 @@ export const Modal = ({ open, onClose, children }: ModalProps) => {
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
