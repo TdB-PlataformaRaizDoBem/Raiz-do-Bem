@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import Coordenador from './Coordenador'
 import { Beneficiarios } from './Beneficiarios'
+import { Dentistas } from './Dentistas'
 
 const Admin = () => {
   return (
@@ -10,6 +11,7 @@ const Admin = () => {
       <Route path='dashboard' element={<Dashboard />}/>
       <Route path='coordenadores' element={<Coordenador />} />
       <Route path='beneficiarios' element={<Beneficiarios />} />
+      <Route path='dentistas' element={<Dentistas />} />
     </Routes>
   )
 }
