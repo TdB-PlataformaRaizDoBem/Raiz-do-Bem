@@ -6,6 +6,7 @@ type ViaCepResponse = {
   cep: string;
   localidade: string;
   uf: string;
+  logradouro?: string;
   erro?: boolean;
 };
 
@@ -43,6 +44,12 @@ export const useCep = <T extends FieldValues>() => {
       json.uf as PathValue<T, Path<T>>,
       { shouldValidate: true }
     );
+
+    setValue(
+      'logradouro' as Path<T>,
+      json.logradouro as PathValue<T, Path<T>>,
+      { shouldValidate: true}
+    )
 
     clearErrors("cep" as Path<T>);
   };

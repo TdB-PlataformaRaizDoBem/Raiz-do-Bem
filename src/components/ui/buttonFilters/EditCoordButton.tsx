@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
-import UpdateCoord from "../../forms/UpdateCoord";
+import UpdateCoord from "../../forms/update/UpdateCoord";
 import { type Coordenador } from "../../../data/coordenadoresData";
 
 type EditCoordButtonProps = {
@@ -18,10 +18,7 @@ const EditCoordButton = ({ user }: EditCoordButtonProps) => {
       </Button>
 
       <Modal open={open} onClose={() => setOpen(false)}>
-        <UpdateCoord 
-          initialData={user} 
-          onSuccess={() => setOpen(false)} 
-        />
+        <UpdateCoord initialData={user} onSuccess={() => setOpen(false)} />
       </Modal>
     </>
   );

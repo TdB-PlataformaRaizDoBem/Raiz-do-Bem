@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/Button";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
-import { validateAge } from "./validateAge";
+import { validateAge } from "../../../hooks/validateAge";
 
 export interface ContactFormData {
   nome: string;
