@@ -5,7 +5,7 @@ import UserInformation from "../../components/userInformation/UserInformation";
 import UserActions from "../../components/userActions/UserActions";
 import { Button } from "../../components/ui/Button";
 import DeleteUserButton from "../../components/ui/buttonFilters/DeleteUserButton";
-import EditCoordButton from "../../components/ui/buttonFilters/EditCoordButton";
+import { CreateCoord } from "../../components/forms/create/CreateCoord";
 
 export default function CoordenadorPage() {
   return (
@@ -13,6 +13,7 @@ export default function CoordenadorPage() {
       title="Coordenador"
       users={coordenadoresData}
       getId={(u) => u.id}
+      renderCreateForm={(close) => <CreateCoord onSuccess={close} />}
       renderCard={(u, selected, select) => (
         <UserCard
           className={`
@@ -110,7 +111,7 @@ export default function CoordenadorPage() {
                 }}
               />
 
-              <EditCoordButton user={selectedCoord} />
+              <Button variant="primary">Editar Dados</Button>
 
               <Button variant="primary" onClick={close}>
                 Fechar

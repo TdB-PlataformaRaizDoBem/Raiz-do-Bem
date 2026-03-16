@@ -3,7 +3,6 @@ import { FilterBar } from "../ui/FilterBar";
 import { Button } from "../ui/Button";
 import { useScrollLock } from "../../hooks/useScrollLock";
 import { Modal } from "../ui/Modal";
-import { CreateCoord } from "../forms/create/CreateCoord";
 
 type UserManagementPageProps<T> = {
   title: string;
@@ -15,6 +14,7 @@ type UserManagementPageProps<T> = {
     select: () => void,
   ) => React.ReactNode;
   renderDetails: (user: T, close: () => void) => React.ReactNode;
+  renderCreateForm?: (close: () => void) => React.ReactNode;
 };
 
 export function UserManagementPage<T>({
@@ -23,6 +23,7 @@ export function UserManagementPage<T>({
   getId,
   renderCard,
   renderDetails,
+  renderCreateForm
 }: UserManagementPageProps<T>) {
   const [selectedUser, setSelectedUser] = React.useState<T | null>(null);
   const [open, setOpen] = React.useState(false);
@@ -36,13 +37,16 @@ export function UserManagementPage<T>({
         searchPlaceholder={`Pesquisar ${title.toLowerCase()}...`}
       >
         <Button>Todos</Button>
-        <Button variant="primary" onClick={() => setOpen(true)}>
-          Criar Conta
-        </Button>
+        
+        {renderCreateForm && (
+          <Button variant="primary" onClick={() => setOpen(true)}>
+            Criar Conta
+          </Button>
+        )}
 
-        {open && (
+        {open && renderCreateForm && (
           <Modal open={open} onClose={() => setOpen(false)}>
-            <CreateCoord onSuccess={() => setOpen(false)} />
+            {renderCreateForm(() => setOpen(false))}
           </Modal>
         )}
       </FilterBar>
