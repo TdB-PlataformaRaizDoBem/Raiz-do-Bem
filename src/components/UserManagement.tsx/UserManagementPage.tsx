@@ -2,12 +2,18 @@ import React from "react";
 import { FilterBar } from "../ui/FilterBar";
 import { Button } from "../ui/Button";
 import { useScrollLock } from "../../hooks/useScrollLock";
+import { Modal } from "../ui/Modal";
+import { CreateCoord } from "../forms/create/CreateCoord";
 
 type UserManagementPageProps<T> = {
   title: string;
   users: T[];
   getId: (user: T) => string | number;
-  renderCard: (user: T, selected: boolean, select: () => void) => React.ReactNode;
+  renderCard: (
+    user: T,
+    selected: boolean,
+    select: () => void,
+  ) => React.ReactNode;
   renderDetails: (user: T, close: () => void) => React.ReactNode;
 };
 
@@ -18,27 +24,32 @@ export function UserManagementPage<T>({
   renderCard,
   renderDetails,
 }: UserManagementPageProps<T>) {
-
   const [selectedUser, setSelectedUser] = React.useState<T | null>(null);
+  const [open, setOpen] = React.useState(false);
 
   useScrollLock(!!selectedUser);
 
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
-
       <FilterBar
         searchLabel="Opções e Filtros:"
         searchPlaceholder={`Pesquisar ${title.toLowerCase()}...`}
       >
         <Button>Todos</Button>
-        <Button>Criar Conta</Button>
+        <Button variant="primary" onClick={() => setOpen(true)}>
+          Criar Conta
+        </Button>
+
+        {open && (
+          <Modal open={open} onClose={() => setOpen(false)}>
+            <CreateCoord onSuccess={() => setOpen(false)} />
+          </Modal>
+        )}
       </FilterBar>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_450px] gap-8 items-start">
-
         <div className="flex flex-col gap-4 w-full max-w-[900px] xl:mx-0">
           {users.map((user) => {
-
             const id = getId(user);
             const selected = selectedUser && getId(selectedUser) === id;
 
@@ -50,9 +61,7 @@ export function UserManagementPage<T>({
           })}
         </div>
 
-
         <div className="flex flex-col gap-4 xl:sticky xl:top-24 h-fit">
-
           {selectedUser && (
             <>
               <div
@@ -75,9 +84,7 @@ export function UserManagementPage<T>({
               </div>
             </>
           )}
-
         </div>
-
       </div>
     </div>
   );
