@@ -3,6 +3,7 @@ import { FilterBar } from "../ui/FilterBar";
 import { Button } from "../ui/Button";
 import { useScrollLock } from "../../hooks/useScrollLock";
 import { Modal } from "../ui/Modal";
+import { getUser } from "../../hooks/useUser";
 
 type UserManagementPageProps<T> = {
   title: string;
@@ -23,12 +24,34 @@ export function UserManagementPage<T>({
   getId,
   renderCard,
   renderDetails,
-  renderCreateForm
+  renderCreateForm,
 }: UserManagementPageProps<T>) {
   const [selectedUser, setSelectedUser] = React.useState<T | null>(null);
   const [open, setOpen] = React.useState(false);
 
+  // Validação de usuário
+  const loggedUser = getUser();
+  const isAdmin = loggedUser?.role === "admin";
+  const isCoord = loggedUser?.role === "coordenador";
+
+  //verificar se é pág de beneficiários
+  const isBeneficiarioPage = title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .includes("beneficiario");
+    
+  // botão de criar conta livre para apenas admin e coordenadores com beneficiário
+  const showCreateButton = isAdmin || (isCoord && isBeneficiarioPage);
+
   useScrollLock(!!selectedUser);
+
+  console.log({
+    pagina: title,
+    perfil: loggedUser?.role,
+    podeCriar: showCreateButton,
+    isBeneficiario: isBeneficiarioPage,
+  });
 
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
@@ -37,14 +60,14 @@ export function UserManagementPage<T>({
         searchPlaceholder={`Pesquisar ${title.toLowerCase()}...`}
       >
         <Button>Todos</Button>
-        
-        {renderCreateForm && (
+
+        {showCreateButton && renderCreateForm && (
           <Button variant="primary" onClick={() => setOpen(true)}>
             Criar Conta
           </Button>
         )}
 
-        {open && renderCreateForm && (
+        {open && showCreateButton && renderCreateForm && (
           <Modal open={open} onClose={() => setOpen(false)}>
             {renderCreateForm(() => setOpen(false))}
           </Modal>

@@ -12,10 +12,10 @@ const Login = () => {
 
   return (
     <main className="min-h-screen w-full flex flex-col lg:flex-row font-sans bg-white">
-      {/* Lado Esquerdo - Imagem */}
+      {/* Imagem */}
       <section className="hidden lg:block lg:w-1/2 bg-cover bg-center shadow-inner" style={{ backgroundImage: `url(${ImagemLogin})` }} />
 
-      {/* Lado Direito - Form */}
+      {/* Form */}
       <section className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 relative">
         <div className="relative z-10 w-full max-w-[480px]">
           

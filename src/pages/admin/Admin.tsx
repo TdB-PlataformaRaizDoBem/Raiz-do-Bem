@@ -2,8 +2,8 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import Coordenador from './Coordenador'
-import { Beneficiarios } from './Beneficiarios'
-import { Dentistas } from './Dentistas'
+import { Beneficiarios } from '../gerenciaBeneficiarios/Beneficiarios'
+import { Dentistas } from '../gerenciaDentistas/Dentistas'
 
 const Admin = () => {
   return (
