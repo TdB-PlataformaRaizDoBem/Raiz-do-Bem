@@ -40,7 +40,7 @@ export function UserManagementPage<T>({
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .includes("beneficiario");
-    
+
   // botão de criar conta livre para apenas admin e coordenadores com beneficiário
   const showCreateButton = isAdmin || (isCoord && isBeneficiarioPage);
 
@@ -74,8 +74,18 @@ export function UserManagementPage<T>({
         )}
       </FilterBar>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_450px] gap-8 items-start">
-        <div className="flex flex-col gap-4 w-full max-w-[900px] xl:mx-0">
+      <div
+        className={`grid gap-8 items-start w-full transition-all duration-300 ${
+          selectedUser ? "xl:grid-cols-[1fr_450px]" : "grid-cols-1"
+        }`}
+      >
+        <div
+          className={`grid gap-6 w-full ${
+            selectedUser
+              ? "grid-cols-1"
+              : "grid-cols-1 md:grid-cols-2 "
+          }`}
+        >
           {users.map((user) => {
             const id = getId(user);
             const selected = selectedUser && getId(selectedUser) === id;
@@ -88,16 +98,21 @@ export function UserManagementPage<T>({
           })}
         </div>
 
-        <div className="flex flex-col gap-4 xl:sticky xl:top-24 h-fit">
-          {selectedUser && (
-            <>
-              <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 xl:hidden"
-                onClick={() => setSelectedUser(null)}
-              />
+        {selectedUser && (
+          <div className="hidden xl:flex flex-col gap-4 xl:sticky xl:top-24 h-fit w-full">
+            {renderDetails(selectedUser, () => setSelectedUser(null))}
+          </div>
+        )}
 
-              <div
-                className="
+        {selectedUser && (
+          <div className="xl:hidden">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 xl:hidden"
+              onClick={() => setSelectedUser(null)}
+            />
+
+            <div
+              className="
                 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
                 w-[92%] lg:w-[40%] max-h-[90vh] overflow-y-auto bg-white
                 rounded-2xl shadow-2xl
@@ -106,12 +121,11 @@ export function UserManagementPage<T>({
                 xl:shadow-none
                 xl:bg-transparent xl:overflow-visible
                 "
-              >
-                {renderDetails(selectedUser, () => setSelectedUser(null))}
-              </div>
-            </>
-          )}
-        </div>
+            >
+              {renderDetails(selectedUser, () => setSelectedUser(null))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
