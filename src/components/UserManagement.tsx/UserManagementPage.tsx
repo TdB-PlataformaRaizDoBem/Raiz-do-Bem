@@ -80,10 +80,10 @@ export function UserManagementPage<T>({
         }`}
       >
         <div
-          className={`grid gap-6 w-full ${
+          className={`grid gap-6 w-full transition-all duration-300 ${
             selectedUser
               ? "grid-cols-1"
-              : "grid-cols-1 md:grid-cols-2 "
+              : "grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2"
           }`}
         >
           {users.map((user) => {
