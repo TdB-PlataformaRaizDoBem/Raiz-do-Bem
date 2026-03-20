@@ -4,6 +4,7 @@ import Dashboard from './Dashboard'
 import Coordenador from './Coordenador'
 import { Beneficiarios } from '../gerenciaBeneficiarios/Beneficiarios'
 import { Dentistas } from '../gerenciaDentistas/Dentistas'
+import { PedidosAjuda } from '../pedidosAjuda/pedidosAjuda'
 
 const Admin = () => {
   return (
@@ -12,6 +13,7 @@ const Admin = () => {
       <Route path='coordenadores' element={<Coordenador />} />
       <Route path='beneficiarios' element={<Beneficiarios />} />
       <Route path='dentistas' element={<Dentistas />} />
+      <Route path='solicitacoes' element={<PedidosAjuda />} />
     </Routes>
   )
 }
