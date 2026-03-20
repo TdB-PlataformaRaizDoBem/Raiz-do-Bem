@@ -7,7 +7,7 @@ type CardProps = {
 
 const UserCard = ({ children, className } : CardProps) => {
   return (
-    <div className={`border-l-4 border-lightgreen p-6 lg:grid lg:grid-cols-2 lg:h-28 lg:items-center bg-lightgray transition-all hover:shadow-md ${className}`}>
+    <div className={`border-l-4 rounded-lg border-lightgreen p-6 lg:grid lg:grid-cols-2 lg:h-28 lg:items-center bg-lightgray transition-all hover:shadow-md min-h-fit ${className}`}>
       {children}
     </div>
   )
