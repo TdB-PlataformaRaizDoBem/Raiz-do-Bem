@@ -68,8 +68,8 @@ export const PedidosAjuda = () => {
       )}
       renderDetails={(pedido, close) => (
         <UserInformation>
-          <div className="flex flex-col h-[85vh] md:h-auto max-w-3xl w-full">
-            <div className="flex-1 overflow-y-auto p-1 pr-2 custom-scrollbar">
+          <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] md:h-auto max-w-3x w-full">
+            <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 custom-scrollbar">
               <div className="flex-1 w-full text-left">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -154,7 +154,6 @@ export const PedidosAjuda = () => {
             </div>
 
             <UserActions>
-              <div className="sticky bottom-0 pt-4">
                 <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end">
                   <Button
                     variant="primary"
@@ -171,7 +170,6 @@ export const PedidosAjuda = () => {
                     Fechar
                   </Button>
                 </div>
-              </div>
             </UserActions>
           </div>
         </UserInformation>
