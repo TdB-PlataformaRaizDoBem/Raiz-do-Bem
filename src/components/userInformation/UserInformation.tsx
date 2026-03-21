@@ -9,17 +9,17 @@ const UserInformation = ({ children }: InformationProps) => {
     <div
       className="
       flex flex-col
-      w-full max-w-full
-      xl:min-w-[500px]
+      w-full
       border-t-4 border-lightgreen
       bg-lightgray
       p-6 pb-0
       relative
-      xl:min-h-[550px]
+      rounded-2xl
+      lg:rounded-lg
+      shadow-2xl
       min-h-full
       z-50
       max-h-[90vh]
-      overflow-hidden
       "
     >
       {children}

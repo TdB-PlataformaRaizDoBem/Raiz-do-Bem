@@ -114,12 +114,12 @@ export function UserManagementPage<T>({
             <div
               className="
                 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
-                w-[92%] lg:w-[40%] max-h-[90vh] overflow-y-auto bg-white
-                rounded-2xl shadow-2xl
+                w-[92%] max-w-[500px] 
+                max-h-[85vh] 
+                overflow-hidden 
                 xl:static xl:translate-x-0 xl:translate-y-0
                 xl:w-full xl:max-w-none xl:max-h-none
-                xl:shadow-none
-                xl:bg-transparent xl:overflow-visible
+                xl:overflow-visible
                 "
             >
               {renderDetails(selectedUser, () => setSelectedUser(null))}
