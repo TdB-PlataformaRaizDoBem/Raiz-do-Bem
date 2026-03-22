@@ -26,7 +26,7 @@ export const Beneficiarios = () => {
           <div className="flex flex-col gap-2">
             <p className="text-lg font-bold text-darkgray">{u.nome}</p>
             <span className="text-xs px-2 py-1 bg-darkgreen/10 text-darkgreen rounded-full w-fit font-bold">
-              {u.programa}
+              {u.programaSocial}
             </span>
           </div>
           <Button
@@ -52,7 +52,7 @@ export const Beneficiarios = () => {
                   </div>
 
                   <span className="px-4 py-1.5 bg-darkgreen/10 text-darkgreen rounded-full text-sm font-bold shrink-0">
-                    {user.programa}
+                    {user.programaSocial}
                   </span>
                 </div>
 
