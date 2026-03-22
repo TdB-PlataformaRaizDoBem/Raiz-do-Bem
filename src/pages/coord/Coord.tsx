@@ -4,7 +4,6 @@ import Dashboard from '../dashboard/Dashboard'
 import { Beneficiarios } from '../gerenciaBeneficiarios/Beneficiarios'
 import { Dentistas } from '../gerenciaDentistas/Dentistas'
 import { PedidosAjuda } from '../pedidosAjuda/pedidosAjuda'
-import Reports from '../reports/Reports'
 
 const Coord = () => {
   return (
@@ -13,7 +12,6 @@ const Coord = () => {
       <Route path='beneficiarios' element={<Beneficiarios />} />
       <Route path='dentistas' element={<Dentistas />} />
       <Route path='solicitacoes' element={<PedidosAjuda />} />
-      <Route path='relatorios' element={<Reports />} />
 
     </Routes>
   )

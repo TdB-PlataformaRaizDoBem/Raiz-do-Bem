@@ -11,6 +11,7 @@ import reports from "../../assets/svgs/reports-stats.svg";
 import register from "../../assets/svgs/register-stats.svg";
 import voluntary from "../../assets/svgs/voluntary-stats.svg";
 import time from "../../assets/svgs/time-stats.svg";
+import { StateRanking } from "../../components/StateRanking/StateRanking";
 
 const Reports = () => {
   // Agora temos os dados divididos por domínio
@@ -52,6 +53,7 @@ const Reports = () => {
       {/* Gráficos de Pizza e Barras Horizontais */}
       <ImpactChart />
       <OrdersStatusBarChart />
+      <StateRanking />
     </div>
   );
 };

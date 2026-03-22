@@ -20,7 +20,7 @@ export const CreateBeneficiario = ({ onSuccess, initialData }: CreateBeneficiari
       telefone: "",
       sexo: "Feminino",
       data_nascimento: "",
-      programa: "Turma do Bem",
+      programaSocial: "Turma do Bem",
       cep: "",
       logradouro: "",
       numero: "",
