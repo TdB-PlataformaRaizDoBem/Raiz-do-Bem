@@ -6,6 +6,7 @@ import register from "../../assets/svgs/register-stats.svg";
 import voluntary from "../../assets/svgs/voluntary-stats.svg";
 import time from "../../assets/svgs/time-stats.svg";
 import ImpactChart from "../../components/impactChart/ImpactChart";
+import { OrdersStatusBarChart } from "../../components/orderStatusBarChart/OrderStatusBarChart";
 
 const Reports = () => {
   const stats = useStats();
@@ -43,6 +44,7 @@ const Reports = () => {
           />
         </section>
         <ImpactChart />
+        <OrdersStatusBarChart />
       </div>
     </>
   );
