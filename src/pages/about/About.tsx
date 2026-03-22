@@ -1,4 +1,3 @@
-import React from "react";
 import {
   stats,
   culture_values,

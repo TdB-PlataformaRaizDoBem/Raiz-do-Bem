@@ -1,4 +1,3 @@
-import React from "react";
 import { faqCategories, type FaqCategory, type FaqItem } from "./faqData";
 import MascoteFaq from "../../assets/img/mascote.png";
 import { Link } from "react-router-dom";

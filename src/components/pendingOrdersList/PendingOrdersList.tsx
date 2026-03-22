@@ -1,4 +1,3 @@
-import React from 'react';
 import { useOrderStats } from '../../hooks/useOrderState';
 
 export const CriticalOrdersList = () => {

@@ -27,10 +27,10 @@ export const BeneficiarioForm = ({ onCancel, isEdit }: BeneficiarioFormProps) =>
 
   useEffect(() => {
     if (selectedSexo === "Masculino") {
-      setValue("programa", "Turma do Bem");
+      setValue("programaSocial", "Turma do Bem");
     }
     if (idadeAtual > 0 && idadeAtual < 18) {
-      setValue("programa", "Turma do Bem");
+      setValue("programaSocial", "Turma do Bem");
     }
   }, [selectedSexo, idadeAtual, setValue]);
 
@@ -101,7 +101,7 @@ export const BeneficiarioForm = ({ onCancel, isEdit }: BeneficiarioFormProps) =>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-bold text-darkgray">Programa</label>
           <select 
-            {...register("programa")} 
+            {...register("programaSocial")} 
             className="border rounded-xl p-3 bg-white border-gray-200 outline-none focus:ring-2 focus:ring-primary transition-all"
           >
             <option value="Turma do Bem">Turma do Bem (Jovens)</option>

@@ -1,4 +1,3 @@
-import React from "react";
 import { useOrderStats } from "../../hooks/useOrderState";
 import time from "../../assets/svgs/time.svg";
 import approved from "../../assets/svgs/approved.svg";

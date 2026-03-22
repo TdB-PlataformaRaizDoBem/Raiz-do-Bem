@@ -1,4 +1,3 @@
-import React from "react";
 import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import UserInformation from "../../components/userInformation/UserInformation";

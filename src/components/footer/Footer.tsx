@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 import TdbLogo from "../../assets/svgs/TDB_logo.svg";

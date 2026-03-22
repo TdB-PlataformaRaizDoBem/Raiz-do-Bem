@@ -1,4 +1,3 @@
-import React from "react";
 import { teamMembers } from "./TeamMembers"; 
 import DentinhoIntegrantes from "../../assets/img/dentinhoIntegrantes.png";
 import LinkedinIcon from "../../assets/svgs/mdi_linkedin_2.svg";

@@ -1,4 +1,3 @@
-import React from "react";
 import Input from "../../../components/formElements/Input";
 import { type ContactFormData } from "./ContactForm";
 import { useFormContext } from "react-hook-form";

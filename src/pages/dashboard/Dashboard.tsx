@@ -1,4 +1,3 @@
-import React from "react";
 import reports from "../../assets/svgs/reports-stats.svg";
 import register from "../../assets/svgs/register-stats.svg";
 import voluntary from "../../assets/svgs/voluntary-stats.svg";

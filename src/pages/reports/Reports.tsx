@@ -1,4 +1,3 @@
-import React from "react";
 import { StaticCard } from "../../components/staticCard/staticCard";
 import ImpactChart from "../../components/impactChart/ImpactChart";
 import { OrdersStatusBarChart } from "../../components/orderStatusBarChart/OrderStatusBarChart";

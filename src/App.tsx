@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter,
   Routes,
@@ -18,7 +18,7 @@ import { NotificationProvider } from "./components/context/NotificationProvider"
 const AppRoutes = () => {
   const location = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const matches = matchRoutes(routes, location);
 
     if (matches) {

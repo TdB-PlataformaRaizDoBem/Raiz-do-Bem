@@ -76,7 +76,7 @@ const UpdateBeneficiario = ({ initialData, onSuccess }: UpdateBeneficiarioProps)
             <label className="text-sm font-bold text-darkgray">Programa</label>
             <select 
               name="programa"
-              value={formData.programa}
+              value={formData.programaSocial}
               onChange={handleChange}
               className="border border-gray-200 rounded-xl p-3 bg-white outline-none focus:ring-2 focus:ring-primary"
             >

@@ -1,5 +1,3 @@
-import React from 'react'
-
 type ToastProps = {
   message: string;
   show: boolean;

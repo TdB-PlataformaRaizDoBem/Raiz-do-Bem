@@ -1,4 +1,3 @@
-import React from 'react';
 import { useImpactStats } from "../../hooks/useImpactStats";
 
 const ImpactChart = () => {
