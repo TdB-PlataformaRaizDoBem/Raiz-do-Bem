@@ -11,7 +11,7 @@ const ImpactChart = () => {
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
   return (
-    <div className="bg-[#f4f4f4] p-6 rounded-2xl w-full max-w-sm shadow-sm border border-gray-100">
+    <div className="bg-white  p-6 rounded-2xl w-full shadow-sm border border-gray-100">
       <h4 className="text-sm font-bold text-darkgray mb-6 uppercase tracking-wider text-center">
         Proporção de Beneficiários
       </h4>

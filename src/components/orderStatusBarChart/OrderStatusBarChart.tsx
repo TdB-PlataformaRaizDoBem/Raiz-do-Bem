@@ -19,7 +19,7 @@ export const OrdersStatusBarChart = () => {
   const maxVal = Math.max(...data.map((d) => d.value), 1);
 
   return (
-    <div className="bg-[#f4f4f4] p-5 sm:p-6 rounded-2xl w-full shadow-sm border border-gray-100">
+    <div className="bg-white  p-5 sm:p-6 rounded-2xl w-full shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-6">
         <h4 className="text-sm font-bold text-darkgray uppercase tracking-wider">
           Status dos Pedidos

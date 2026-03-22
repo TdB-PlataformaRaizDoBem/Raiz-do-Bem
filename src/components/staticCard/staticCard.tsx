@@ -14,7 +14,7 @@ export const StaticCard = ({
   return (
     <div
       className="
-        bg-[#f4f4f4]
+        bg-white 
         p-4 sm:p-5 md:p-6
         rounded-2xl
         w-full

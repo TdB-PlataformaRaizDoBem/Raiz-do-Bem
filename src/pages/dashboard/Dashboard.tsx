@@ -5,7 +5,11 @@ import voluntary from "../../assets/svgs/voluntary-stats.svg";
 import time from "../../assets/svgs/time-stats.svg";
 
 import { StaticCard } from "../../components/staticCard/staticCard";
-import { useDashboardData } from "../../hooks/useDashboardData"; // Importando o hook unificado
+import { useDashboardData } from "../../hooks/useDashboardData";
+import { OrdersStatusBarChart } from "../../components/orderStatusBarChart/OrderStatusBarChart";
+import ImpactChart from "../../components/impactChart/ImpactChart";
+import { StateRanking } from "../../components/StateRanking/StateRanking";
+import { CriticalOrdersList } from "../../components/pendingOrdersList/PendingOrdersList";
 
 const Dashboard = () => {
   const { orders, impact, pros } = useDashboardData();
@@ -14,7 +18,7 @@ const Dashboard = () => {
     <div>
       <section
         aria-label="quick-stats"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16"
       >
         <StaticCard
           icon={register}
@@ -43,6 +47,16 @@ const Dashboard = () => {
           value={`${impact.totalHoras}h`}
           description="Horas estimadas de serviço."
         />
+      </section>
+
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <ImpactChart />
+        <OrdersStatusBarChart />
+        <StateRanking />
+      </section>
+
+      <section className="mb-6">
+        <CriticalOrdersList />
       </section>
     </div>
   );
