@@ -18,7 +18,6 @@ export const StaticCard = ({
         p-4 sm:p-5 md:p-6
         rounded-2xl
         w-full
-        lg:max-w-80
         shadow-sm
         transition
         hover:shadow-lightgreen/10 hover:shadow-2xl

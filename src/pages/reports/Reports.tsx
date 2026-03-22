@@ -5,16 +5,17 @@ import reports from "../../assets/svgs/reports-stats.svg";
 import register from "../../assets/svgs/register-stats.svg";
 import voluntary from "../../assets/svgs/voluntary-stats.svg";
 import time from "../../assets/svgs/time-stats.svg";
+import ImpactChart from "../../components/impactChart/ImpactChart";
 
 const Reports = () => {
   const stats = useStats();
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-center place-content-center gap-14">
         <section
           aria-label="quick-stats"
-          className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 xl:col-span-full gap-5"
         >
           <StaticCard
             icon={register}
@@ -41,6 +42,7 @@ const Reports = () => {
             description="Horas estimadas de serviço voluntário."
           />
         </section>
+        <ImpactChart />
       </div>
     </>
   );

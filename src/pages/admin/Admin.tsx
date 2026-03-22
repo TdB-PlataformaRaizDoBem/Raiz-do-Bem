@@ -5,7 +5,7 @@ import Coordenador from './Coordenador'
 import { Beneficiarios } from '../gerenciaBeneficiarios/Beneficiarios'
 import { Dentistas } from '../gerenciaDentistas/Dentistas'
 import { PedidosAjuda } from '../pedidosAjuda/pedidosAjuda'
-import Reports from '../reports/reports'
+import Reports from "../reports/Reports"
 
 const Admin = () => {
   return (
