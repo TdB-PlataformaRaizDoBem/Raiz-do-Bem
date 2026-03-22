@@ -80,7 +80,7 @@ const ImpactChart = () => {
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-darkgreen" />
-            <span className="text-xs text-gray-500 font-medium">Apolônias</span>
+            <span className="text-xs text-gray-500 font-medium">Apolônias do Bem</span>
           </div>
           <strong className="text-lg text-black">{qtdAdb} <span className="text-xs text-gray-400">({adbPercent.toFixed(0)}%)</span></strong>
         </div>
