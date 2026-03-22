@@ -6,7 +6,7 @@ export type Beneficiario = {
   telefone: string;
   sexo: "Masculino" | "Feminino" | "Outro";
   data_nascimento: string;
-  programa: "Turma do Bem" | "Apolônias do Bem";
+  programaSocial: "Turma do Bem" | "Apolônias do Bem";
   cep: string;
   logradouro: string;
   numero: string;
@@ -23,7 +23,7 @@ export const beneficiariosData: Beneficiario[] = [
     telefone: "(11) 98888-7777",
     sexo: "Feminino",
     data_nascimento: "12/10/2006",
-    programa: "Apolônias do Bem",
+    programaSocial: "Apolônias do Bem",
     cep: "03977-000",
     logradouro: "Avenida Sapopemba",
     numero: "1000",

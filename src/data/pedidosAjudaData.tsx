@@ -28,7 +28,7 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     descricao_problema: "Sinto muita dor no fundo da boca e meu rosto está inchado faz três dias. Não tenho condições de pagar um dentista agora.",
     data: "18/03/2026",
     id_status_pedido: 2,
-    situacao: "Em Análise",
+    situacao: "Pendente",
   },
   {
     id: 3,
@@ -58,7 +58,7 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     descricao_problema: "Minha boca estala muito e dói quando tento abrir para comer. Acho que desencaixou depois de um soco que levei.",
     data: "15/03/2026",
     id_status_pedido: 4,
-    situacao: "Concluído",
+    situacao: "Aprovado",
   },
   {
     id: 6,
@@ -68,7 +68,7 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     descricao_problema: "Tenho vergonha de ir na escola porque meus dentes estão todos pretos e estragados. Dói muito quando como doce.",
     data: "14/03/2026",
     id_status_pedido: 2,
-    situacao: "Em Análise",
+    situacao: "Pendente",
   },
   {
     id: 7,
@@ -108,6 +108,6 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     descricao_problema: "Faz muito tempo que não consigo mastigar do lado esquerdo porque os dentes quebraram. Preciso de canal ou arrancar.",
     data: "10/03/2026",
     id_status_pedido: 2,
-    situacao: "Em Análise",
+    situacao: "Aprovado",
   }
 ];

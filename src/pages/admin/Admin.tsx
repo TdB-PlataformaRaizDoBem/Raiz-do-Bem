@@ -1,10 +1,11 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Dashboard from './Dashboard'
+import Dashboard from '../dashboard/Dashboard'
 import Coordenador from './Coordenador'
 import { Beneficiarios } from '../gerenciaBeneficiarios/Beneficiarios'
 import { Dentistas } from '../gerenciaDentistas/Dentistas'
 import { PedidosAjuda } from '../pedidosAjuda/pedidosAjuda'
+import Reports from '../reports/reports'
 
 const Admin = () => {
   return (
@@ -14,6 +15,7 @@ const Admin = () => {
       <Route path='beneficiarios' element={<Beneficiarios />} />
       <Route path='dentistas' element={<Dentistas />} />
       <Route path='solicitacoes' element={<PedidosAjuda />} />
+      <Route path='relatorios' element={<Reports />} />
     </Routes>
   )
 }
