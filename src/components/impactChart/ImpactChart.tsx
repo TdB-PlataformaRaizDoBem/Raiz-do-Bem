@@ -1,18 +1,14 @@
-import { useStats } from "../../hooks/useStats";
+import React from 'react';
+import { useImpactStats } from "../../hooks/useImpactStats";
 
 const ImpactChart = () => {
-  const { qtdTdb, qtdAdb } = useStats();
+  const { qtdTdb, qtdAdb, total } = useImpactStats(); 
   
-  //  Cálculos de Proporção
-  const total = qtdTdb + qtdAdb;
   const tdbPercent = total > 0 ? (qtdTdb / total) * 100 : 0;
   const adbPercent = total > 0 ? (qtdAdb / total) * 100 : 0;
 
-  // Configurações do SVG (Circunferência = 2 * PI * Raio)
-  // Usamos raio 15.9155 para a circunferência dar exatamente 100.
-  // Isso facilita o cálculo do stroke-dasharray (usamos a porcentagem direto).
   const RADIUS = 15.9155;
-  const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ~100
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
   return (
     <div className="bg-[#f4f4f4] p-6 rounded-2xl w-full max-w-sm shadow-sm border border-gray-100">
@@ -20,59 +16,40 @@ const ImpactChart = () => {
         Proporção de Beneficiários
       </h4>
       
-      {/* Container do Gráfico */}
       <div className="relative flex justify-center items-center h-48">
         <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 transform">
-          {/* Círculo de Fundo (Cinza) - Base */}
+          <circle cx="18" cy="18" r={RADIUS} fill="none" className="stroke-gray-200" strokeWidth="3" />
+          
           <circle
-            cx="18"
-            cy="18"
-            r={RADIUS}
-            fill="none"
-            className="stroke-gray-200"
-            strokeWidth="3"
-          />
-
-          {/* Segmento 1: Turma do Bem*/}
-          <circle
-            cx="18"
-            cy="18"
-            r={RADIUS}
-            fill="none"
+            cx="18" cy="18" r={RADIUS} fill="none"
             className="stroke-lightgreen transition-all duration-700"
             strokeWidth="3"
             strokeDasharray={`${tdbPercent} ${CIRCUMFERENCE}`}
             strokeDashoffset="0"
           />
 
-          {/* Segmento 2: Apolônias do Bem */}
           <circle
-            cx="18"
-            cy="18"
-            r={RADIUS}
-            fill="none"
+            cx="18" cy="18" r={RADIUS} fill="none"
             className="stroke-darkgreen transition-all duration-700"
             strokeWidth="3"
             strokeDasharray={`${adbPercent} ${CIRCUMFERENCE}`}
-            strokeDashoffset={`-${tdbPercent}`} // Começa após o TdB
+            strokeDashoffset={`-${tdbPercent}`}
           />
         </svg>
 
-        {/* Texto Central (Total) */}
         <div className="absolute text-center">
           <strong className="text-4xl font-bold text-black">{total}</strong>
           <p className="text-xs text-gray-400">Total</p>
         </div>
       </div>
 
-      {/* Legenda Dinâmica */}
       <div className="flex justify-center gap-6 mt-8 border-t border-gray-100 pt-5">
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-lightgreen" />
             <span className="text-xs text-gray-500 font-medium">Turma do Bem</span>
           </div>
-          <strong className="text-lg text-black">{qtdTdb} <span className="text-xs text-gray-400">({tdbPercent.toFixed(0)}%)</span></strong>
+          <strong className="text-lg text-black">{qtdTdb} <span className="text-xs text-gray-400 font-normal">({tdbPercent.toFixed(0)}%)</span></strong>
         </div>
         
         <div className="w-px h-10 bg-gray-100" />
@@ -80,9 +57,9 @@ const ImpactChart = () => {
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-darkgreen" />
-            <span className="text-xs text-gray-500 font-medium">Apolônias do Bem</span>
+            <span className="text-xs text-gray-500 font-medium">Apolônias</span>
           </div>
-          <strong className="text-lg text-black">{qtdAdb} <span className="text-xs text-gray-400">({adbPercent.toFixed(0)}%)</span></strong>
+          <strong className="text-lg text-black">{qtdAdb} <span className="text-xs text-gray-400 font-normal">({adbPercent.toFixed(0)}%)</span></strong>
         </div>
       </div>
     </div>
