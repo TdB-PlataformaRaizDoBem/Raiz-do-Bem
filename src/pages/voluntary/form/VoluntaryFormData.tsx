@@ -1,15 +1,16 @@
 export interface DentistFormData {
-  nome: string;
+  nomeCompleto: string;
   cpf: string;
+  dataNascimento: string;
   email: string;
-  celular: string;
-  pais: string;
-  estado: string;
-  cidade: string;
-  cep: string;
+  idSexo: string; // ID que representa o tipo (Masculino, Feminino, etc)
+  
   cro: string;
   especialidades: string;
-  publicoAtendido: "criancas" | "mulheres" | "ambos";
-  qtdCriancas: number;
-  qtdMulheres: number;
+
+  cep: string; 
+  logradouro: string;
+  numero: string;
+  cidade: string;
+  estado: string;
 }
