@@ -4,10 +4,21 @@ type TextAreaProps = React.ComponentProps<'textarea'> & {
   label: string;
   error?: string | null;
   labelClassName?: string;
+  errorClassName?: string;
 };
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ label, error, ...rest }, ref) => {
+  (
+    {
+      label,
+      error,
+      labelClassName = "text-white",
+      errorClassName = "text-red-500",
+      className,
+      ...rest
+    },
+    ref
+  ) => {
     const baseStyleTextarea = `
       border 
       border-gray-200
@@ -24,14 +35,18 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       hover:shadow-[0_0_0_3px_#fea]
       resize-none
       ${error ? 'border-red-600 shadow-[0_0_0_1px_red]' : ''}
+      ${className || ''}
     `;
 
     return (
       <div className="mb-4">
-        <label htmlFor={rest.name} className="block mb-1 font-medium text-white">
+        <label
+          htmlFor={rest.name}
+          className={`block mb-1 font-medium ${labelClassName}`}
+        >
           {label}
         </label>
-        
+
         <textarea
           {...rest}
           id={rest.name}
@@ -40,7 +55,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         />
 
         {error && (
-          <p className="text-red-600 text-sm mt-1">
+          <p className={`text-sm mt-1 ${errorClassName}`}>
             {error}
           </p>
         )}
