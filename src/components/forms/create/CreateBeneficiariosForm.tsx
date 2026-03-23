@@ -27,7 +27,7 @@ export const BeneficiarioForm = ({
   const { buscarCep } = useCep(setValue, setError, clearErrors);
 
   const selectedSexo = watch("sexo");
-  const dataNasc = watch("data_nascimento");
+  const dataNasc = watch("dataNascimento");
   const idadeAtual = validateAge(dataNasc);
 
   useEffect(() => {
@@ -70,8 +70,8 @@ export const BeneficiarioForm = ({
         <Input
           label="Data de Nascimento"
           type="date"
-          error={errors.data_nascimento?.message}
-          {...register("data_nascimento", {
+          error={errors.dataNascimento?.message}
+          {...register("dataNascimento", {
             required: "Data obrigatória",
             validate: (value) => validateAge(value) >= 0 || "Data inválida",
           })}
