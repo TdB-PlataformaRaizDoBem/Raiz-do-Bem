@@ -1,34 +1,37 @@
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/Button";
-import StepOne from "./StepOne";
-import StepTwo from "./StepTwo";
 import { validateAge } from "../../../hooks/validateAge";
+import Input from "../../../components/formElements/Input";
+import TextArea from "../../../components/formElements/TextArea";
+import { ToastNotificationContext } from "../../../components/context/NotificationContext";
 
 export interface ContactFormData {
-  nome: string;
+  nomeCompleto: string;
   cpf: string;
-  nascimento: string;
-  sexo: "masculino" | "feminino";
-  violenciaDomestica?: "sim" | "nao";
-  celular: string;
   email: string;
-  cep: string;
-  cidade: string;
-  estado: string;
-  acompanhamento: "sim" | "nao";
-  problemas: string;
-  tempoSintomas: string;
-  mensagem?: string;
+  telefone: string;
+  nascimento: string;
+  sexo: "masculino" | "feminino" | "outros" | "";
+  violenciaDomestica?: "sim" | "nao" | "";
+  descricaoProblema: string;
 }
 
 const ContactForm = () => {
-  const [step, setStep] = React.useState(1);
-  const methods = useForm<ContactFormData>({ mode: "onBlur" });
-  const nascimento = methods.watch("nascimento");
-  const sexo = methods.watch("sexo");
-  const violencia = methods.watch("violenciaDomestica");
+  const methods = useForm<ContactFormData>({
+    mode: "onBlur",
+    defaultValues: { sexo: "", violenciaDomestica: "" },
+  });
 
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = methods;
+
+  const nascimento = watch("nascimento");
+  const sexo = watch("sexo");
+  const violencia = watch("violenciaDomestica");
   const idade = nascimento ? validateAge(nascimento) : 0;
 
   const isHomemAdulto = sexo === "masculino" && idade >= 18;
@@ -38,78 +41,205 @@ const ContactForm = () => {
   const mensagemErro = isHomemAdulto
     ? "O atendimento para homens é restrito a menores de 18 anos."
     : isMulherInativa
-      ? "Para mulheres acima de 18 anos, o projeto é exclusivo para vítimas de violência."
-      : null;
+    ? "Para mulheres cis/trans acima de 18 anos, o projeto é exclusivo para vítimas de violência."
+    : null;
+
+  const { showNotification } = React.useContext(ToastNotificationContext)!;
 
   const onSubmit = (data: ContactFormData) => {
-    console.log("Dados Finais:", data);
-    alert("Enviado com sucesso!");
-  };
+    const payload: Omit<
+      ContactFormData,
+      "nascimento" | "sexo" | "violenciaDomestica"
+    > = {
+      nomeCompleto: data.nomeCompleto,
+      cpf: data.cpf,
+      email: data.email,
+      telefone: data.telefone,
+      descricaoProblema: data.descricaoProblema,
+    };
 
-  const handleNextStep = async () => {
-    const fieldsToValidate: (keyof ContactFormData)[] = [
-      "nome",
-      "cpf",
-      "nascimento",
-      "sexo",
-      "celular",
-      "email",
-      "cep",
-      "cidade",
-      "estado",
-    ];
+    console.log("Payload limpo para o Oracle:", payload);
 
-    const isStepOneValid = await methods.trigger(fieldsToValidate);
-
-    if (isStepOneValid) {
-      setStep(2);
-    }
+    showNotification("Pedido enviado com sucesso!", "success");
+    methods.reset();
   };
 
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="bg-darkgreen p-8 rounded-xl shadow-2xl w-full md:w-[860px] mx-auto min-h-[500px] flex flex-col"
+        className="bg-darkgreen p-8 rounded-xl shadow-2xl w-full md:w-[650px] mx-auto flex flex-col gap-5"
       >
-        {step === 1 ? <StepOne /> : <StepTwo />}
+        <div className="text-center mb-2">
+          <h2 className="text-white text-3xl font-bold font-fredoka">
+            Solicitar Ajuda
+          </h2>
+          <p className="text-white/60 text-xs mt-1 italic uppercase tracking-widest">
+            Triagem Inicial
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
+          <Input
+            label="Nome Completo: *"
+            labelClassName="text-white"
+            errorClassName="text-white"
+            {...register("nomeCompleto", {
+              required: "Nome é obrigatório",
+              minLength: {
+                value: 3,
+                message: "Nome deve ter no mínimo 3 caracteres",
+              },
+              pattern: {
+                value: /^[A-Za-zÀ-ÿ\s]+$/,
+                message: "Nome deve conter apenas letras",
+              },
+            })}
+            error={errors.nomeCompleto?.message}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="CPF: *"
+              labelClassName="text-white"
+              errorClassName="text-white"
+              placeholder="000.000.000-00"
+              {...register("cpf", {
+                required: "CPF é obrigatório",
+                pattern: {
+                  value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/,
+                  message: "CPF inválido (use 000.000.000-00)",
+                },
+              })}
+              error={errors.cpf?.message}
+            />
+
+            <Input
+              label="Data de Nascimento: *"
+              labelClassName="text-white"
+              errorClassName="text-white"
+              type="date"
+              {...register("nascimento", {
+                required: "Data de nascimento é obrigatória",
+              })}
+              error={errors.nascimento?.message}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-white text-sm font-medium">Sexo: *</label>
+              <select
+                {...register("sexo", {
+                  required: "Selecione o sexo",
+                })}
+                className="p-3 rounded-md bg-white h-[52px] focus:ring-2 focus:ring-orange outline-none"
+              >
+                <option value="">Selecione</option>
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+                <option value="outros">Outros</option>
+              </select>
+              {errors.sexo && (
+                <p className="text-white text-xs">{errors.sexo.message}</p>
+              )}
+            </div>
+
+            {sexo !== "feminino" && <div className="hidden md:block" />}
+
+            {sexo === "feminino" && idade >= 18 && (
+              <div className="col-span-full flex flex-col gap-3 animate-fadeIn bg-white/10 p-4 rounded-lg border border-white/20 mt-2">
+                <label className="text-white text-sm font-medium leading-relaxed">
+                  Nossos programas para mulheres adultas (cis e trans) são focados em casos de vulnerabilidade por violência.
+                  Você se enquadra neste perfil? *
+                </label>
+
+                <select
+                  {...register("violenciaDomestica", {
+                    required: "Selecione uma opção",
+                  })}
+                  className="p-3 rounded-md bg-white h-[52px] text-black font-medium"
+                >
+                  <option value="">Selecione</option>
+                  <option value="sim">Sim</option>
+                  <option value="nao">Não</option>
+                </select>
+
+                {errors.violenciaDomestica && (
+                  <p className="text-white text-xs">
+                    {errors.violenciaDomestica.message}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Email: *"
+              labelClassName="text-white"
+              errorClassName="text-white"
+              type="email"
+              {...register("email", {
+                required: "Email é obrigatório",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Email inválido",
+                },
+              })}
+              error={errors.email?.message}
+            />
+
+            <Input
+              label="Telefone: *"
+              labelClassName="text-white"
+              errorClassName="text-white"
+              placeholder="(11) 99999-9999"
+              {...register("telefone", {
+                required: "Telefone é obrigatório",
+                pattern: {
+                  value: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/,
+                  message: "Telefone inválido",
+                },
+              })}
+              error={errors.telefone?.message}
+            />
+          </div>
+
+          <TextArea
+            label="Descrição do Problema: *"
+            labelClassName="text-white"
+            errorClassName="text-white"
+            placeholder="Conte-nos o que está sentindo..."
+            rows={4}
+            {...register("descricaoProblema", {
+              required: "Descrição é obrigatória",
+              minLength: {
+                value: 20,
+                message: "Mínimo de 20 caracteres",
+              },
+            })}
+            error={errors.descricaoProblema?.message}
+          />
+        </div>
 
         {mensagemErro && (
-          <div className="text-center p-4 bg-red-400 text-white font-bold rounded-md mb-4">
+          <div className="p-3 bg-red-500 text-white text-xs font-bold rounded-md text-center">
             {mensagemErro}
           </div>
         )}
 
-        <div className="flex gap-4 justify-center mt-8">
-          {step === 2 && (
-            <Button
-              type="button"
-              onClick={() => setStep(1)}
-              className="bg-transparent border border-white"
-            >
-              Voltar
-            </Button>
-          )}
-
-          {step === 1 ? (
-            <Button
-              type="button"
-              disabled={!!mensagemErro}
-              onClick={handleNextStep}
-              className={`bg-orange ${
-                mensagemErro
-                  ? "opacity-70 cursor-not-allowed"
-                  : "hover:bg-amber"
-              }`}
-            >
-              Próxima Etapa
-            </Button>
-          ) : (
-            <Button type="submit" className="bg-orange">
-              Enviar para Triagem
-            </Button>
-          )}
-        </div>
+        <Button
+          type="submit"
+          disabled={!!mensagemErro}
+          className={`bg-orange mt-2 ${
+            mensagemErro
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-amber"
+          }`}
+        >
+          Enviar para Triagem
+        </Button>
       </form>
     </FormProvider>
   );

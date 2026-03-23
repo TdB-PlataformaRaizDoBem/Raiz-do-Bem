@@ -1,14 +1,15 @@
-import React,  {type ReactNode } from "react";
+import React from "react";
 import { ToastNotificationContext } from "./NotificationContext";
 import Toast from "../ui/Toast";
 
-export const NotificationProvider = ({ children }: { children: ReactNode }) => {
-  const [message, setMessage] = React.useState<string | undefined>(undefined);
+export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
+  const [message, setMessage] = React.useState<string>("");
   const [show, setShow] = React.useState(false);
+  const [type, setType] = React.useState<"success" | "error" | "info">("info");
 
-  // Função mostra/apaga em 3s
-  const showNotification = (msg: string) => {
+  const showNotification = (msg: string, t: "success" | "error" | "info" = "info") => {
     setMessage(msg);
+    setType(t);
     setShow(true);
 
     setTimeout(() => {
@@ -19,7 +20,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastNotificationContext.Provider value={{ showNotification }}>
       {children}
-      <Toast show={show} message={message || ""} />
+      <Toast show={show} message={message} type={type} />
     </ToastNotificationContext.Provider>
   );
 };
