@@ -7,7 +7,8 @@ export type PedidoAjudaData = {
   data: string;
   id_status_pedido: number;
   situacao: string;
-}
+  id_coordenador?: number;
+};
 
 export const PedidoAjuda: PedidoAjudaData[] = [
   {
@@ -15,7 +16,7 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     nome_completo: "João Silva",
     email: "joao.s@email.com",
     telefone: "(11) 98888-7777",
-    descricao_problema: "Meus dentes da frente quebraram em uma briga em casa e não consigo nem sorrir ou falar direito. Dói muito quando bebo água.",
+    descricao_problema: "Meus dentes da frente quebraram em uma briga em casa...",
     data: "22/03/2026",
     id_status_pedido: 1,
     situacao: "Pendente",
@@ -35,10 +36,11 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     nome_completo: "Lorrany Mendes",
     email: "lorrany.m@email.com",
     telefone: "(31) 96666-5555",
-    descricao_problema: "Perdi vários dentes por falta de cuidado no passado e sinto muita vergonha. Preciso de uma prótese para conseguir um emprego.",
+    descricao_problema: "Perdi vários dentes por falta de cuidado no passado...",
     data: "17/03/2026",
     id_status_pedido: 3,
     situacao: "Aprovado",
+    id_coordenador: 3
   },
   {
     id: 4,
@@ -59,6 +61,7 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     data: "15/03/2026",
     id_status_pedido: 4,
     situacao: "Aprovado",
+    id_coordenador: 6
   },
   {
     id: 6,
@@ -99,6 +102,7 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     data: "11/03/2026",
     id_status_pedido: 3,
     situacao: "Aprovado",
+    id_coordenador: 1
   },
   {
     id: 10,
@@ -109,5 +113,6 @@ export const PedidoAjuda: PedidoAjudaData[] = [
     data: "10/03/2026",
     id_status_pedido: 2,
     situacao: "Aprovado",
+    id_coordenador: 2
   }
 ];
