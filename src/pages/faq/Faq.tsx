@@ -78,7 +78,7 @@ const Faq = () => {
           </p>
 
           <Link
-            to="/contact"
+            to="/contato"
             className="bg-orange text-white w-full max-w-[260px] md:max-w-[300px] lg:max-w-[220px] h-[40px] rounded-lg flex items-center justify-center font-medium transition-colors hover:bg-[#e57e0f] mx-auto lg:mx-0"
           >
             Contate-Nos
