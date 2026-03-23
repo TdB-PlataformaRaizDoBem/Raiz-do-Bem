@@ -19,7 +19,7 @@ export const CreateBeneficiario = ({ onSuccess, initialData }: CreateBeneficiari
       email: "",
       telefone: "",
       sexo: "Feminino",
-      data_nascimento: "",
+      dataNascimento: "",
       programaSocial: "Turma do Bem",
       cep: "",
       logradouro: "",
@@ -29,7 +29,7 @@ export const CreateBeneficiario = ({ onSuccess, initialData }: CreateBeneficiari
     },
   });
 
-  const onSubmit = async (data: Beneficiario) => {
+  const onSubmit = async (data: Omit<Beneficiario, 'id'>) => {
     try {
       showNotification(`Beneficiário ${data.nome} ${isEdit ? 'atualizado' : 'criado'} com sucesso!`);
       onSuccess();
