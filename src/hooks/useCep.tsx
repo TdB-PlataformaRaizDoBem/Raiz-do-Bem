@@ -1,6 +1,12 @@
-import { useFormContext } from "react-hook-form";
-import type { FieldValues, Path, PathValue } from "react-hook-form";
 import useFetch from "../hooks/useFetch";
+import type {
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormSetValue,
+  UseFormSetError,
+  UseFormClearErrors
+} from "react-hook-form";
 
 type ViaCepResponse = {
   cep: string;
@@ -10,8 +16,11 @@ type ViaCepResponse = {
   erro?: boolean;
 };
 
-export const useCep = <T extends FieldValues>() => {
-  const { setValue, setError, clearErrors } = useFormContext<T>();
+export const useCep = <T extends FieldValues>(
+  setValue: UseFormSetValue<T>,
+  setError: UseFormSetError<T>,
+  clearErrors: UseFormClearErrors<T>
+) => {
   const { request, loading } = useFetch<ViaCepResponse>();
 
   const buscarCep = async (cep: string) => {
@@ -28,7 +37,8 @@ export const useCep = <T extends FieldValues>() => {
     if (json.erro) {
       setError("cep" as Path<T>, {
         type: "manual",
-        message: "Ops! Não localizamos esse CEP. Confira se digitou corretamente. Caso tenha certeza digite o endereço manualmente.",
+        message:
+          "CEP não encontrado. Verifique ou preencha manualmente.",
       });
       return;
     }
@@ -46,10 +56,10 @@ export const useCep = <T extends FieldValues>() => {
     );
 
     setValue(
-      'logradouro' as Path<T>,
-      json.logradouro as PathValue<T, Path<T>>,
-      { shouldValidate: true}
-    )
+      "logradouro" as Path<T>,
+      (json.logradouro || "") as PathValue<T, Path<T>>,
+      { shouldValidate: true }
+    );
 
     clearErrors("cep" as Path<T>);
   };

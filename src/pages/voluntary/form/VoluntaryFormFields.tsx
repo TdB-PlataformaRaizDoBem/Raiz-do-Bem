@@ -6,21 +6,26 @@ import Input from "../../../components/formElements/Input";
 const VoluntaryFormFields = () => {
   const {
     register,
+    setValue,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useFormContext<DentistFormData>();
 
-  const { buscarCep } = useCep<DentistFormData>();
+  const { buscarCep } = useCep<DentistFormData>(
+    setValue,
+    setError,
+    clearErrors,
+  );
 
   return (
     <div className="w-full mx-auto px-4">
-      
       {/* dados pessoais */}
       <h2 className="text-2xl font-bold mt-[80px] mb-10 border-b pb-3">
         INFORMAÇÕES PESSOAIS
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[60px] gap-y-[30px]">
-
         <Input
           label="Nome Completo:"
           {...register("nomeCompleto", {
@@ -65,9 +70,7 @@ const VoluntaryFormFields = () => {
         />
 
         <div className="flex flex-col">
-          <label className="mb-1 font-medium text-sm">
-            Sexo:
-          </label>
+          <label className="mb-1 font-medium text-sm">Sexo:</label>
 
           <select
             {...register("idSexo", { required: "Selecione o sexo" })}
@@ -131,7 +134,6 @@ const VoluntaryFormFields = () => {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[60px] gap-y-[30px]">
-
         <Input
           label="CEP:"
           {...register("cep", {

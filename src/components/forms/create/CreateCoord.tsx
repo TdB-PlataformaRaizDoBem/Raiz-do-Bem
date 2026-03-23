@@ -6,18 +6,27 @@ type CreateCoordProps = {
 };
 
 export type CreateCoordFormData = {
-  nome: string;
+  nomeCompleto: string;
   email: string;
+  cpf: string;
+  dataNascimento: string;
+  idSexo: number;
+
   cep: string;
+  logradouro: string;
+  numero: string;
   cidade: string;
   estado: string;
-  data_contratacao: string;
+
+  dataContratacao: string;
+  nivelAcesso: "admin" | "coord";
 };
 
 export const CreateCoord = ({ onSuccess }: CreateCoordProps) => {
   const methods = useForm<CreateCoordFormData>({
     defaultValues: {
-      data_contratacao: new Date().toLocaleDateString("pt-br"),
+      dataContratacao: new Date().toISOString().split("T")[0],
+      nivelAcesso: "coord",
     },
   });
 
