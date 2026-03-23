@@ -3,7 +3,6 @@ import coordenadores from "../../assets/svgs/Coordenadores.svg";
 import dentista from "../../assets/svgs/dentista.svg";
 import beneficiario from "../../assets/svgs/beneficiario.svg";
 import solicitacoes from "../../assets/svgs/pedidosAjuda.svg";
-import relatorio from "../../assets/svgs/relatorio.svg";
 
 export interface MenuItem {
   label: string;
@@ -18,13 +17,11 @@ export const Menu_Data: Record<"admin" | "coordenador", MenuItem[]> = {
     { label: "Dentistas", icon: dentista, path: "/admin/dentistas" },
     { label: "Beneficiários", icon: beneficiario, path: "/admin/beneficiarios" },
     { label: "Pedidos de Ajuda", icon: solicitacoes, path: "/admin/solicitacoes" },
-    { label: "Relatórios e Estatísticas", icon: relatorio, path: "/admin/relatorios" },
   ],
   coordenador: [
     { label: "Painel Geral", icon: painelGeral, path: "/coord/dashboard" },
     { label: "Pedidos de Ajuda", icon: solicitacoes, path: "/coord/solicitacoes" },
     { label: "Beneficiários", icon: beneficiario, path: "/coord/beneficiarios" },
     { label: "Dentistas", icon: dentista, path: "/coord/dentistas" },
-    { label: "Relatórios", icon: relatorio, path: "/coord/relatorios" },
   ],
 };
