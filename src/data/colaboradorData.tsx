@@ -1,4 +1,4 @@
-export interface Coordenador {
+export interface Colaborador {
   id: number;
   idColaborador: number;
   nomeCompleto: string;
@@ -15,10 +15,10 @@ export interface Coordenador {
   idTipoEndereco: number; 
   // Dados de Contrato
   dataContratacao: string;
-  nivelAcesso: "admin" | "coord";
+  nivelAcesso: "admin" | "colaborador";
 }
 
-export const coordenadoresData: Coordenador[] = [
+export const colaboradorData: Colaborador[] = [
   { 
     id: 1, 
     idColaborador: 101,
@@ -51,7 +51,7 @@ export const coordenadoresData: Coordenador[] = [
     cep: "08340-140", 
     idTipoEndereco: 1,
     dataContratacao: "10/03/2023",
-    nivelAcesso: "coord"
+    nivelAcesso: "colaborador"
   },
   { 
     id: 3, 
@@ -68,7 +68,7 @@ export const coordenadoresData: Coordenador[] = [
     cep: "03941-000", 
     idTipoEndereco: 1,
     dataContratacao: "22/05/2022",
-    nivelAcesso: "coord"
+    nivelAcesso: "colaborador"
   },
   { 
     id: 4, 
@@ -85,7 +85,7 @@ export const coordenadoresData: Coordenador[] = [
     cep: "08340-000", 
     idTipoEndereco: 1,
     dataContratacao: "05/11/2023",
-    nivelAcesso: "coord"
+    nivelAcesso: "colaborador"
   },
   { 
     id: 5, 
@@ -119,7 +119,7 @@ export const coordenadoresData: Coordenador[] = [
     cep: "08471-000", 
     idTipoEndereco: 1,
     dataContratacao: "30/01/2024",
-    nivelAcesso: "coord"
+    nivelAcesso: "colaborador"
   },
   { 
     id: 7, 
@@ -136,7 +136,7 @@ export const coordenadoresData: Coordenador[] = [
     cep: "08410-030", 
     idTipoEndereco: 1,
     dataContratacao: "14/06/2023",
-    nivelAcesso: "coord"
+    nivelAcesso: "colaborador"
   },
   { 
     id: 8, 

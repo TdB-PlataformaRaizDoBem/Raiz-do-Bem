@@ -2,7 +2,7 @@ import { UserManagementPage } from "../../components/UserManagement.tsx/UserMana
 import { beneficiariosData } from "../../data/beneficiariosData";
 import { dentistasMock } from "../../data/dentistasData"; // Importe seus mocks
 import { PedidoAjuda } from "../../data/pedidosAjudaData";
-import { coordenadoresData } from "../../data/coordenadoresData";
+import { colaboradorData } from "../../data/colaboradorData";
 
 import UserCard from "../../components/userCard/UserCard";
 import UserInformation from "../../components/userInformation/UserInformation";
@@ -67,7 +67,7 @@ export const Beneficiarios = () => {
         const dentistaVinculado = dentistasMock.find(
           (d) => d.id === user.idDentistaDesignado,
         );
-        const coordenadorVinculado = coordenadoresData.find(
+        const coordenadorVinculado = colaboradorData.find(
           (c) => c.id === user.idCoordenadorResponsavel,
         );
 

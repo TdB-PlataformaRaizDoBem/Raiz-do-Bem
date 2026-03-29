@@ -75,7 +75,7 @@ const ContactForm = () => {
             Solicitar Ajuda
           </h2>
           <p className="text-white/60 text-xs mt-1 italic uppercase tracking-widest">
-            Triagem Inicial
+            Preencha com os dados de quem nescessita de um dentista
           </p>
         </div>
 

@@ -13,7 +13,7 @@ export interface MenuItem {
 export const Menu_Data: Record<"admin" | "coordenador", MenuItem[]> = {
   admin: [
     { label: "Painel Geral", icon: painelGeral, path: "/admin/dashboard" },
-    { label: "Coordenadores", icon: coordenadores, path: "/admin/coordenadores" },
+    { label: "Colaboradores", icon: coordenadores, path: "/admin/colaboradores" },
     { label: "Dentistas", icon: dentista, path: "/admin/dentistas" },
     { label: "Beneficiários", icon: beneficiario, path: "/admin/beneficiarios" },
     { label: "Pedidos de Ajuda", icon: solicitacoes, path: "/admin/solicitacoes" },
