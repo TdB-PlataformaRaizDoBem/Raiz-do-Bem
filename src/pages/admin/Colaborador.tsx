@@ -1,5 +1,5 @@
 import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
-import { coordenadoresData } from "../../data/coordenadoresData";
+import { colaboradorData } from "../../data/colaboradorData";
 import UserCard from "../../components/userCard/UserCard";
 import UserInformation from "../../components/userInformation/UserInformation";
 import UserActions from "../../components/userActions/UserActions";
@@ -8,11 +8,11 @@ import DeleteUserButton from "../../components/ui/buttonFilters/DeleteUserButton
 import { CreateCoord } from "../../components/forms/create/CreateCoord";
 import EditCoordButton from "../../components/ui/buttonFilters/EditCoordButton";
 
-export default function CoordenadorPage() {
+export default function Colaborador() {
   return (
     <UserManagementPage
-      title="Gerenciamento de Coordenadores"
-      users={coordenadoresData}
+      title="Gerenciamento de Colaboradores"
+      users={colaboradorData}
       getId={(u) => u.id}
       renderCreateForm={(close) => <CreateCoord onSuccess={close} />}
       renderCard={(u, selected, select) => (
