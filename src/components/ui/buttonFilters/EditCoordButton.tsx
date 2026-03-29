@@ -2,10 +2,10 @@ import React from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
 import UpdateCoord from "../../forms/update/UpdateCoord";
-import { type Coordenador } from "../../../data/colaboradorData";
+import { type Colaborador } from "../../../data/colaboradorData";
 
 type EditCoordButtonProps = {
-  user: Coordenador;
+  user: Colaborador;
 };
 
 const EditCoordButton = ({ user }: EditCoordButtonProps) => {
