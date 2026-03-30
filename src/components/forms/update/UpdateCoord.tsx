@@ -4,7 +4,7 @@ import Input from "../../formElements/Input";
 import { Button } from "../../ui/Button";
 import { type Colaborador } from "../../../data/colaboradorData";
 import { useCep } from "../../../hooks/useCep";
-import { ToastNotificationContext } from "../../context/NotificationContext";
+import { useNotification } from "../../../hooks/useNotification";
 
 interface UpdateCoordProps {
   initialData: Colaborador;
@@ -26,13 +26,13 @@ const UpdateCoord = ({ initialData, onSuccess }: UpdateCoordProps) => {
   // Hook de CEP configurado para preencher os campos automaticamente
   const { buscarCep } = useCep<Colaborador>(setValue, setError, clearErrors);
 
-  const { showNotification } = React.useContext(ToastNotificationContext)!;
+  const { showNotification } = useNotification();
 
   const onSubmit = (data: Colaborador) => {
     if (!isDirty) return;
 
     const payload = {
-      idColaborador: initialData.idColaborador, // PK fixa
+      idColaborador: initialData.idColaborador, 
       email: data.email,
       nivelAcesso: data.nivelAcesso,
       endereco: {
