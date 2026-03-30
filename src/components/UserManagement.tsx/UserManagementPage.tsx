@@ -46,13 +46,6 @@ export function UserManagementPage<T>({
 
   useScrollLock(!!selectedUser);
 
-  console.log({
-    pagina: title,
-    perfil: loggedUser?.role,
-    podeCriar: showCreateButton,
-    isBeneficiario: isBeneficiarioPage,
-  });
-
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
       <FilterBar
