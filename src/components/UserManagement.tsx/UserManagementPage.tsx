@@ -4,6 +4,7 @@ import { Button } from "../ui/Button";
 import { useScrollLock } from "../../hooks/useScrollLock";
 import { Modal } from "../ui/Modal";
 import { getUser } from "../../hooks/useUser";
+import { useSearchParams } from "react-router-dom";
 
 type UserManagementPageProps<T> = {
   title: string;
@@ -26,8 +27,24 @@ export function UserManagementPage<T>({
   renderDetails,
   renderCreateForm,
 }: UserManagementPageProps<T>) {
-  const [selectedUser, setSelectedUser] = React.useState<T | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = React.useState(false);
+
+  const selectedId = searchParams.get("id");
+
+  const selectedUser = React.useMemo(() => {
+    if (!selectedId) return null;
+    return users.find((user) => String(getId(user)) === selectedId) || null;
+  }, [selectedId, users, getId]);
+
+  const handleSelect = (user: T) => {
+    setSearchParams({ id: String(getId(user)) });
+  };
+
+  const handleClose = () => {
+    searchParams.delete("id");
+    setSearchParams(searchParams);
+  };
 
   // Validação de usuário
   const loggedUser = getUser();
@@ -85,7 +102,7 @@ export function UserManagementPage<T>({
 
             return (
               <div key={id}>
-                {renderCard(user, !!selected, () => setSelectedUser(user))}
+                {renderCard(user, !!selected, () => handleSelect(user))}
               </div>
             );
           })}
@@ -93,7 +110,7 @@ export function UserManagementPage<T>({
 
         {selectedUser && (
           <div className="hidden xl:flex flex-col gap-4 xl:sticky xl:top-24 h-fit w-full">
-            {renderDetails(selectedUser, () => setSelectedUser(null))}
+            {renderDetails(selectedUser, handleClose)}
           </div>
         )}
 
@@ -101,7 +118,7 @@ export function UserManagementPage<T>({
           <div className="xl:hidden">
             <div
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 xl:hidden"
-              onClick={() => setSelectedUser(null)}
+              onClick={handleClose}
             />
 
             <div
@@ -115,7 +132,7 @@ export function UserManagementPage<T>({
                 xl:overflow-visible
                 "
             >
-              {renderDetails(selectedUser, () => setSelectedUser(null))}
+              {renderDetails(selectedUser, handleClose)}
             </div>
           </div>
         )}
