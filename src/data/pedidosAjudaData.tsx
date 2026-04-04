@@ -5,8 +5,8 @@ export type PedidoAjudaData = {
   telefone: string;
   descricao_problema: string;
   data: string;
-  id_status_pedido: number;
-  situacao: string;
+  id_status_pedido?: number;
+  situacao?: string;
   id_coordenador?: number;
 };
 
