@@ -3,8 +3,10 @@ import { useEffect } from "react";
 import Input from "../../formElements/Input";
 import { Button } from "../../ui/Button";
 import { useCep } from "../../../hooks/useCep";
-import { type Beneficiario } from "../../../data/beneficiariosData";
+import { beneficiariosData, type Beneficiario } from "../../../data/beneficiariosData";
 import { validateAge } from "../../../hooks/validateAge";
+import { PedidoAjuda } from "../../../data/pedidosAjudaData";
+
 
 interface BeneficiarioFormProps {
   onCancel: () => void;
@@ -38,6 +40,14 @@ export const BeneficiarioForm = ({
       setValue("programaSocial", "Turma do Bem");
     }
   }, [selectedSexo, idadeAtual, setValue]);
+
+  const pedidosAprovadosLivres = PedidoAjuda.filter((pedido) => {
+  if (pedido.situacao !== "Aprovado") return false;
+  const jaVinculado = beneficiariosData.some(
+    (b) => b.id_pedido_ajuda === pedido.id
+  );
+  return !jaVinculado;
+});
 
   return (
     <div className="flex flex-col gap-6 w-full max-h-[80vh] overflow-y-auto pr-2 custom-scrollbar text-left">
@@ -122,6 +132,70 @@ export const BeneficiarioForm = ({
             )}
           </select>
         </div>
+
+        {/* Vínculo com pedido de ajuda aprovado */}
+        {!isEdit && (
+          <div className="flex flex-col gap-1 md:col-span-2">
+            <label className="text-sm font-bold text-darkgray">
+              Pedido de Ajuda Aprovado
+              <span className="ml-1 text-red-500">*</span>
+            </label>
+ 
+            {pedidosAprovadosLivres.length === 0 ? (
+              <div className="border border-amber/40 bg-amber/5 rounded-xl p-3">
+                <p className="text-sm text-amber font-medium">
+                  Nenhum pedido aprovado disponível para vínculo no momento.
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Um pedido de ajuda precisa ser aprovado na triagem antes de
+                  vincular a um beneficiário.
+                </p>
+              </div>
+            ) : (
+              <select
+                {...register("id_pedido_ajuda", {
+                  required: "Selecione um pedido aprovado",
+                  valueAsNumber: true,
+                })}
+                className={`border rounded-xl p-3 bg-white outline-none focus:ring-2 focus:ring-primary transition-all ${
+                  errors.id_pedido_ajuda ? "border-red-500" : "border-gray-200"
+                }`}
+              >
+                <option value="">Selecione um pedido...</option>
+                {pedidosAprovadosLivres.map((pedido) => (
+                  <option key={pedido.id} value={pedido.id}>
+                    #{pedido.id} — {pedido.nome_completo} · {pedido.data}
+                  </option>
+                ))}
+              </select>
+            )}
+ 
+            {errors.id_pedido_ajuda && (
+              <span className="text-xs text-red-500">
+                {errors.id_pedido_ajuda.message}
+              </span>
+            )}
+ 
+            {/* Preview do pedido selecionado */}
+            {watch("id_pedido_ajuda") ? (
+              (() => {
+                const pedido = PedidoAjuda.find(
+                  (p) => p.id === Number(watch("id_pedido_ajuda"))
+                );
+                return pedido ? (
+                  <div className="mt-2 bg-gray-50 border border-gray-100 rounded-xl p-3">
+                    <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1">
+                      Descrição do pedido #{pedido.id}
+                    </p>
+                    <p className="text-sm text-darkgray italic line-clamp-3">
+                      "{pedido.descricao_problema}"
+                    </p>
+                  </div>
+                ) : null;
+              })()
+            ) : null}
+          </div>
+        )}
       </div>
 
       <div className="border-t pt-6">
