@@ -41,8 +41,8 @@ const ContactForm = () => {
   const mensagemErro = isHomemAdulto
     ? "O atendimento para homens é restrito a menores de 18 anos."
     : isMulherInativa
-    ? "Para mulheres cis/trans acima de 18 anos, o projeto é exclusivo para vítimas de violência."
-    : null;
+      ? "Para mulheres cis/trans acima de 18 anos, o projeto é exclusivo para vítimas de violência."
+      : null;
 
   const { showNotification } = React.useContext(ToastNotificationContext)!;
 
@@ -150,8 +150,9 @@ const ContactForm = () => {
             {sexo === "feminino" && idade >= 18 && (
               <div className="col-span-full flex flex-col gap-3 animate-fadeIn bg-white/10 p-4 rounded-lg border border-white/20 mt-2">
                 <label className="text-white text-sm font-medium leading-relaxed">
-                  Nossos programas para mulheres adultas (cis e trans) são focados em casos de vulnerabilidade por violência.
-                  Você se enquadra neste perfil? *
+                  Nossos programas para mulheres adultas (cis e trans) são
+                  focados em casos de vulnerabilidade por violência. Você se
+                  enquadra neste perfil? *
                 </label>
 
                 <select
@@ -224,8 +225,54 @@ const ContactForm = () => {
         </div>
 
         {mensagemErro && (
-          <div className="p-3 bg-red-500 text-white text-xs font-bold rounded-md text-center">
-            {mensagemErro}
+          <div className="mt-4 p-5 bg-white/5 border border-white/20 rounded-xl animate-fadeIn">
+            <h3 className="text-orange font-bold text-sm mb-2 uppercase tracking-wider">
+              Canais de Apoio Recomendados
+            </h3>
+            <p className="text-white text-sm leading-relaxed mb-4">
+              Seu perfil não se enquadra nos projetos atuais da Turma do Bem,
+              mas você pode encontrar atendimento gratuito nestes locais:
+            </p>
+
+            <div className="grid grid-cols-1 gap-3 text-left">
+              {/* Opção Nacional - SUS */}
+              <div className="bg-white/10 p-3 rounded-lg border-l-4 border-orange">
+                <span className="text-white font-bold text-xs">
+                  REDE PÚBLICA (SUS)
+                </span>
+                <p className="text-white/70 text-sm mt-1">
+                  Procure a <strong>Unidade Básica de Saúde (UBS)</strong> mais
+                  próxima de você. Solicite informações sobre o programa{" "}
+                  <strong>Brasil Sorridente</strong> para triagem odontológica
+                  gratuita.
+                </p>
+              </div>
+
+              {/* Opção Regional - Faculdades */}
+              <div className="bg-white/10 p-3 rounded-lg border-l-4 border-lightgreen">
+                <span className="text-white font-bold text-xs">
+                  FACULDADES DE ODONTOLOGIA
+                </span>
+                <p className="text-white/70 text-sm mt-1">
+                  Busque por <strong>"Clínica de Odontologia"</strong> em
+                  universidades federais ou estaduais da sua região. Muitas
+                  instituições oferecem atendimento gratuito ou a preço de custo
+                  como parte da formação de especialistas.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() =>
+                window.open(
+                  "https://www.google.com/search?q=faculdade+de+odontologia+atendimento+gratuito+proximo+a+mim",
+                  "_blank",
+                )
+              }
+              className="w-full mt-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded transition-all border border-white/10"
+            >
+              Buscar Faculdades Próximas de Mim
+            </button>
           </div>
         )}
 
@@ -233,9 +280,7 @@ const ContactForm = () => {
           type="submit"
           disabled={!!mensagemErro}
           className={`bg-orange mt-2 ${
-            mensagemErro
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-amber"
+            mensagemErro ? "opacity-50 cursor-not-allowed" : "hover:bg-amber"
           }`}
         >
           Enviar para Triagem
