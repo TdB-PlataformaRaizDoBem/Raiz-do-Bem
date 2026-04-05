@@ -3,7 +3,7 @@ import Dashboard from '../dashboard/Dashboard'
 import { Beneficiarios } from '../gerenciaBeneficiarios/Beneficiarios'
 import { Dentistas } from '../gerenciaDentistas/Dentistas'
 import { PedidosAjuda } from '../pedidosAjuda/pedidosAjuda'
-import Designacao from '../designacao/Designacao'
+import {Designacao} from '../designacao/Designacao'
 
 const Coord = () => {
   return (
