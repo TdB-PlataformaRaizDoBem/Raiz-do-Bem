@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { designacaoData } from "../data/designacaoData";
 import { type Beneficiario } from "../data/beneficiariosData";
-import { type Dentista, dentistasMock } from "../data/dentistasData"; // Importe o dentistasMock aqui
+import { type Dentista, dentistasMock } from "../data/dentistasData";
 import { useNotification } from "./useNotification";
 
 export const useDesignacao = () => {
@@ -43,6 +43,7 @@ export const buscarDentistasProximos = (beneficiario: Beneficiario): Dentista[] 
     const isDisponivel = d.disponibilidade === "Sim";
     const mesmEstado = d.endereco?.estado === beneficiario.estado;
     const isCompativel = d.programa === "Ambos" || d.programa === beneficiario.programaSocial;
+
 
     return isDisponivel && mesmEstado && isCompativel;
   });

@@ -313,15 +313,16 @@ npm install
   <tr>
     <td align="center">
       <b>Renan Paulino</b><br/>
-      <sub>Desenvolvedor Front-End</sub>
+      <sub>RM566610</sub>
     </td>
     <td align="center">
       <b>Murilo Ayabe</b><br/>
-      <sub>Desenvolvedor Back-End</sub>
+      <sub>RM567479</sub>
     </td>
     <td align="center">
       <b>Paulo Cavalcante</b><br/>
-      <sub>Desenvolvedor Back-End</sub>
+      <sub>RM566667</sub>
+</sub>
     </td>
   </tr>
 </table>

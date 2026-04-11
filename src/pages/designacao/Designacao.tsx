@@ -73,16 +73,12 @@ export const Designacao = () => {
     acaoPendente,
     beneficiarioEmFoco,
     dentistaSelecionado,
-    // setDentistaSelecionado,
     solicitarDesignacao,
     cancelarDesignacao,
     confirmarDesignacao,
   } = useDesignacao();
-
-  // Dentista pré-selecionado localmente no painel (antes de abrir o modal).
   const [dentistaPainel, setDentistaPainel] = useState<Dentista | null>(null);
 
-  // Quando o painel troca de beneficiário, limpa a seleção anterior.
   const handleSelecionarBeneficiario = (b: Beneficiario) => {
     setDentistaPainel(null);
     return b;
@@ -238,7 +234,6 @@ export const Designacao = () => {
                       </div>
                     </div>
 
-                    {/* Pedido vinculado */}
                     {pedido && (
                       <div className="bg-lightgreen/5 p-4 rounded-xl border border-lightgreen/20">
                         <p className="text-xs font-black uppercase text-darkgreen tracking-widest mb-1">
@@ -253,13 +248,11 @@ export const Designacao = () => {
                       </div>
                     )}
 
-                    {/* Lista de dentistas */}
                     <div>
                       <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-3">
                         Dentistas disponíveis por proximidade
                       </p>
 
-                      {/* Sem dentistas disponíveis */}
                       {semDentistas && (
                         <div className="p-4 rounded-xl bg-red-50 border border-red-200">
                           <p className="text-sm font-bold text-red-700">
@@ -274,7 +267,6 @@ export const Designacao = () => {
                         </div>
                       )}
 
-                      {/* Lista de dentistas disponíveis */}
                       {!semDentistas && (
                         <div className="flex flex-col gap-2">
                           {dentistasDisponiveis.map((d: Dentista) => (
