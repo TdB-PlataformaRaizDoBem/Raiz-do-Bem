@@ -20,7 +20,7 @@ export const useOrderStats = () => {
       aprovados: PedidoAjuda.filter(p => p.situacao === "Aprovado").length,
       negados: PedidoAjuda.filter(p => p.situacao === "Negado").length,
       total: PedidoAjuda.length,
-      pedidosCriticos // Lista pronta para a Home
+      pedidosCriticos
     };
   }, [PedidoAjuda]);
 };
