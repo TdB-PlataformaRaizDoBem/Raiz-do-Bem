@@ -5,10 +5,7 @@ import { Button } from "../ui/Button";
 import DeleteUserButton from "../ui/buttonFilters/DeleteUserButton";
 import EditBeneficiarioButton from "../ui/buttonFilters/EditBeneficiarioButton";
  
-// ---------------------------------------------------------------------------
 // Subcomponentes de seção — cada um renderiza uma fatia isolada do detalhe.
-// Nenhum faz lógica: recebe dados já resolvidos e renderiza.
-// ---------------------------------------------------------------------------
  
 const SecaoVinculos = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -121,10 +118,7 @@ const SecaoEndereco = ({ data }: { data: BeneficiarioCompleto }) => (
   </div>
 );
  
-// ---------------------------------------------------------------------------
 // Componente principal: compõe as seções e recebe dados já resolvidos.
-// Nenhum .find() aqui — apenas renderização.
-// ---------------------------------------------------------------------------
 type BeneficiarioDetailsProps = {
   data: BeneficiarioCompleto;
   isAdmin: boolean;

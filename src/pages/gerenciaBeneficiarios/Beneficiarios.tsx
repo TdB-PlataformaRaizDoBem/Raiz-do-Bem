@@ -8,10 +8,7 @@ import { useBeneficiarios, useBeneficiario } from "../../hooks/useBeneficiarios"
 import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
 import { getUser } from "../../hooks/useUser";
  
-// ---------------------------------------------------------------------------
-// Painel de detalhe isolado — tem seu próprio ciclo de fetch por id.
-// Evita recarregar a lista inteira quando só o detalhe muda.
-// ---------------------------------------------------------------------------
+
 const BeneficiarioPainel = ({
   id,
   isAdmin,
@@ -30,9 +27,7 @@ const BeneficiarioPainel = ({
   );
 };
  
-// ---------------------------------------------------------------------------
 // Página principal
-// ---------------------------------------------------------------------------
 export const Beneficiarios = () => {
   const loggedUser = getUser();
   const isAdmin = loggedUser?.role === "admin";
