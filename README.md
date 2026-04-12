@@ -339,16 +339,18 @@ npm install
   <tr>
     <td align="center">
       <b>Renan Paulino</b><br/>
-      <sub>RM566610</sub>
+      <sub>1TDSPS - RM566610</sub><br/>
+      <a href="https://www.linkedin.com/in/renansilvapaulino/" target="_blank">LinkedIn - Renan</a>
     </td>
     <td align="center">
       <b>Murilo Ayabe</b><br/>
-      <sub>RM567479</sub>
+      <sub>1TDSPS - RM567479</sub><br/>
+      <a href="https://www.linkedin.com/in/muriloayabe/" target="_blank">LinkedIn - Murilo</a>
     </td>
     <td align="center">
       <b>Paulo Cavalcante</b><br/>
-      <sub>RM566667</sub>
-</sub>
+      <sub>1TDSPS - RM566667</sub><br/>
+      <a href="https://www.linkedin.com/in/paulocavalcantec/" target="_blank">LinkedIn - Paulo</a>
     </td>
   </tr>
 </table>

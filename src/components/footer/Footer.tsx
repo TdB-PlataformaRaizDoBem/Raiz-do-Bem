@@ -9,11 +9,11 @@ import IconYT from "../../assets/svgs/mdi_youtube.png";
 
 const Footer = () => {
   const social_links = [
-    { href: "https://facebook.com/...", icon: IconFB, alt: "facebook" },
-    { href: "https://x.com/...", icon: IconX, alt: "X" },
-    { href: "https://instagram.com/...", icon: IconInsta, alt: "instagram" },
-    { href: "https://linkedin.com/...", icon: IconLinkedin, alt: "linkedin" },
-    { href: "https://youtube.com/...", icon: IconYT, alt: "youtube" },
+    { href: "https://www.facebook.com/turmadobem/?locale=pt_BR", icon: IconFB, alt: "facebook" },
+    { href: "https://x.com/turmadobem", icon: IconX, alt: "X" },
+    { href: "https://www.instagram.com/ongturmadobem/?hl=pt", icon: IconInsta, alt: "instagram" },
+    { href: "https://www.linkedin.com/company/turma-do-bem/posts/?feedView=all", icon: IconLinkedin, alt: "linkedin" },
+    { href: "https://www.youtube.com/user/turmadobem", icon: IconYT, alt: "youtube" },
   ];
 
   const footer_links = [
