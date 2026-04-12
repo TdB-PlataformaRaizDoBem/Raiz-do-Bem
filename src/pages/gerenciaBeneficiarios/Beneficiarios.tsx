@@ -56,9 +56,12 @@ export const Beneficiarios = () => {
                 <span className="font-bold text-gray uppercase text-xs mr-1">Programa:</span>
                 {u.programaSocial}
               </p>
+              <p className="text-sm text-gray-500 font-medium">
+                <span className="font-bold text-gray uppercase text-xs mr-1">Cidade: </span>{u.cidade} • {u.estado}
+              </p>
             </div>
             <div className="mt-4 pt-4 flex flex-col gap-6">
-              <span className="text-xs font-black sm:text-end uppercase text-gray-400 tracking-widest">
+              <span className="text-xs font-black lg:text-end border-t border-gray/10 pt-4 lg:border-t-0 uppercase text-gray-400 tracking-widest">
                 ID: #{u.id}
               </span>
               <Button

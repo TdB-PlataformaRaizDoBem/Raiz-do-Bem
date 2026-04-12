@@ -25,7 +25,7 @@ const SecaoVinculos = ({ data }: { data: BeneficiarioCompleto }) => (
  
     <div className="bg-gray/10 p-4 rounded-xl border border-purple-100">
       <p className="text-xs font-black uppercase mb-2 tracking-widest">
-        Coordenador do Caso
+        Colaborador do Caso
       </p>
       {data.coordenador ? (
         <>
@@ -156,7 +156,7 @@ export const BeneficiarioDetails = ({ data, isAdmin, onClose }: BeneficiarioDeta
       </div>
  
       <UserActions>
-        <div className="grid grid-cols-3 md:flex-wrap gap-3 justify-end w-full">
+        <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
           {isAdmin && (
             <DeleteUserButton userId={data.id} userName={data.nome} onDelete={onClose} />
           )}
