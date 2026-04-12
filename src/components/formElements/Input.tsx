@@ -38,7 +38,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={baseStyleInput}
         />
         {error && <p className={`text-[10px] font-bold mt-1 ${errorClassName}`}>{error}</p>}
-      </div>
+      </div>  
     );
   }
 );

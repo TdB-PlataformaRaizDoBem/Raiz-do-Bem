@@ -4,35 +4,37 @@ import { Button } from "../../components/ui/Button";
 import { CreateBeneficiario } from "../../components/forms/create/CreateBeneficiario";
 import { BeneficiarioDetails } from "../../components/details/BeneficiarioDetails";
 import { AsyncEstado } from "../../components/ui/AsyncEstado";
-import { useBeneficiarios, useBeneficiario } from "../../hooks/useBeneficiarios";
+import {
+  useBeneficiarios,
+  useBeneficiario,
+} from "../../hooks/useBeneficiarios";
 import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
 import { getUser } from "../../hooks/useUser";
- 
 
-const BeneficiarioPainel = ({
-  id,
-  isAdmin,
-  onClose,
-}: {
-  id: number;
-  isAdmin: boolean;
-  onClose: () => void;
-}) => {
-  const { data, loading, error } = useBeneficiario(id);
- 
-  return (
-    <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <BeneficiarioDetails data={data!} isAdmin={isAdmin} onClose={onClose} />
-    </AsyncEstado>
-  );
-};
- 
 // Página principal
 export const Beneficiarios = () => {
   const loggedUser = getUser();
   const isAdmin = loggedUser?.role === "admin";
   const { data: beneficiarios, loading, error } = useBeneficiarios();
- 
+
+  const BeneficiarioPainel = ({
+    id,
+    isAdmin,
+    onClose,
+  }: {
+    id: number;
+    isAdmin: boolean;
+    onClose: () => void;
+  }) => {
+    const { data, loading, error } = useBeneficiario(id);
+
+    return (
+      <AsyncEstado loading={loading} error={error} vazio={!data}>
+        <BeneficiarioDetails data={data!} isAdmin={isAdmin} onClose={onClose} />
+      </AsyncEstado>
+    );
+  };
+
   return (
     <AsyncEstado
       loading={loading}
@@ -51,13 +53,20 @@ export const Beneficiarios = () => {
               ${selected ? "shadow-md scale-[1.02] bg-gray-50" : "hover:shadow-sm"}`}
           >
             <div className="flex flex-col gap-2">
-              <p className="text-xl font-bold text-darkgray leading-tight">{u.nome}</p>
+              <p className="text-xl font-bold text-darkgray leading-tight">
+                {u.nome}
+              </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-gray uppercase text-xs mr-1">Programa:</span>
+                <span className="font-bold text-gray uppercase text-xs mr-1">
+                  Programa:
+                </span>
                 {u.programaSocial}
               </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-gray uppercase text-xs mr-1">Cidade: </span>{u.cidade} • {u.estado}
+                <span className="font-bold text-gray uppercase text-xs mr-1">
+                  Cidade:{" "}
+                </span>
+                {u.cidade} • {u.estado}
               </p>
             </div>
             <div className="mt-4 pt-4 flex flex-col gap-6">

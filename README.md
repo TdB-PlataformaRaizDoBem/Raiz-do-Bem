@@ -13,6 +13,7 @@
 [🌐 Acessar o site](https://raiz-do-bem.vercel.app/) &nbsp;·&nbsp;
 [📁 Repositório](https://github.com/TdB-PlataformaRaizDoBem/Raiz-do-Bem) &nbsp;·&nbsp;
 [🎨 Organização](https://https://github.com/TdB-PlataformaRaizDoBem)
+[🎥 Pitch](https://youtu.be/3qlfh8A-jWMm)
 
 </div>
 
@@ -67,88 +68,113 @@ A ONG Turma do Bem conecta dentistas a jovens em situação de vulnerabilidade s
 ```
 Raiz-do-Bem/
 ├── public/
-│   └── TDB_logo.svg               # Logo da ONG exibida no navegador
+│   └── TDB_logo.svg                    # Logo exibida no navegador
 │
 ├── src/
 │   ├── assets/
-│   │   ├── img/                   # Imagens (fotos, banners, mascote Dentinho)
-│   │   └── svgs/                  # Ícones e ilustrações vetoriais
+│   │   ├── img/                        # Imagens (fotos, banners, mascote Dentinho)
+│   │   └── svgs/                       # Ícones e ilustrações vetoriais
 │   │
-│   ├── components/                # Componentes reutilizáveis da aplicação
-│   │   ├── asidebar/              # Sidebar lateral de navegação interna
-│   │   ├── context/               # Context API para notificações globais
-│   │   ├── footer/                # Rodapé do site
-│   │   ├── formElements/          # Inputs e TextAreas genéricos
+│   ├── data/                           # ① CAMADA DE DADOS (mock)
+│   │   ├── auth.tsx                    # Credenciais e lógica de autenticação
+│   │   ├── beneficiariosData.tsx       # Dados e tipos dos beneficiários
+│   │   ├── colaboradorData.tsx         # Dados e tipos dos colaboradores
+│   │   ├── dentistasData.tsx           # Dados e tipos dos dentistas
+│   │   └── pedidosAjudaData.tsx        # Dados e tipos dos pedidos de ajuda
+│   │
+│   ├── services/                       # ② CAMADA DE SERVIÇOS (acesso a dados)
+│   │   ├── Beneficiarioservice.tsx     # getBeneficiariosCompletos, getBeneficiarioCompleto
+│   │   ├── ColaboradorService.tsx      # getColaboradoresCompletos, getColaboradorCompleto
+│   │   ├── DentistaService.tsx         # getDentistasCompletos, getDentistasProximos
+│   │   ├── PedidoService.tsx           # getPedidosCompletos, aprovarPedido, negarPedido
+│   │   └── DesignacaoService.tsx       # getDesignacoes e operações relacionadas
+│   │
+│   ├── hooks/                          # ③ CAMADA DE ESTADO (custom hooks)
+│   │   ├── useAsync.tsx                # Hook genérico: AsyncState<T> tipado (idle/loading/success/error)
+│   │   ├── useBeneficiarios.tsx        # useBeneficiarios · useBeneficiario(id)
+│   │   ├── useDentistas.tsx            # useDentistas · useDentista(id) · useDentistasProximos
+│   │   ├── useColaboradores.tsx        # useColaboradores · useColaborador(id)
+│   │   ├── usePedidos.tsx              # usePedidos · usePedido(id) · usePedidosAprovadosLivres
+│   │   ├── useDesignacao.tsx           # Lógica de designação de casos
+│   │   ├── useAuth.tsx                 # Autenticação e controle de sessão
+│   │   ├── useCep.tsx                  # Busca de endereço por CEP (autocomplete)
+│   │   ├── useDashboardData.tsx        # Métricas agregadas para o painel
+│   │   ├── useImpactStats.tsx          # Estatísticas de impacto social
+│   │   ├── useNotification.tsx         # Sistema de notificações (Toast)
+│   │   ├── useOrderState.tsx           # Estado de pedidos
+│   │   ├── useProfessionalStats.tsx    # Estatísticas por dentista
+│   │   ├── useScrollLock.tsx           # Bloqueia scroll quando modais estão abertos
+│   │   ├── useUser.tsx                 # Dados do usuário autenticado
+│   │   └── validateAge.tsx             # Validação de idade mínima nos formulários
+│   │
+│   ├── components/                     # ④ CAMADA DE APRESENTAÇÃO
+│   │   ├── details/                    # Componentes de detalhe por entidade
+│   │   │   ├── BeneficiarioDetails.tsx # Detalhe completo com seções isoladas
+│   │   │   ├── DentistaDetails.tsx     # Detalhe do dentista voluntário
+│   │   │   ├── ColaboradorDetails.tsx  # Detalhe do colaborador/coordenador
+│   │   │   ├── DesignacaoDetails.tsx   # Detalhe de designação de caso
+│   │   │   └── PedidosDetails.tsx      # Detalhe de pedido de ajuda
+│   │   ├── ui/
+│   │   │   ├── AsyncEstado.tsx         # Feedback padronizado: loading · erro · vazio
+│   │   │   ├── Button.tsx              # Botão com variantes (primary, secondary...)
+│   │   │   ├── Modal.tsx               # Modal reutilizável
+│   │   │   ├── Toast.tsx               # Notificações temporárias
+│   │   │   ├── Search.tsx              # Campo de busca
+│   │   │   ├── FilterBar.tsx           # Barra de filtros
+│   │   │   └── buttonFilters/          # Botões de ação (editar, deletar, etc.)
+│   │   ├── asidebar/                   # Sidebar lateral de navegação interna
+│   │   ├── context/                    # Context API para notificações globais
+│   │   ├── footer/                     # Rodapé do site
+│   │   ├── formElements/               # Inputs e TextAreas genéricos reutilizáveis
 │   │   ├── forms/
-│   │   │   ├── create/            # Formulários de cadastro (beneficiário, dentista, coordenador)
-│   │   │   └── update/            # Formulários de edição de usuários (beneficiário, dentista, coordenador)
-│   │   ├── header/                # Cabeçalho do site público
-│   │   ├── impactChart/           # Gráfico de impacto social
-│   │   ├── orderStatusBarChart/   # Gráfico de status de pedidos
-│   │   ├── pendingOrdersList/     # Lista de pedidos pendentes
-│   │   ├── staticCard/            # Cards de métricas do dashboard
-│   │   ├── StateRanking/          # Ranking de estados por atendimentos
-│   │   ├── ui/                    # Componentes de UI genéricos (Modal, Toast, Button, Search)
-│   │   ├── userActions/           # Ações disponíveis por perfil de usuário
-│   │   ├── userCard/              # Card de exibição de usuário
-│   │   ├── userHeader/            # Header interno pós-login
-│   │   └── userInformation/       # Informações detalhadas do usuário
+│   │   │   ├── create/                 # Formulários de cadastro (beneficiário, dentista, coord)
+│   │   │   └── update/                 # Formulários de edição
+│   │   ├── header/                     # Cabeçalho do site público
+│   │   ├── impactChart/                # Gráfico de impacto social
+│   │   ├── orderStatusBarChart/        # Gráfico de status de pedidos
+│   │   ├── pendingOrdersList/          # Lista de pedidos pendentes
+│   │   ├── staticCard/                 # Cards de métricas do dashboard
+│   │   ├── StateRanking/               # Ranking de estados por atendimentos
+│   │   ├── UserManagement.tsx/         # Página de gestão de usuários
+│   │   ├── userActions/                # Barra de ações por perfil
+│   │   ├── userCard/                   # Card de exibição de usuário
+│   │   ├── userHeader/                 # Header interno pós-login
+│   │   └── userInformation/            # Container de informações detalhadas
 │   │
-│   ├── data/                      # Dados mockados e funções de autenticação
-│   │   ├── auth.tsx               # Lógica de autenticação
-│   │   ├── beneficiariosData.tsx  # Dados dos beneficiários
-│   │   ├── colaboradorData.tsx    # Dados dos colaboradores
-│   │   ├── dentistasData.tsx      # Dados dos dentistas voluntários
-│   │   ├── designacaoData.tsx     # Dados de designações
-│   │   └── pedidosAjudaData.tsx   # Dados de pedidos de ajuda
-│   │
-│   ├── hooks/                     # Custom hooks da aplicação
-│   │   ├── useAuth.tsx            # Hook de autenticação e controle de sessão
-│   │   ├── useCep.tsx             # Hook para busca de endereço via CEP
-│   │   ├── useDashboardData.tsx   # Hook de dados do dashboard
-│   │   ├── useDesignacao.tsx      # Hook de designações
-│   │   ├── useFetch.tsx           # Hook genérico para requisições
-│   │   ├── useImpactStats.tsx     # Hook de estatísticas de impacto
-│   │   ├── useNotification.tsx    # Hook de notificações
-│   │   ├── useOrderState.tsx      # Hook de estado dos pedidos
-│   │   ├── useProfessionalStats.tsx # Hook de estatísticas profissionais
-│   │   ├── useScrollLock.tsx      # Hook para bloquear scroll (modais)
-│   │   ├── useUser.tsx            # Hook de dados do usuário logado
-│   │   └── validateAge.tsx        # Hook de validação de idade
-│   │
-│   ├── layout/
-│   │   ├── Layout.tsx             # Layout base com Header e Footer
-│   │   └── ScrollToTop.tsx        # Utilitário de scroll para topo na navegação
-│   │
-│   ├── pages/                     # Páginas da aplicação (uma pasta por rota)
-│   │   ├── home/                  # Página inicial (landing page)
-│   │   ├── about/                 # Sobre a TdB
-│   │   ├── contact/               # Contato e formulário de ajuda
-│   │   ├── faq/                   # Perguntas frequentes
-│   │   ├── login/                 # Login de usuários
-│   │   ├── voluntary/             # Inscrição de dentistas voluntários
-│   │   ├── Team/                  # Equipe de desenvolvimento
-│   │   ├── dashboard/             # Painel principal pós-login
-│   │   ├── admin/                 # Painel do administrador + gestão de colaboradores
-│   │   ├── coord/                 # Painel do colaborador
-│   │   ├── gerenciaBeneficiarios/ # Gestão de beneficiários
-│   │   ├── gerenciaDentistas/     # Gestão de dentistas voluntários
-│   │   ├── designacao/            # Designação de casos
-│   │   ├── pedidosAjuda/          # Pedidos de ajuda recebidos
-│   │   └── reports/               # Relatórios e métricas
+│   ├── pages/                          # Páginas da aplicação (uma pasta por rota)
+│   │   ├── home/                       # Página inicial (landing page)
+│   │   ├── about/                      # Sobre a TdB
+│   │   ├── contact/                    # Contato e formulário de pedido de ajuda
+│   │   ├── faq/                        # Perguntas frequentes
+│   │   ├── login/                      # Login com autenticação por perfil
+│   │   ├── voluntary/                  # Inscrição de dentistas voluntários
+│   │   ├── Team/                       # Equipe de desenvolvimento
+│   │   ├── dashboard/                  # Painel principal pós-login
+│   │   ├── admin/                      # Painel do administrador + colaboradores
+│   │   ├── coord/                      # Painel do coordenador
+│   │   ├── gerenciaBeneficiarios/      # Gestão de beneficiários
+│   │   ├── gerenciaDentistas/          # Gestão de dentistas voluntários
+│   │   ├── designacao/                 # Designação de casos a dentistas
+│   │   ├── pedidosAjuda/               # Pedidos de ajuda recebidos
+│   │   └── reports/                    # Relatórios e métricas
 │   │
 │   ├── Routes/
-│   │   ├── Routes.tsx             # Definição de todas as rotas da aplicação
-│   │   └── ProtectedRoutes.tsx    # Rotas protegidas por autenticação
+│   │   ├── Routes.tsx                  # Definição de todas as rotas
+│   │   └── ProtectedRoutes.tsx         # Rotas protegidas por autenticação e perfil
 │   │
-│   ├── App.tsx                    # Componente raiz da aplicação
-│   ├── main.tsx                   # Ponto de entrada — monta o React no DOM
-│   └── index.css                  # Estilos globais e configuração do Tailwind
+│   ├── layout/
+│   │   ├── Layout.tsx                  # Layout base com Header e Footer
+│   │   └── ScrollToTop.tsx             # Scroll para o topo ao navegar entre rotas
+│   │
+│   ├── App.tsx                         # Componente raiz
+│   ├── main.tsx                        # Ponto de entrada — monta o React no DOM
+│   └── index.css                       # Estilos globais e configuração do Tailwind
 │
-├── index.html                     # HTML base do Vite
-├── package.json                   # Dependências e scripts do projeto
-├── tsconfig.json                  # Configuração do TypeScript
-└── vite.config.ts                 # Configuração do Vite
+├── vercel.json                         # Configuração de deploy (redirecionamento de rotas SPA)
+├── index.html                          # HTML base do Vite
+├── package.json                        # Dependências e scripts
+├── tsconfig.json                       # Configuração do TypeScript
+└── vite.config.ts                      # Configuração do Vite
 ```
 
 ---
@@ -303,7 +329,7 @@ npm install
 | 🌐 Site em produção | [https://tdb-plataformaraizdobem.github.io/Front-End/](https://tdb-plataformaraizdobem.github.io/Front-End/) |
 | 📁 Repositório Front-End | [https://github.com/TdB-PlataformaRaizDoBem/Front-End](https://github.com/TdB-PlataformaRaizDoBem/Front-End) |
 | 🏢 Organização no GitHub | [https://github.com/TdB-PlataformaRaizDoBem](https://github.com/TdB-PlataformaRaizDoBem) |
-| 🎨 Protótipo no Figma | [Acessar protótipo](https://www.figma.com/proto/PXxoRDmkhZU9yVuq7ksPSD/Turma-do-Bem?node-id=1-2&t=5On8ArgGm21C4ZNu-1&starting-point-node-id=1%3A2) |
+| 🎥 Pitch Explicativo do Código e Telas | [https://youtu.be/3qlfh8A-jWM](https://youtu.be/3qlfh8A-jWM) |
 
 ---
 

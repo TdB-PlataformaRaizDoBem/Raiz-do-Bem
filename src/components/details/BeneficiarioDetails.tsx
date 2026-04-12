@@ -6,7 +6,6 @@ import DeleteUserButton from "../ui/buttonFilters/DeleteUserButton";
 import EditBeneficiarioButton from "../ui/buttonFilters/EditBeneficiarioButton";
  
 // Subcomponentes de seção — cada um renderiza uma fatia isolada do detalhe.
- 
 const SecaoVinculos = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div className="bg-gray/10 p-4 rounded-xl">

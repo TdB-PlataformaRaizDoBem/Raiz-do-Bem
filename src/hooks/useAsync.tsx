@@ -17,7 +17,6 @@ export function useAsync<T>(
     loading: false,
   });
  
-  // Evita atualizar estado em componente desmontado
   const mountedRef = useRef(true);
   useEffect(() => {
     mountedRef.current = true;

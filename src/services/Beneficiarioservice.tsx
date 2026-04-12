@@ -13,8 +13,6 @@ export type BeneficiarioCompleto = Beneficiario & {
 const _dentistasIdx = new Map(dentistasMock.map((d) => [d.id, d]));
 const _colaboradoresIdx = new Map(colaboradorData.map((c) => [c.id, c]));
 const _pedidosIdx = new Map(PedidoAjuda.map((p) => [p.id, p]));
- 
-// Adapter — resolve vínculos de um beneficiário.
 
 // INTEGRAÇÃO API - Substituir por:
 //   const res = await fetch(`/api/beneficiarios/${id}`);
@@ -23,7 +21,6 @@ const _pedidosIdx = new Map(PedidoAjuda.map((p) => [p.id, p]));
 export const getBeneficiarioCompleto = async (
   id: number
 ): Promise<BeneficiarioCompleto | null> => {
-  // Simula latência de rede — remover quando API chegar
   await new Promise((r) => setTimeout(r, 300));
  
   const b = beneficiariosData.find((b) => b.id === id);

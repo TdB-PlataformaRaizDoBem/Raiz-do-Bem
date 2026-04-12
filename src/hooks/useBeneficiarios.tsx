@@ -9,7 +9,7 @@ import {
 export const useBeneficiarios = () =>
   useAsync<BeneficiarioCompleto[]>(getBeneficiariosCompletos);
  
-// Detalhe de um beneficiário por id — usado no renderDetails
+// beneficiário por id
 export const useBeneficiario = (id: number) =>
   useAsync<BeneficiarioCompleto | null>(
     () => getBeneficiarioCompleto(id),
