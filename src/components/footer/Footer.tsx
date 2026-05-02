@@ -15,7 +15,7 @@ const Footer = () => {
     { href: "https://www.linkedin.com/company/turma-do-bem/posts/?feedView=all", icon: IconLinkedin, alt: "linkedin" },
     { href: "https://www.youtube.com/user/turmadobem", icon: IconYT, alt: "youtube" },
   ];
-
+  
   const footer_links = [
     {
       title: "Tome uma Atitude",
