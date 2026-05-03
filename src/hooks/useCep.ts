@@ -1,4 +1,4 @@
-import useFetch from "../hooks/useFetch";
+import useFetch from "./useFetch";
 import type {
   FieldValues,
   Path,

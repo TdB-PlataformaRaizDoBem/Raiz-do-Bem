@@ -1,10 +1,5 @@
 import { useAsync } from "./useAsync";
-import {
-  getPedidosCompletos,
-  getPedidoCompleto,
-  getPedidosAprovadosLivres,
-  type PedidoCompleto,
-} from "../services/PedidoService";
+import { getPedidosCompletos, getPedidoCompleto, getPedidosAprovadosLivres, type PedidoCompleto } from "../services/PedidoService";
 
 export const usePedidos = () =>
   useAsync<PedidoCompleto[]>(getPedidosCompletos);
