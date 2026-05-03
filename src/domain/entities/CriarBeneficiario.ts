@@ -1,4 +1,4 @@
-export interface CriarBeneficiarioPayload {
+export interface CriarBeneficiario {
   cpf: string;
   nomeCompleto: string;
   dataNascimento: string;        

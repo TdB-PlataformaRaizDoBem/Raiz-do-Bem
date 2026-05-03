@@ -1,50 +1,83 @@
-import { beneficiariosData, type Beneficiario } from "../data/beneficiariosData";
-import { dentistasMock, type Dentista } from "../data/dentistasData";
-import { colaboradorData, type Colaborador } from "../data/colaboradorData";
-import { PedidoAjuda, type PedidoAjudaData } from "../data/pedidosAjudaData";
+/**
+ * Endpoints consumidos (BeneficiarioController.java):
+ *   GET    /beneficiario         → listar todos
+ *   GET    /beneficiario/:cpf    → buscar por CPF
+ *   POST   /beneficiario         → criar
+ *   PUT    /beneficiario/:cpf    → atualizar
+ *   DELETE /beneficiario/:cpf    → excluir
+ */
 
-export type BeneficiarioCompleto = Beneficiario & {
-  dentista: Dentista | null;
-  coordenador: Colaborador | null;
-  pedido: PedidoAjudaData | null;
-};
- 
-// Índices por id
-const _dentistasIdx = new Map(dentistasMock.map((d) => [d.id, d]));
-const _colaboradoresIdx = new Map(colaboradorData.map((c) => [c.id, c]));
-const _pedidosIdx = new Map(PedidoAjuda.map((p) => [p.id, p]));
+import type { BeneficiarioAPI } from "../domain/entities/BeneficiarioAPI";
+import type { CriarBeneficiario } from '../domain/entities/CriarBeneficiario.ts'
+import {
+  mapBeneficiario,
+  mapBeneficiarios,
+  type BeneficiarioViewModel,
+} from "../domain/mappers/Beneficiariomapper.ts";
 
-// INTEGRAÇÃO API - Substituir por:
-//   const res = await fetch(`/api/beneficiarios/${id}`);
-//   if (!res.ok) throw new Error("Falha ao buscar beneficiário");
-//   return res.json() as BeneficiarioCompleto;
-export const getBeneficiarioCompleto = async (
-  id: number
-): Promise<BeneficiarioCompleto | null> => {
-  await new Promise((r) => setTimeout(r, 300));
- 
-  const b = beneficiariosData.find((b) => b.id === id);
-  if (!b) return null;
- 
-  return {
-    ...b,
-    dentista: _dentistasIdx.get(b.idDentistaDesignado ?? -1) ?? null,
-    coordenador: _colaboradoresIdx.get(b.idCoordenadorResponsavel ?? -1) ?? null,
-    pedido: _pedidosIdx.get(b.id_pedido_ajuda ?? -1) ?? null,
-  };
-};
- 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const ENDPOINT = `${BASE_URL}/beneficiario`;
 
-// INTEGRAÇÃO API - Substituir por:
-//   const res = await fetch("/api/beneficiarios");
-//   return res.json() as BeneficiarioCompleto[];
-export const getBeneficiariosCompletos = async (): Promise<BeneficiarioCompleto[]> => {
-  await new Promise((r) => setTimeout(r, 300));
- 
-  return beneficiariosData.map((b) => ({
-    ...b,
-    dentista: _dentistasIdx.get(b.idDentistaDesignado ?? -1) ?? null,
-    coordenador: _colaboradoresIdx.get(b.idCoordenadorResponsavel ?? -1) ?? null,
-    pedido: _pedidosIdx.get(b.id_pedido_ajuda ?? -1) ?? null,
-  }));
-};
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    let mensagem = `Erro ${res.status}`;
+    try {
+      const body = await res.json();
+      mensagem = body?.message ?? body?.error ?? mensagem;
+    } catch { /* manter mensagem padrão */ }
+    throw new Error(mensagem);
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
+
+function jsonHeaders(): HeadersInit {
+  return { "Content-Type": "application/json" };
+}
+
+export async function getBeneficiariosCompletos(): Promise<BeneficiarioViewModel[]> {
+  const res = await fetch(ENDPOINT);
+  const data = await handleResponse<BeneficiarioAPI[]>(res);
+  return mapBeneficiarios(data);
+}
+
+export async function getBeneficiarioCompleto(
+  cpf: string
+): Promise<BeneficiarioViewModel | null> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`);
+  if (res.status === 404) return null;
+  const data = await handleResponse<BeneficiarioAPI>(res);
+  return mapBeneficiario(data);
+}
+
+export async function criarBeneficiario(
+  payload: CriarBeneficiario
+): Promise<BeneficiarioViewModel> {
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: jsonHeaders(),
+    body: JSON.stringify(payload),
+  });
+  const data = await handleResponse<BeneficiarioAPI>(res);
+  return mapBeneficiario(data);
+}
+
+export async function atualizarBeneficiario(
+  cpf: string,
+  payload: Partial<CriarBeneficiario>
+): Promise<BeneficiarioViewModel> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`, {
+    method: "PUT",
+    headers: jsonHeaders(),
+    body: JSON.stringify(payload),
+  });
+  const data = await handleResponse<BeneficiarioAPI>(res);
+  return mapBeneficiario(data);
+}
+
+export async function excluirBeneficiario(cpf: string): Promise<void> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
+  await handleResponse<void>(res);
+}
+
+export type BeneficiarioCompleto = BeneficiarioViewModel;
