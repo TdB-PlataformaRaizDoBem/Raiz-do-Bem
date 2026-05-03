@@ -1,41 +1,118 @@
-import { dentistasMock, type Dentista } from "../data/dentistasData";
-import { type Beneficiario } from "../data/beneficiariosData";
+/**
+ * Endpoints consumidos (DentistaController.java):
+ *   GET    /dentista         → listar todos
+ *   GET    /dentista/:cpf    → buscar por CPF
+ *   POST   /dentista         → criar (voluntário)
+ *   PUT    /dentista/:cpf    → atualizar
+ *   DELETE /dentista/:cpf    → excluir
+ */
 
-export type DentistaCompleto = Dentista;
+import type { DentistaAPI } from "../domain/entities/DentistaAPI";
+import type { CriarDentistaPayload } from "../domain/entities/CriarDentista"
+import {
+  mapDentista,
+  mapDentistas,
+  isDentistaDisponivel,
+  programaCompativel,
+  type DentistaViewModel,
+} from "../domain/mappers/DentistaMapper ";
+import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
 
-// INTEGRAÇÃO API - GET /api/dentistas/:id
-export const getDentistaCompleto = async (
-  id: number
-): Promise<DentistaCompleto | null> => {
-  await new Promise((r) => setTimeout(r, 300));
-  return dentistasMock.find((d) => d.id === id) ?? null;
-};
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const ENDPOINT = `${BASE_URL}/dentista`;
 
-// INTEGRAÇÃO - API GET /api/dentistas
-export const getDentistasCompletos = async (): Promise<DentistaCompleto[]> => {
-  await new Promise((r) => setTimeout(r, 300));
-  return dentistasMock;
-};
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    let mensagem = `Erro ${res.status}`;
+    try {
+      const body = await res.json();
+      mensagem = body?.message ?? body?.error ?? mensagem;
+    } catch { /* manter mensagem padrão */ }
+    throw new Error(mensagem);
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
 
-// INTEGRAÇÃO API
-//   GET /api/dentistas/proximos?cidade=X&estado=Y&programa=Z
-//   → DentistaCompleto[]
-const programaCompativel = (d: Dentista, b: Beneficiario): boolean =>
-  d.programa === "Ambos" || d.programa === b.programaSocial;
+function jsonHeaders(): HeadersInit {
+  return { "Content-Type": "application/json" };
+}
 
-export const getDentistasProximos = async (
-  beneficiario: Beneficiario
-): Promise<DentistaCompleto[]> => {
-  await new Promise((r) => setTimeout(r, 300));
+export async function getDentistasCompletos(): Promise<DentistaViewModel[]> {
+  const res = await fetch(ENDPOINT);
+  const data = await handleResponse<DentistaAPI[]>(res);
+  return mapDentistas(data);
+}
 
-  const disponiveis = dentistasMock.filter(
-    (d) => d.disponibilidade === "Sim" && programaCompativel(d, beneficiario)
+export async function getDentistaCompleto(
+  cpf: string
+): Promise<DentistaViewModel | null> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`);
+  if (res.status === 404) return null;
+  const data = await handleResponse<DentistaAPI>(res);
+  return mapDentista(data);
+}
+
+/**
+ * Retorna dentistas disponíveis próximos ao beneficiário.
+ */
+export async function getDentistasProximos(
+  beneficiario: BeneficiarioViewModel
+): Promise<DentistaViewModel[]> {
+  const todos = await getDentistasCompletos();
+
+  const disponiveis = todos.filter(
+    (d) =>
+      isDentistaDisponivel(d) &&
+      programaCompativel(d, beneficiario.programaSocial)
   );
 
-  const porCidade = disponiveis.filter(
-    (d) => d.endereco.cidade === beneficiario.cidade
-  );
+  const cidade = beneficiario.endereco?.cidade;
+  const estado = beneficiario.endereco?.estado;
+
+  const porCidade = cidade
+    ? disponiveis.filter((d) => d.endereco?.cidade === cidade)
+    : [];
+
   if (porCidade.length > 0) return porCidade;
 
-  return disponiveis.filter((d) => d.endereco.estado === beneficiario.estado);
-};
+  return estado
+    ? disponiveis.filter((d) => d.endereco?.estado === estado)
+    : disponiveis;
+}
+
+/**
+ * POST /dentista
+ * Cadastro de voluntário (VoluntaryForm.tsx).
+ */
+export async function criarDentista(
+  payload: CriarDentistaPayload
+): Promise<DentistaViewModel> {
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: jsonHeaders(),
+    body: JSON.stringify(payload),
+  });
+  const data = await handleResponse<DentistaAPI>(res);
+  return mapDentista(data);
+}
+
+export async function atualizarDentista(
+  cpf: string,
+  payload: Partial<CriarDentistaPayload>
+): Promise<DentistaViewModel> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`, {
+    method: "PUT",
+    headers: jsonHeaders(),
+    body: JSON.stringify(payload),
+  });
+  const data = await handleResponse<DentistaAPI>(res);
+  return mapDentista(data);
+}
+
+export async function excluirDentista(cpf: string): Promise<void> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
+  await handleResponse<void>(res);
+}
+
+export type DentistaCompleto = DentistaViewModel;

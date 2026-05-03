@@ -1,0 +1,13 @@
+import { useAsync } from "./useAsync";
+import { getBeneficiariosCompletos, getBeneficiarioCompleto, type BeneficiarioCompleto } from "../services/Beneficiarioservice";
+ 
+// Lista completa — usada na página de gerenciamento
+export const useBeneficiarios = () =>
+  useAsync<BeneficiarioCompleto[]>(getBeneficiariosCompletos);
+ 
+// beneficiário por cpf
+export const useBeneficiario = (cpf: string) =>
+  useAsync<BeneficiarioCompleto | null>(
+    () => getBeneficiarioCompleto(cpf),
+    [cpf]
+  );

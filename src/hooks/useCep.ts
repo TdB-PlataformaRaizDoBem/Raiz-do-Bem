@@ -5,7 +5,7 @@ import type {
   PathValue,
   UseFormSetValue,
   UseFormSetError,
-  UseFormClearErrors
+  UseFormClearErrors,
 } from "react-hook-form";
 
 type ViaCepResponse = {
@@ -19,13 +19,17 @@ type ViaCepResponse = {
 export const useCep = <T extends FieldValues>(
   setValue: UseFormSetValue<T>,
   setError: UseFormSetError<T>,
-  clearErrors: UseFormClearErrors<T>
+  clearErrors: UseFormClearErrors<T>,
+  prefix: string = ""
 ) => {
   const { request, loading } = useFetch<ViaCepResponse>();
 
+  const field = (name: string): Path<T> => {
+    return (prefix ? `${prefix}.${name}` : name) as Path<T>;
+  };
+
   const buscarCep = async (cep: string) => {
     const cepLimpo = cep.replace(/\D/g, "");
-
     if (cepLimpo.length !== 8) return;
 
     const { json } = await request(
@@ -35,33 +39,18 @@ export const useCep = <T extends FieldValues>(
     if (!json) return;
 
     if (json.erro) {
-      setError("cep" as Path<T>, {
+      setError(field("cep"), {
         type: "manual",
-        message:
-          "CEP não encontrado. Verifique ou preencha manualmente.",
+        message: "CEP não encontrado. Verifique ou preencha manualmente.",
       });
       return;
     }
 
-    setValue(
-      "cidade" as Path<T>,
-      json.localidade as PathValue<T, Path<T>>,
-      { shouldValidate: true }
-    );
+    setValue(field("cidade"), json.localidade as PathValue<T, Path<T>>, { shouldValidate: true });
+    setValue(field("estado"), json.uf as PathValue<T, Path<T>>, { shouldValidate: true });
+    setValue(field("logradouro"), (json.logradouro || "") as PathValue<T, Path<T>>, { shouldValidate: true });
 
-    setValue(
-      "estado" as Path<T>,
-      json.uf as PathValue<T, Path<T>>,
-      { shouldValidate: true }
-    );
-
-    setValue(
-      "logradouro" as Path<T>,
-      (json.logradouro || "") as PathValue<T, Path<T>>,
-      { shouldValidate: true }
-    );
-
-    clearErrors("cep" as Path<T>);
+    clearErrors(field("cep"));
   };
 
   return { buscarCep, loading };

@@ -14,8 +14,8 @@ const SecaoVinculos = ({ data }: { data: BeneficiarioCompleto }) => (
       </p>
       {data.dentista ? (
         <>
-          <p className="text-sm font-bold text-darkgray">{data.dentista.nome}</p>
-          <p className="text-xs text-gray-500">CRO: {data.dentista.cro}</p>
+          <p className="text-sm font-bold text-darkgray">{data.dentista.nomeCompleto}</p>
+          <p className="text-xs text-gray-500">CRO: {data.dentista.croDentista}</p>
         </>
       ) : (
         <p className="text-xs italic text-gray-400">Aguardando designação</p>
@@ -41,19 +41,19 @@ const SecaoVinculos = ({ data }: { data: BeneficiarioCompleto }) => (
 const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-300">
     <h4 className="text-xs font-black uppercase text-gray-500 tracking-wider mb-3">
-      Relato Inicial do Pedido (#{data.id_pedido_ajuda})
+      Relato Inicial do Pedido (#{data.pedido?.id})
     </h4>
     {data.pedido ? (
       <>
         <p className="text-sm text-darkgray leading-relaxed italic">
-          "{data.pedido.descricao_problema}"
+          "{data.pedido.descricaoProblema}"
         </p>
         <div className="mt-3 flex justify-between items-center">
           <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded">
-            SITUAÇÃO: {data.pedido.situacao}
+            SITUAÇÃO: {data.pedido.statusLabel}
           </span>
           <span className="text-[10px] text-gray-400 font-medium">
-            Data do Pedido: {data.pedido.data}
+            Data do Pedido: {data.pedido.statusLabel}
           </span>
         </div>
       </>
@@ -71,10 +71,10 @@ const SecaoPrograma = ({ data }: { data: BeneficiarioCompleto }) => (
       <p className="text-xs font-black uppercase text-amber/60">Programa Vinculado</p>
       <p className="text-lg font-bold text-amber">{data.programaSocial}</p>
     </div>
-    <div className="text-right">
+    {/*<div className="text-right">
       <p className="text-xs font-black uppercase text-gray-400">Sexo</p>
       <p className="font-bold text-darkgray">{data.sexo}</p>
-    </div>
+    </div>*/}
   </div>
 );
  
@@ -110,9 +110,9 @@ const SecaoEndereco = ({ data }: { data: BeneficiarioCompleto }) => (
       Localização
     </h4>
     <p className="text-darkgray leading-relaxed text-lg">
-      {data.logradouro}, {data.numero} <br />
-      {data.cidade} - {data.estado} <br />
-      <span className="text-sm font-bold">CEP: {data.cep}</span>
+      {data.endereco?.logradouro}, {data.endereco?.numero} <br />
+      {data.endereco?.cidade} - {data.endereco?.estado} <br />
+      <span className="text-sm font-bold">CEP: {data.endereco?.cep}</span>
     </p>
   </div>
 );
@@ -133,7 +133,7 @@ export const BeneficiarioDetails = ({ data, isAdmin, onClose }: BeneficiarioDeta
           {/* Cabeçalho */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h3 className="text-3xl font-bold text-darkgray font-fredoka">{data.nome}</h3>
+              <h3 className="text-3xl font-bold text-darkgray font-fredoka">{data.nomeCompleto}</h3>
               <div className="h-1.5 w-20 mt-1 bg-amber" />
             </div>
             <div className="text-right">
@@ -157,7 +157,7 @@ export const BeneficiarioDetails = ({ data, isAdmin, onClose }: BeneficiarioDeta
       <UserActions>
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
           {isAdmin && (
-            <DeleteUserButton userId={data.id} userName={data.nome} onDelete={onClose} />
+            <DeleteUserButton userId={data.id} userName={data.nomeCompleto} onDelete={onClose} />
           )}
           <EditBeneficiarioButton user={data} />
           <Button variant="secondary" onClick={onClose} className="flex-1 md:flex-none">

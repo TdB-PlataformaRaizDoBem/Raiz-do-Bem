@@ -10,7 +10,7 @@ const SecaoAcesso = ({ data }: { data: ColaboradorCompleto }) => (
     <div>
       <p className="text-xs font-black uppercase text-gray-400">Nível de Acesso</p>
       <p className={`font-bold ${data.nivelAcesso === "admin" ? "text-amber" : "text-darkgreen"}`}>
-        {data.nivelAcesso.toUpperCase()}
+        {data.nivelAcesso?.toUpperCase()}
       </p>
     </div>
     <div className="w-px h-8 bg-gray-200" />
@@ -31,19 +31,6 @@ const SecaoDadosPessoais = ({ data }: { data: ColaboradorCompleto }) => (
       <h4 className="text-xs font-black uppercase text-gray-400 tracking-wider mb-1">Nascimento</h4>
       <p className="text-darkgray font-medium text-lg">{data.dataNascimento}</p>
     </div>
-  </div>
-);
-
-const SecaoEndereco = ({ data }: { data: ColaboradorCompleto }) => (
-  <div className="bg-amber/5 p-6 rounded-2xl border border-amber/10">
-    <h4 className="text-xs font-black uppercase text-amber tracking-wider mb-3">
-      Endereço Residencial
-    </h4>
-    <p className="text-darkgray leading-relaxed text-lg">
-      {data.logradouro}, {data.numero} <br />
-      {data.cidade} - {data.estado} <br />
-      <span className="text-sm font-bold">CEP: {data.cep}</span>
-    </p>
   </div>
 );
 
@@ -79,14 +66,13 @@ export const ColaboradorDetails = ({ data, onClose }: ColaboradorDetailsProps) =
               <span className="block text-xs font-black text-gray-400 uppercase tracking-widest">
                 ID Colaborador
               </span>
-              <span className="text-lg font-mono font-bold text-darkgray">#{data.idColaborador}</span>
+              <span className="text-lg font-mono font-bold text-darkgray">#{data.id}</span>
             </div>
           </div>
 
           <div className="space-y-6">
             <SecaoAcesso data={data} />
             <SecaoDadosPessoais data={data} />
-            <SecaoEndereco data={data} />
             <SecaoContato data={data} />
           </div>
         </div>

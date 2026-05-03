@@ -99,6 +99,10 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
   };
 }
 
+export function mapPedidos(apiList: PedidoAjudaAPI[]): PedidoViewModel[] {
+  return apiList.map(mapPedido);
+}
+
 export function isPedidoAprovado(pedido: PedidoViewModel): boolean {
   return pedido.statusAPI === "APROVADO";
 }
