@@ -2,10 +2,10 @@ import React from "react";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
 import UpdateCoord from "../../forms/update/UpdateCoord";
-import { type Colaborador } from "../../../data/colaboradorData";
+import type { ColaboradorViewModel } from "../../../domain/mappers/ColaboradorMapper";
 
 type EditCoordButtonProps = {
-  user: Colaborador;
+  user: ColaboradorViewModel;
 };
 
 const EditCoordButton = ({ user }: EditCoordButtonProps) => {

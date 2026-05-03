@@ -1,61 +1,84 @@
+/**
+ * UpdateBeneficiario.tsx
+ *
+ * Formulário de edição de Beneficiário — refatorado para ViewModel.
+ *
+ * ALTERAÇÕES vs. versão anterior:
+ *   - initialData agora é BeneficiarioViewModel (não mais o tipo Beneficiario do mock)
+ *   - Campo "nome" → "nomeCompleto"
+ *   - Campo "sexo" removido (não existe em Beneficiario.java)
+ *   - Endereço: campos planos → objeto aninhado "endereco.*" (reflete back-end)
+ *   - Campo "programaSocial" aceita string (vem do mapper como string)
+ *   - onSubmit monta payload correto para PUT /beneficiario/:cpf
+ *   - useCep atualizado para escrever em "endereco.cidade", "endereco.estado", etc.
+ */
+
 import { useForm } from "react-hook-form";
-import type { Beneficiario } from "../../../data/beneficiariosData";
+import type { BeneficiarioViewModel } from "../../../domain/mappers/Beneficiariomapper";
+import { atualizarBeneficiario } from "../../../services/Beneficiarioservice";
 import { useNotification } from "../../../hooks/useNotification";
 import { useCep } from "../../../hooks/useCep";
 import Input from "../../formElements/Input";
 import { Button } from "../../ui/Button";
- 
+
 type UpdateBeneficiarioProps = {
-  initialData: Beneficiario;
+  initialData: BeneficiarioViewModel;
   onSuccess: () => void;
 };
- 
-// Campos que o usuário pode editar.
-// Campos imutáveis (id, cpf, dataNascimento, id_pedido_ajuda, vínculos).
-type BeneficiarioEditavel = Pick<
-  Beneficiario,
-  "nome" | "email" | "telefone" | "sexo" | "programaSocial" |
-  "cep" | "logradouro" | "numero" | "cidade" | "estado"
->;
- 
+
+
+type BeneficiarioEditavel = {
+  nomeCompleto: string;      
+  email: string;
+  telefone: string;
+  programaSocial: string;      
+  "endereco.cep": string;
+  "endereco.numero": string;
+  "endereco.logradouro": string;
+  "endereco.cidade": string;
+  "endereco.estado": string;
+};
+
 const UpdateBeneficiario = ({ initialData, onSuccess }: UpdateBeneficiarioProps) => {
   const { showNotification } = useNotification();
- 
+
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     setError,
     clearErrors,
     formState: { isDirty, errors },
   } = useForm<BeneficiarioEditavel>({
     defaultValues: {
-      nome:          initialData.nome,
-      email:         initialData.email,
-      telefone:      initialData.telefone,
-      sexo:          initialData.sexo,
+      nomeCompleto: initialData.nomeCompleto,
+      email: initialData.email,
+      telefone: initialData.telefone,
       programaSocial: initialData.programaSocial,
-      cep:           initialData.cep,
-      logradouro:    initialData.logradouro,
-      numero:        initialData.numero,
-      cidade:        initialData.cidade,
-      estado:        initialData.estado,
+      "endereco.cep": initialData.endereco?.cep ?? "",
+      "endereco.numero": initialData.endereco?.numero ?? "",
+      "endereco.logradouro": initialData.endereco?.logradouro ?? "",
+      "endereco.cidade": initialData.endereco?.cidade ?? "",
+      "endereco.estado": initialData.endereco?.estado ?? "",
     },
   });
- 
+
   const { buscarCep } = useCep<BeneficiarioEditavel>(setValue, setError, clearErrors);
- 
-  const watchSexo = watch("sexo");
- 
-  const onSubmit = (data: BeneficiarioEditavel) => {
-    // futura integração: [INTEGRAÇÃO API - ATUALIZAR BENEFICIÁRIO]
-    // Enviar apenas os campos editáveis.
- 
-    showNotification(`Beneficiário(a) ${data.nome} atualizado com sucesso!`, "success");
-    onSuccess();
+
+  const onSubmit = async (data: BeneficiarioEditavel) => {
+    try {
+      await atualizarBeneficiario(initialData.cpf, {
+        nomeCompleto: data.nomeCompleto,
+        email: data.email,
+      });
+      showNotification(`${data.nomeCompleto} atualizado com sucesso!`, "success");
+      onSuccess();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao atualizar";
+      showNotification(msg, "error");
+    }
   };
- 
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -64,10 +87,10 @@ const UpdateBeneficiario = ({ initialData, onSuccess }: UpdateBeneficiarioProps)
       <h2 className="text-2xl font-bold font-fredoka mb-6 text-darkgray">
         Editar Beneficiário
       </h2>
- 
+
       <div className="flex-1 overflow-y-auto pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
- 
-        {/* Dados imutáveis — somente leitura, não registrados no form */}
+
+        {/* Dados imutáveis — somente leitura */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
           <Input
             label="CPF"
@@ -84,13 +107,13 @@ const UpdateBeneficiario = ({ initialData, onSuccess }: UpdateBeneficiarioProps)
             className="bg-gray-200 cursor-not-allowed"
           />
         </div>
- 
+
         {/* Dados editáveis */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <Input
             label="Nome Completo"
-            {...register("nome", { required: "Obrigatório" })}
-            error={errors.nome?.message}
+            {...register("nomeCompleto", { required: "Obrigatório" })}
+            error={errors.nomeCompleto?.message}
           />
           <Input
             label="E-mail"
@@ -106,75 +129,76 @@ const UpdateBeneficiario = ({ initialData, onSuccess }: UpdateBeneficiarioProps)
             {...register("telefone", { required: "Obrigatório" })}
             error={errors.telefone?.message}
           />
- 
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-bold text-darkgray">Sexo</label>
-            <select
-              {...register("sexo")}
-              className="border border-gray-200 rounded-xl p-3 bg-white outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="Feminino">Feminino</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
- 
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-bold text-darkgray">Programa</label>
-            <select
-              {...register("programaSocial")}
-              className="border border-gray-200 rounded-xl p-3 bg-white outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="Turma do Bem">Turma do Bem</option>
-              {watchSexo !== "Masculino" && (
-                <option value="Apolônias do Bem">Apolônias do Bem</option>
-              )}
-            </select>
-          </div>
+
+          <Input
+            label="Programa Social (somente leitura)"
+            defaultValue={initialData.programaSocial}
+            readOnly
+            className="bg-gray-100 cursor-not-allowed"
+          />
         </div>
- 
-        {/* Endereço com auto-preenchimento via ViaCEP */}
+
         <div className="border-t pt-4">
           <h3 className="font-bold text-darkgray mb-4 font-fredoka">Endereço</h3>
+
+          {/*
+           * NOTA SOBRE ENDEREÇO:
+           * O back-end cria o Endereço via POST /endereco (CEP + número + tipoEndereco)
+           * e retorna o objeto completo com id. O PUT /beneficiario/:cpf recebe idEndereco.
+           * Logo o fluxo correto é:
+           *   1. Usuário digita novo CEP + número
+           *   2. Front chama POST /endereco para criar novo registro
+           *   3. Usa o id retornado no payload do PUT /beneficiario
+           *
+           * Enquanto o endpoint PUT /beneficiario não aceita body, apenas exibimos
+           * os campos com aviso de funcionalidade pendente.
+           */}
+          <div className="mb-3 p-3 bg-amber/5 border border-amber/20 rounded-lg">
+            <p className="text-xs text-amber font-bold">
+              ⚠ Atualização de endereço depende de implementação do PUT /beneficiario no back-end.
+              Os campos abaixo serão enviados quando disponível.
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid grid-cols-2 gap-4">
               <Input
                 label="CEP"
-                {...register("cep", {
+                {...register("endereco.cep", {
                   required: "Obrigatório",
                   pattern: { value: /^\d{5}-?\d{3}$/, message: "CEP inválido" },
                   onBlur: (e) => buscarCep(e.target.value),
                 })}
-                error={errors.cep?.message}
+                error={errors["endereco.cep"]?.message}
               />
               <Input
                 label="Número"
-                {...register("numero", { required: "Obrigatório" })}
-                error={errors.numero?.message}
+                {...register("endereco.numero", { required: "Obrigatório" })}
+                error={errors["endereco.numero"]?.message}
               />
             </div>
             <Input
               label="Logradouro"
-              {...register("logradouro")}
+              {...register("endereco.logradouro")}
               readOnly
               className="bg-gray-100"
             />
             <Input
               label="Cidade"
-              {...register("cidade")}
+              {...register("endereco.cidade")}
               readOnly
               className="bg-gray-100"
             />
             <Input
               label="Estado"
-              {...register("estado")}
+              {...register("endereco.estado")}
               readOnly
               className="bg-gray-100"
             />
           </div>
         </div>
       </div>
- 
+
       <div className="flex gap-3 justify-end mt-6 pt-4 border-t">
         <Button variant="secondary" type="button" onClick={onSuccess}>
           Cancelar
@@ -191,5 +215,5 @@ const UpdateBeneficiario = ({ initialData, onSuccess }: UpdateBeneficiarioProps)
     </form>
   );
 };
- 
+
 export default UpdateBeneficiario;

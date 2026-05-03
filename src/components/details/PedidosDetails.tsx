@@ -18,15 +18,9 @@ const SecaoStatus = ({ data }: { data: PedidoCompleto }) => (
         Situação Atual
       </p>
       <p
-        className={`font-bold ${
-          data.situacao === "Aprovado"
-            ? "text-darkgreen"
-            : data.situacao === "Negado"
-            ? "text-red-500"
-            : "text-amber"
-        }`}
+        className={`font-bold ${data.statusClass}`}
       >
-        {data.situacao}
+        {data.statusLabel}
       </p>
     </div>
 
@@ -36,7 +30,7 @@ const SecaoStatus = ({ data }: { data: PedidoCompleto }) => (
       <p className="text-xs font-black uppercase text-gray-400">
         Data do Envio
       </p>
-      <p className="font-bold text-darkgray">{data.data}</p>
+      <p className="font-bold text-darkgray">{data.dataPedido}</p>
     </div>
   </div>
 );
@@ -47,7 +41,7 @@ const SecaoDescricao = ({ data }: { data: PedidoCompleto }) => (
       Descrição da Solicitação
     </h4>
     <p className="text-darkgray leading-relaxed text-lg">
-      "{data.descricao_problema}"
+      "{data.descricaoProblema}"
     </p>
   </div>
 );
@@ -97,7 +91,7 @@ export const PedidoDetails = ({
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-3xl font-bold text-darkgray font-fredoka">
-              {data.nome_completo}
+              {data.nomeCompleto}
             </h3>
             <div className="h-1.5 w-20 bg-amber mt-1" />
           </div>
@@ -121,7 +115,7 @@ export const PedidoDetails = ({
 
       <UserActions>
         <div className="flex flex-wrap gap-3 justify-end">
-          {isCoord && data.situacao === "Pendente" && (
+          {isCoord && data.statusAPI === "PENDENTE" && (
             <>
               <Button variant="secondary" onClick={onAprovar}>
                 Aprovar
