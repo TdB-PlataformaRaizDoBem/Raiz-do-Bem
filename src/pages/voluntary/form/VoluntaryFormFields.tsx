@@ -12,15 +12,11 @@ const VoluntaryFormFields = () => {
     formState: { errors },
   } = useFormContext<DentistFormData>();
 
-  const { buscarCep } = useCep<DentistFormData>(
-    setValue,
-    setError,
-    clearErrors,
-  );
+  const { buscarCep } = useCep<DentistFormData>(setValue, setError, clearErrors);
 
   return (
     <div className="w-full mx-auto px-4">
-      {/* dados pessoais */}
+      {/* Dados pessoais */}
       <h2 className="text-2xl font-bold mt-[80px] mb-10 border-b pb-3">
         INFORMAÇÕES PESSOAIS
       </h2>
@@ -69,6 +65,19 @@ const VoluntaryFormFields = () => {
           error={errors.email?.message}
         />
 
+        <Input
+          label="Telefone:"
+          placeholder="(11) 99999-9999"
+          {...register("telefone", {
+            required: "Telefone obrigatório",
+            pattern: {
+              value: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/,
+              message: "Telefone inválido",
+            },
+          })}
+          error={errors.telefone?.message}
+        />
+
         <div className="flex flex-col">
           <label className="mb-1 font-medium text-sm">Sexo:</label>
 
@@ -101,7 +110,7 @@ const VoluntaryFormFields = () => {
         </div>
       </div>
 
-      {/* dados do profissional*/}
+      {/* Dados profissionais */}
       <h2 className="text-2xl font-bold mt-[70px] mb-10 border-b pb-3">
         INFORMAÇÕES PROFISSIONAIS
       </h2>
@@ -113,7 +122,7 @@ const VoluntaryFormFields = () => {
             required: "CRO obrigatório",
             pattern: {
               value: /^\d{2,6}-[A-Z]{2}$/i,
-              message: "Formato inválido (12345-SP)",
+              message: "Formato inválido (ex: 12345-SP)",
             },
           })}
           error={errors.cro?.message}
@@ -128,7 +137,7 @@ const VoluntaryFormFields = () => {
         />
       </div>
 
-      {/* Endereço */}
+      {/* Endereço do consultório */}
       <h2 className="text-2xl font-bold mt-[70px] mb-10 border-b pb-3">
         ENDEREÇO DO CONSULTÓRIO
       </h2>

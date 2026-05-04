@@ -5,6 +5,8 @@ import { validateAge } from "../../../hooks/validateAge";
 import Input from "../../../components/formElements/Input";
 import TextArea from "../../../components/formElements/TextArea";
 import { ToastNotificationContext } from "../../../components/context/NotificationContext";
+import { criarPedidoAjuda } from "../../../services/PedidoService";
+import type { SexoAPI } from "../../../domain/types/api-schema";
 
 export interface ContactFormData {
   nomeCompleto: string;
@@ -17,6 +19,13 @@ export interface ContactFormData {
   descricaoProblema: string;
 }
 
+// Mapeia sexo do formulário para o enum da API
+const SEXO_API_MAP: Record<string, SexoAPI> = {
+  masculino: "M",
+  feminino: "F",
+  outros: "O",
+};
+
 const ContactForm = () => {
   const methods = useForm<ContactFormData>({
     mode: "onBlur",
@@ -26,7 +35,7 @@ const ContactForm = () => {
   const {
     register,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = methods;
 
   const nascimento = watch("nascimento");
@@ -46,22 +55,24 @@ const ContactForm = () => {
 
   const { showNotification } = React.useContext(ToastNotificationContext)!;
 
-  const onSubmit = (data: ContactFormData) => {
-    const payload: Omit<
-      ContactFormData,
-      "nascimento" | "sexo" | "violenciaDomestica"
-    > = {
-      nomeCompleto: data.nomeCompleto,
-      cpf: data.cpf,
-      email: data.email,
-      telefone: data.telefone,
-      descricaoProblema: data.descricaoProblema,
-    };
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      await criarPedidoAjuda({
+        nomeCompleto: data.nomeCompleto,
+        cpf: data.cpf,
+        dataNascimento: data.nascimento,
+        sexo: SEXO_API_MAP[data.sexo] ?? "O",
+        telefone: data.telefone,
+        email: data.email,
+        descricaoProblema: data.descricaoProblema,
+      });
 
-    console.log("Payload limpo para o Oracle:", payload);
-
-    showNotification("Pedido enviado com sucesso!", "success");
-    methods.reset();
+      showNotification("Pedido enviado com sucesso!", "success");
+      methods.reset();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao enviar pedido";
+      showNotification(msg, "error");
+    }
   };
 
   return (
@@ -75,7 +86,7 @@ const ContactForm = () => {
             Solicitar Ajuda
           </h2>
           <p className="text-white/60 text-xs mt-1 italic uppercase tracking-widest">
-            Preencha com os dados de quem nescessita de um dentista
+            Preencha com os dados de quem necessita de um dentista
           </p>
         </div>
 
@@ -235,34 +246,26 @@ const ContactForm = () => {
             </p>
 
             <div className="grid grid-cols-1 gap-3 text-left">
-              {/* Opção Nacional - SUS */}
               <div className="bg-white/10 p-3 rounded-lg border-l-4 border-orange">
-                <span className="text-white font-bold text-xs">
-                  REDE PÚBLICA (SUS)
-                </span>
+                <span className="text-white font-bold text-xs">REDE PÚBLICA (SUS)</span>
                 <p className="text-white/70 text-sm mt-1">
                   Procure a <strong>Unidade Básica de Saúde (UBS)</strong> mais
                   próxima de você. Solicite informações sobre o programa{" "}
-                  <strong>Brasil Sorridente</strong> para triagem odontológica
-                  gratuita.
+                  <strong>Brasil Sorridente</strong> para triagem odontológica gratuita.
                 </p>
               </div>
 
-              {/* Opção Regional - Faculdades */}
               <div className="bg-white/10 p-3 rounded-lg border-l-4 border-lightgreen">
-                <span className="text-white font-bold text-xs">
-                  FACULDADES DE ODONTOLOGIA
-                </span>
+                <span className="text-white font-bold text-xs">FACULDADES DE ODONTOLOGIA</span>
                 <p className="text-white/70 text-sm mt-1">
                   Busque por <strong>"Clínica de Odontologia"</strong> em
-                  universidades federais ou estaduais da sua região. Muitas
-                  instituições oferecem atendimento gratuito ou a preço de custo
-                  como parte da formação de especialistas.
+                  universidades federais ou estaduais da sua região.
                 </p>
               </div>
             </div>
 
             <button
+              type="button"
               onClick={() =>
                 window.open(
                   "https://www.google.com/search?q=faculdade+de+odontologia+atendimento+gratuito+proximo+a+mim",
@@ -278,12 +281,12 @@ const ContactForm = () => {
 
         <Button
           type="submit"
-          disabled={!!mensagemErro}
+          disabled={!!mensagemErro || isSubmitting}
           className={`bg-orange mt-2 ${
-            mensagemErro ? "opacity-50 cursor-not-allowed" : "hover:bg-amber"
+            mensagemErro || isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-amber"
           }`}
         >
-          Enviar para Triagem
+          {isSubmitting ? "Enviando..." : "Enviar para Triagem"}
         </Button>
       </form>
     </FormProvider>

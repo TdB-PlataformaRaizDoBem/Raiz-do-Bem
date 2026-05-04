@@ -3,12 +3,13 @@ export interface DentistFormData {
   cpf: string;
   dataNascimento: string;
   email: string;
-  idSexo: string; // ID que representa o tipo (Masculino, Feminino, etc)
-  
+  telefone: string;
+  idSexo: string; // "1" = M, "2" = F, "3" = O
+
   cro: string;
   especialidades: string;
 
-  cep: string; 
+  cep: string;
   logradouro: string;
   numero: string;
   cidade: string;
