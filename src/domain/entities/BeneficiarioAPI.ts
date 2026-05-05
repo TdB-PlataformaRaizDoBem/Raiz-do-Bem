@@ -9,7 +9,7 @@ export interface BeneficiarioAPI {
   dataNascimento: string;
   telefone: string;
   email: string;
-  pedido?: PedidoAjudaAPI | null;
-  programaSocial?: ProgramaSocialAPI | null;
-  endereco?: EnderecoAPI | null;
+  pedido: PedidoAjudaAPI | null;
+  programaSocial: ProgramaSocialAPI | null;
+  endereco: EnderecoAPI | null;
 }

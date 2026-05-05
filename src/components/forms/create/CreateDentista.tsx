@@ -1,17 +1,31 @@
-// CreateDentista.tsx
 import { FormProvider, useForm } from "react-hook-form";
-import { type Dentista } from "../../../data/dentistasData";
 import { useNotification } from "../../../hooks/useNotification";
 import { CreateDentistaForm } from "./CreateDentistaForms";
+import { criarDentista } from "../../../services/DentistaService";
+import type { SexoAPI } from "../../../domain/types/api-schema";
 
 interface CreateDentistaProps {
   onSuccess: () => void;
 }
 
-type DentistaFormValues = Omit<Dentista, "id" | "sexo" | "especialidades"> & {
-  sexo: "Masculino" | "Feminino" | "Outro";
-  especialidades: string;
+export type DentistaFormValues = {
+  nomeCompleto: string;  
+  croDentista: string;     
+  cpf: string;
+  email: string;
+  telefone: string;
+  sexo: "Masculino" | "Feminino" | "Outro";   
+  especialidades: string; 
+  disponivel: "true" | "false";               
+  programa: "Turma do Bem" | "Apolônias do Bem" | "Ambos";
+  "endereco.cep": string;
+  "endereco.numero": string;
+  "endereco.logradouro": string;
+  "endereco.cidade": string;
+  "endereco.estado": string;
 };
+
+const SEXO_MAP: Record<string, SexoAPI> = { Masculino: "M", Feminino: "F", Outro: "O" };
 
 export const CreateDentista = ({ onSuccess }: CreateDentistaProps) => {
   const { showNotification } = useNotification();
@@ -19,49 +33,47 @@ export const CreateDentista = ({ onSuccess }: CreateDentistaProps) => {
   const methods = useForm<DentistaFormValues>({
     mode: "onBlur",
     defaultValues: {
-      nome: "",
-      cro: "",
+      nomeCompleto: "",
+      croDentista: "",
       cpf: "",
       email: "",
       telefone: "",
       sexo: "Feminino",
       especialidades: "",
       programa: "Ambos",
-      disponibilidade: "Sim",
-      endereco: {
-        cep: "",
-        logradouro: "",
-        numero: "",
-        cidade: "",
-        estado: "",
-      },
+      disponivel: "true",  
+      "endereco.cep": "",
+      "endereco.numero": "",
+      "endereco.logradouro": "",
+      "endereco.cidade": "",
+      "endereco.estado": "",
     },
   });
 
-  const onSubmit = (data: DentistaFormValues) => {
-  const dentista: Dentista = {
-    id: 0,
-    nome: data.nome,
-    cro: data.cro,
-    cpf: data.cpf,
-    email: data.email,
-    telefone: data.telefone,
-    sexo: {
-      id: data.sexo === "Masculino" ? 1 : data.sexo === "Feminino" ? 2 : 3,
-      tipo: data.sexo,
-    },
-    especialidades: data.especialidades
-      .split(",")
-      .map((desc, i) => ({ id: i + 1, descricao: desc.trim() })),
-    programa: data.programa,
-    disponibilidade: data.disponibilidade,
-    endereco: { ...data.endereco },
+  const onSubmit = async (data: DentistaFormValues) => {
+    try {
+      await criarDentista({
+        croDentista: data.croDentista,    
+        cpf: data.cpf,
+        nomeCompleto: data.nomeCompleto,     
+        sexo: SEXO_MAP[data.sexo] ?? "O",       
+        email: data.email,
+        telefone: data.telefone,
+        categoria: data.especialidades,         
+        disponivel: data.disponivel === "true",  
+        endereco: {
+          cep: data["endereco.cep"],
+          numero: data["endereco.numero"],
+          tipoEndereco: "PROFISSIONAL",       
+        },
+      });
+      showNotification(`Dentista ${data.nomeCompleto} cadastrado com sucesso!`, "success");
+      onSuccess();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao cadastrar dentista";
+      showNotification(msg, "error");
+    }
   };
-
-  console.log("CREATE Dentista:", dentista);
-  showNotification(`Dentista criado com sucesso!`);
-  onSuccess();
-};
 
   return (
     <FormProvider {...methods}>
