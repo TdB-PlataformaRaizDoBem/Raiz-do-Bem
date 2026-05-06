@@ -1,36 +1,51 @@
-import React from "react";
-import { beneficiariosData } from "../data/beneficiariosData";
+import { useState, useEffect } from "react";
+import { getBeneficiariosCompletos } from "../services/Beneficiarioservice";
+import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
+
+interface ImpactStats {
+  total: number;
+  qtdTdb: number;
+  qtdAdb: number;
+  totalHoras: number;
+  rankingEstado: { uf: string; qtd: number; percent: number }[];
+}
+
+const EMPTY: ImpactStats = { total: 0, qtdTdb: 0, qtdAdb: 0, totalHoras: 0, rankingEstado: [] };
 
 export const useImpactStats = () => {
-  return React.useMemo(() => {
-    const qtdTdb = beneficiariosData.filter(p => p.programaSocial === "Turma do Bem").length;
-    const qtdAdb = beneficiariosData.filter(p => p.programaSocial === "Apolônias do Bem").length;
-    
-    // Cálculo de Horas
-    const totalHoras = (qtdTdb * 6) + (qtdAdb * 20);
+  const [stats, setStats] = useState<ImpactStats>(EMPTY);
 
-    // Lógica do Ranking de Estados
-    const rankingEstado = Object.entries(
-      beneficiariosData.reduce((acc, b) => {
-        const uf = b.estado || "Não Informado";
-        acc[uf] = (acc[uf] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>)
-    )
-      .map(([uf, qtd]) => ({ 
-        uf, 
-        qtd,
-        percent: beneficiariosData.length > 0 ? (qtd / beneficiariosData.length) * 100 : 0
-      }))
-      .sort((a, b) => b.qtd - a.qtd)
-      .slice(0, 5);
+  useEffect(() => {
+    getBeneficiariosCompletos()
+      .then((lista: BeneficiarioViewModel[]) => {
+        const qtdTdb = lista.filter((b) => b.programaSocial === "Turma do Bem").length;
+        const qtdAdb = lista.filter((b) => b.programaSocial === "Apolônias do Bem").length;
 
-    return { 
-      total: beneficiariosData.length, 
-      qtdTdb, 
-      qtdAdb, 
-      totalHoras, 
-      rankingEstado 
-    };
-  }, [beneficiariosData]);
+        const countByEstado = lista.reduce<Record<string, number>>((acc, b) => {
+          const uf = b.endereco?.estado ?? "Não informado";
+          acc[uf] = (acc[uf] ?? 0) + 1;
+          return acc;
+        }, {});
+
+        const rankingEstado = Object.entries(countByEstado)
+          .map(([uf, qtd]) => ({
+            uf,
+            qtd,
+            percent: lista.length > 0 ? (qtd / lista.length) * 100 : 0,
+          }))
+          .sort((a, b) => b.qtd - a.qtd)
+          .slice(0, 5);
+
+        setStats({
+          total: lista.length,
+          qtdTdb,
+          qtdAdb,
+          totalHoras: qtdTdb * 6 + qtdAdb * 20,
+          rankingEstado,
+        });
+      })
+      .catch(() => setStats(EMPTY));
+  }, []);
+
+  return stats;
 };

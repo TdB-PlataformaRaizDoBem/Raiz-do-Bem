@@ -1,26 +1,36 @@
-import React from 'react';
-import { PedidoAjuda } from '../data/pedidosAjudaData';
+import { useState, useEffect } from "react";
+import { getPedidosCompletos } from "../services/PedidoService";
+import type { PedidoViewModel } from "../domain/mappers/PedidoMapper";
+
+interface OrderStats {
+  pendentes: number;
+  aprovados: number;
+  negados: number;
+  total: number;
+  pedidosCriticos: PedidoViewModel[];
+}
+
+const EMPTY: OrderStats = { pendentes: 0, aprovados: 0, negados: 0, total: 0, pedidosCriticos: [] };
 
 export const useOrderStats = () => {
-  return React.useMemo(() => {
-    const pendentesList = PedidoAjuda.filter(p => p.situacao === "Pendente");
+  const [stats, setStats] = useState<OrderStats>(EMPTY);
 
-    const parseDate = (dateStr: string) => {
-      const [day, month, year] = dateStr.split('/').map(Number);
-      return new Date(year, month - 1, day);
-    };
+  useEffect(() => {
+    getPedidosCompletos()
+      .then((lista: PedidoViewModel[]) => {
+        const pendentes = lista.filter((p) => p.statusAPI === "PENDENTE");
+        const aprovados = lista.filter((p) => p.statusAPI === "APROVADO").length;
+        const negados = lista.filter((p) => p.statusAPI === "REJEITADO").length;
 
-    // Ordenação: Mais antigo primeiro (Fila de Espera)
-    const pedidosCriticos = [...pendentesList]
-      .sort((a, b) => parseDate(a.data).getTime() - parseDate(b.data).getTime())
-      .slice(0, 10);
+        // Top-10 mais antigos (ISO-8601 → comparação lexicográfica funciona diretamente)
+        const pedidosCriticos = [...pendentes]
+          .sort((a, b) => a.dataPedido.localeCompare(b.dataPedido))
+          .slice(0, 10);
 
-    return {
-      pendentes: pendentesList.length,
-      aprovados: PedidoAjuda.filter(p => p.situacao === "Aprovado").length,
-      negados: PedidoAjuda.filter(p => p.situacao === "Negado").length,
-      total: PedidoAjuda.length,
-      pedidosCriticos
-    };
-  }, [PedidoAjuda]);
+        setStats({ pendentes: pendentes.length, aprovados, negados, total: lista.length, pedidosCriticos });
+      })
+      .catch(() => setStats(EMPTY));
+  }, []);
+
+  return stats;
 };
