@@ -1,9 +1,19 @@
-import React from 'react';
-import { dentistasMock } from '../data/dentistasData';
+import { useState, useEffect } from "react";
+import { getDentistasCompletos } from "../services/DentistaService";
 
 export const useProfessionalStats = () => {
-  return React.useMemo(() => ({
-    dentistasDisponiveis: dentistasMock.filter(d => d.disponibilidade === "Sim").length,
-    totalDentistas: dentistasMock.length
-  }), [dentistasMock]);
+  const [stats, setStats] = useState({ dentistasDisponiveis: 0, totalDentistas: 0 });
+
+  useEffect(() => {
+    getDentistasCompletos()
+      .then((lista) =>
+        setStats({
+          dentistasDisponiveis: lista.filter((d) => d.disponivel).length,
+          totalDentistas: lista.length,
+        })
+      )
+      .catch(() => {});
+  }, []);
+
+  return stats;
 };
