@@ -48,6 +48,8 @@ export interface DentistaViewModel {
 export function mapDentista(api: DentistaAPI): DentistaViewModel {
   const sexoAPI = api.sexo ?? "O";
 
+  const disponivel = api.disponivel === "S";
+
   const programa: string =
     api.programaSocial?.programa ??
     (api.categoria ? api.categoria : "Não informado");
@@ -69,8 +71,8 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
     telefone: api.telefone ?? "—",
 
     categoria: api.categoria ?? "—",
-    disponivel: api.disponivel ?? false,
-    disponibilidadeLabel: api.disponivel ? "Sim" : "Não",
+    disponivel,
+    disponibilidadeLabel: disponivel ? "Sim" : "Não",
 
     programa,
     especialidades,
@@ -97,9 +99,7 @@ export function isDentistaDisponivel(d: DentistaViewModel): boolean {
 }
 
 /**
- * Verifica compatibilidade de programa entre dentista e beneficiário.
- * "Não informado" é tratado como compatível com qualquer programa
- * para não bloquear o fluxo de designação enquanto o back-end não implementa.
+ "Não informado" é tratado como compatível com qualquer programa para não travar o fluxo no momento
  */
 export function programaCompativel(
   dentista: DentistaViewModel,
@@ -110,3 +110,4 @@ export function programaCompativel(
     dentista.programa === "Ambos" || dentista.programa === programaBeneficiario
   );
 }
+

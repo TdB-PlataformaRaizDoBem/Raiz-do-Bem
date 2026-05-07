@@ -5,18 +5,19 @@ import { Button } from "../ui/Button";
 import DeleteUserButton from "../ui/buttonFilters/DeleteUserButton";
 import EditBeneficiarioButton from "../ui/buttonFilters/EditBeneficiarioButton";
 
-// Seção: pedido vinculado
 const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-300">
     <h4 className="text-xs font-black uppercase text-gray-500 tracking-wider mb-3">
       Relato Inicial do Pedido {data.pedido ? `(#${data.pedido.id})` : ""}
     </h4>
+
     {data.pedido ? (
       <>
         <p className="text-sm text-darkgray leading-relaxed italic">
           "{data.pedido.descricaoProblema}"
         </p>
-        <div className="mt-3 flex justify-between items-center">
+
+        <div className="mt-3 flex justify-between items-center flex-wrap gap-2">
           <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded">
             SITUAÇÃO: {data.pedido.statusLabel}
           </span>
@@ -24,6 +25,28 @@ const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
             Data do Pedido: {data.pedido.dataPedido}
           </span>
         </div>
+
+        {/* Dentista responsável pelo pedido */}
+        {data.pedido.dentistaResponsavel ? (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-[10px] font-black text-gray-400 uppercase mb-1">
+              Dentista Responsável
+            </p>
+            <p className="text-sm font-bold text-darkgray">
+              {data.pedido.dentistaResponsavel.nomeCompleto}
+            </p>
+            <p className="text-xs text-gray-500">
+              CRO: {data.pedido.dentistaResponsavel.croDentista}
+            </p>
+            <p className="text-xs text-gray-500">
+              {data.pedido.dentistaResponsavel.email}
+            </p>
+          </div>
+        ) : (
+          <p className="mt-3 text-xs text-amber font-medium italic">
+            Nenhum dentista atribuído a este pedido.
+          </p>
+        )}
       </>
     ) : (
       <p className="text-xs text-gray-400">
@@ -33,19 +56,19 @@ const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
   </div>
 );
 
-// Seção: programa social
 const SecaoPrograma = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-amber/5 p-4 rounded-xl border border-amber/10 flex items-center justify-between">
     <div>
       <p className="text-xs font-black uppercase text-amber/60">
         Programa Vinculado
       </p>
-      <p className="text-lg font-bold text-amber">{data.programaSocial}</p>
+      <p className="text-lg font-bold text-amber">
+        {data.programaSocial?.programaLabel ?? "Não informado"}
+      </p>
     </div>
   </div>
 );
 
-// Seção: dados pessoais
 const SecaoDadosPessoais = ({ data }: { data: BeneficiarioCompleto }) => (
   <>
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -82,26 +105,35 @@ const SecaoDadosPessoais = ({ data }: { data: BeneficiarioCompleto }) => (
   </>
 );
 
-// Seção: endereço
 const SecaoEndereco = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
     <h4 className="text-xs font-black uppercase text-gray-400 tracking-wider mb-3">
       Localização
     </h4>
     {data.endereco ? (
-      <p className="text-darkgray leading-relaxed text-lg">
-        {data.endereco.logradouro}, {data.endereco.numero} <br />
-        {data.endereco.bairro && <>{data.endereco.bairro} — </>}
-        {data.endereco.cidade} - {data.endereco.estado} <br />
-        <span className="text-sm font-bold">CEP: {data.endereco.cep}</span>
-      </p>
+      <>
+        <p className="text-darkgray leading-relaxed text-lg">
+          {data.endereco.logradouro}, {data.endereco.numero}
+          <br />
+          {data.endereco.bairro && data.endereco.bairro !== "—" && (
+            <>{data.endereco.bairro} — </>
+          )}
+          {data.endereco.cidade} - {data.endereco.estado}
+          <br />
+          <span className="text-sm font-bold">CEP: {data.endereco.cep}</span>
+        </p>
+        {data.endereco.tipoEndereco && (
+          <span className="mt-2 inline-block text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded">
+            {data.endereco.tipoEndereco}
+          </span>
+        )}
+      </>
     ) : (
       <p className="text-xs text-gray-400 italic">Endereço não informado.</p>
     )}
   </div>
 );
 
-// Componente principal
 type BeneficiarioDetailsProps = {
   data: BeneficiarioCompleto;
   isAdmin: boolean;
@@ -166,3 +198,4 @@ export const BeneficiarioDetails = ({
     </div>
   </UserInformation>
 );
+

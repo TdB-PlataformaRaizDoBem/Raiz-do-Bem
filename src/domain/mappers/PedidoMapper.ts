@@ -9,9 +9,9 @@ export const STATUS_LABEL: Record<StatusPedidoAPI, string> = {
 };
 
 export const STATUS_CLASS: Record<StatusPedidoAPI, string> = {
-  PENDENTE: "text-amber",
-  APROVADO: "text-darkgreen",
-  REJEITADO: "text-red-500",
+  PENDENTE: "text-amber bg-amber/10",
+  APROVADO: "text-darkgreen bg-darkgreen/10",
+  REJEITADO: "text-red-500 bg-red-500/10",
 };
 
 export interface PedidoViewModel {
