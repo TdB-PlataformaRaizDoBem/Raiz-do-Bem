@@ -18,7 +18,7 @@ const SecaoStatus = ({ data }: { data: PedidoCompleto }) => (
         Situação Atual
       </p>
       <p
-        className={`font-bold ${data.statusClass}`}
+        className={`font-bold ${data.statusClass} bg-transparent`}
       >
         {data.statusLabel}
       </p>

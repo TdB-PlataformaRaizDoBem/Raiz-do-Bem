@@ -9,7 +9,7 @@ const SecaoStatus = ({ data }: { data: DentistaCompleto }) => (
   <div className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl">
     <div>
       <p className="text-xs font-black uppercase text-gray-400">Programa</p>
-      <p className="font-bold text-darkgreen">{data.programa}</p>
+      <p className="font-bold text-darkgreen">Não Informado</p>
     </div>
     <div className="w-px h-8 bg-gray-200" />
     <div>
@@ -24,7 +24,8 @@ const SecaoDadosProfissionais = ({ data }: { data: DentistaCompleto }) => (
     <div>
       <h4 className="text-xs font-black uppercase text-gray-400 mb-1">Especialidade</h4>
       <p className="text-darkgray font-medium text-lg">
-        {data.especialidades.length > 0 ? data.especialidades.map((e) => e.descricao).join(", ") : "Não informado"}
+        {data.categoria}
+        {/*{data.categoria.length > 0 ? data.especialidades.map((e) => e.descricao).join(", ") : "Não informado"}*/}
       </p>
     </div>
     <div>
@@ -52,7 +53,7 @@ const SecaoEndereco = ({ data }: { data: DentistaCompleto }) => (
       Endereço do Consultório
     </h4>
     <p className="text-darkgray leading-relaxed text-lg">
-      {data.endereco?.logradouro}, {data.endereco?.numero} <br />
+      {data.endereco?.logradouro}, {data.endereco?.numero}  <br />
       {data.endereco?.cidade} - {data.endereco?.estado} <br />
       <span className="text-sm font-bold">CEP: {data.endereco?.cep}</span>
     </p>

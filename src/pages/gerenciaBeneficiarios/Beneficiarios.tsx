@@ -36,7 +36,7 @@ export const Beneficiarios = () => {
               <p className="text-xl font-bold text-darkgray leading-tight">{u.nomeCompleto}</p>
               <p className="text-sm text-gray-500 font-medium">
                 <span className="font-bold text-gray uppercase text-xs mr-1">Programa:</span>
-                {u.programaSocial}
+                {u.programaSocial?.programaLabel ?? "Não informado"}
               </p>
               <p className="text-sm text-gray-500 font-medium">
                 <span className="font-bold text-gray uppercase text-xs mr-1">Cidade:</span>

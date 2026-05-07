@@ -80,4 +80,4 @@ export async function excluirBeneficiario(cpf: string): Promise<void> {
   await handleResponse<void>(res);
 }
 
-export type BeneficiarioCompleto = BeneficiarioViewModel;
+export type { BeneficiarioViewModel as BeneficiarioCompleto } from "../domain/mappers/Beneficiariomapper";

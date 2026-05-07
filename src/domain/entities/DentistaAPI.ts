@@ -1,4 +1,4 @@
-import type { EspecialidadeAPI, ProgramaSocialAPI, SexoAPI } from "../types/api-schema";
+import type { DisponibilidadeAPI, EspecialidadeAPI, ProgramaSocialAPI, SexoAPI } from "../types/api-schema";
 import type { EnderecoAPI } from "../types/enderecoAPI";
 
 export interface DentistaAPI {
@@ -10,7 +10,7 @@ export interface DentistaAPI {
   email: string;
   telefone: string;
   categoria?: string | null;
-  disponivel: boolean;
+  disponivel: DisponibilidadeAPI;
   endereco?: EnderecoAPI | null;
 
   especialidades?: EspecialidadeAPI[] | null;
