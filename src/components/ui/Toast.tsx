@@ -14,7 +14,7 @@ const Toast = ({ message, show, type = "info" }: ToastProps) => {
   }[type];
 
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999]">
       <div className={`${bgColor} text-white px-6 py-3 rounded-md shadow-lg`}>
         {message}
       </div>

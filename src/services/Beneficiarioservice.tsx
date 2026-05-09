@@ -8,7 +8,7 @@
  */
 
 import type { BeneficiarioAPI } from "../domain/entities/BeneficiarioAPI";
-import type { CriarBeneficiario } from '../domain/entities/CriarBeneficiario.ts'
+import type { CriarBeneficiario } from "../domain/entities/CriarBeneficiario.ts";
 import {
   mapBeneficiario,
   mapBeneficiarios,
@@ -24,7 +24,9 @@ async function handleResponse<T>(res: Response): Promise<T> {
     try {
       const body = await res.json();
       mensagem = body?.message ?? body?.error ?? mensagem;
-    } catch { /* manter mensagem padrão */ }
+    } catch {
+      /* manter mensagem padrão */
+    }
     throw new Error(mensagem);
   }
   if (res.status === 204) return undefined as T;
@@ -35,14 +37,16 @@ function jsonHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
 }
 
-export async function getBeneficiariosCompletos(): Promise<BeneficiarioViewModel[]> {
+export async function getBeneficiariosCompletos(): Promise<
+  BeneficiarioViewModel[]
+> {
   const res = await fetch(ENDPOINT);
   const data = await handleResponse<BeneficiarioAPI[]>(res);
   return mapBeneficiarios(data);
 }
 
 export async function getBeneficiarioCompleto(
-  cpf: string
+  cpf: string,
 ): Promise<BeneficiarioViewModel | null> {
   const res = await fetch(`${ENDPOINT}/${cpf}`);
   if (res.status === 404) return null;
@@ -51,7 +55,7 @@ export async function getBeneficiarioCompleto(
 }
 
 export async function criarBeneficiario(
-  payload: CriarBeneficiario
+  payload: CriarBeneficiario,
 ): Promise<BeneficiarioViewModel> {
   const res = await fetch(ENDPOINT, {
     method: "POST",
@@ -64,7 +68,7 @@ export async function criarBeneficiario(
 
 export async function atualizarBeneficiario(
   cpf: string,
-  payload: Partial<CriarBeneficiario>
+  payload: Partial<CriarBeneficiario>,
 ): Promise<BeneficiarioViewModel> {
   const res = await fetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",
@@ -75,9 +79,21 @@ export async function atualizarBeneficiario(
   return mapBeneficiario(data);
 }
 
-export async function excluirBeneficiario(cpf: string): Promise<void> {
-  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
-  await handleResponse<void>(res);
+type RequestFn = (
+  url: string,
+  options?: RequestInit,
+) => Promise<{
+  response: Response | null;
+  json: unknown;
+}>;
+
+export async function excluirBeneficiario(
+  request: RequestFn,
+  cpf: string,
+): Promise<void> {
+  await request(`${ENDPOINT}/${cpf}`, {
+    method: "DELETE",
+  });
 }
 
 export type { BeneficiarioViewModel as BeneficiarioCompleto } from "../domain/mappers/Beneficiariomapper";

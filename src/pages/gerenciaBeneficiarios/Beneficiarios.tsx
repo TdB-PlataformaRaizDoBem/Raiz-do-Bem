@@ -8,11 +8,11 @@ import { useBeneficiarios, useBeneficiario } from "../../hooks/useBeneficiarios"
 import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
 import { getUser } from "../../hooks/useUser";
 
-const BeneficiarioPainel = ({ cpf, isAdmin, onClose }: { cpf: string; isAdmin: boolean; onClose: () => void }) => {
+const BeneficiarioPainel = ({ cpf, isAdmin, onClose, onDeleted }: { cpf: string; isAdmin: boolean; onClose: () => void; onDeleted: () => void ; }) => {
   const { data, loading, error } = useBeneficiario(cpf);
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <BeneficiarioDetails data={data!} isAdmin={isAdmin} onClose={onClose} />
+      <BeneficiarioDetails data={data!} isAdmin={isAdmin} onClose={onClose} onDeleted={onDeleted}/>
     </AsyncEstado>
   );
 };
@@ -20,7 +20,7 @@ const BeneficiarioPainel = ({ cpf, isAdmin, onClose }: { cpf: string; isAdmin: b
 export const Beneficiarios = () => {
   const loggedUser = getUser();
   const isAdmin = loggedUser?.role === "admin";
-  const { data: beneficiarios, loading, error } = useBeneficiarios();
+  const { data: beneficiarios, loading, error, refetch } = useBeneficiarios();
 
   return (
     <AsyncEstado loading={loading} error={error} vazio={!beneficiarios?.length} mensagemVazio="Nenhum beneficiário cadastrado.">
@@ -55,7 +55,7 @@ export const Beneficiarios = () => {
           </UserCard>
         )}
         renderDetails={(user, close) => (
-          <BeneficiarioPainel cpf={user.cpf} isAdmin={isAdmin} onClose={close} />
+          <BeneficiarioPainel cpf={user.cpf} isAdmin={isAdmin} onClose={close} onDeleted={refetch}/>
         )}
       />
     </AsyncEstado>

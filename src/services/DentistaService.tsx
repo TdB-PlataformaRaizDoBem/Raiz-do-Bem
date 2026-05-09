@@ -110,9 +110,21 @@ export async function atualizarDentista(
   return mapDentista(data);
 }
 
-export async function excluirDentista(cpf: string): Promise<void> {
-  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
-  await handleResponse<void>(res);
+type RequestFn = (
+  url: string,
+  options?: RequestInit,
+) => Promise<{
+  response: Response | null;
+  json: unknown;
+}>;
+
+export async function excluirDentista(
+  request: RequestFn,
+  cpf: string,
+): Promise<void> {
+  await request(`${ENDPOINT}/${cpf}`, {
+    method: "DELETE",
+  });
 }
 
 export type DentistaCompleto = DentistaViewModel;

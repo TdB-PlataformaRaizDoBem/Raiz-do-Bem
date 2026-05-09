@@ -1,4 +1,4 @@
-import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
+import { excluirBeneficiario, type BeneficiarioCompleto } from "../../services/Beneficiarioservice";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
@@ -138,12 +138,14 @@ type BeneficiarioDetailsProps = {
   data: BeneficiarioCompleto;
   isAdmin: boolean;
   onClose: () => void;
+  onDeleted: () => void;
 };
 
 export const BeneficiarioDetails = ({
   data,
   isAdmin,
   onClose,
+  onDeleted,
 }: BeneficiarioDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
@@ -180,9 +182,12 @@ export const BeneficiarioDetails = ({
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
           {isAdmin && (
             <DeleteUserButton
-              userId={data.id}
               userName={data.nomeCompleto}
-              onDelete={onClose}
+              onConfirm={async (request) => {
+                await excluirBeneficiario(request, data.cpf);
+                onClose();
+                onDeleted();
+              }}
             />
           )}
           <EditBeneficiarioButton user={data} />
