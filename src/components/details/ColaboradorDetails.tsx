@@ -1,4 +1,4 @@
-import type { ColaboradorCompleto } from "../../services/ColaboradorService";
+import { excluirColaborador, type ColaboradorCompleto } from "../../services/ColaboradorService";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
@@ -50,9 +50,10 @@ const SecaoContato = ({ data }: { data: ColaboradorCompleto }) => (
 type ColaboradorDetailsProps = {
   data: ColaboradorCompleto;
   onClose: () => void;
+  onDeleted: () => void;
 };
 
-export const ColaboradorDetails = ({ data, onClose }: ColaboradorDetailsProps) => (
+export const ColaboradorDetails = ({ data, onClose, onDeleted }: ColaboradorDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
       <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 custom-scrollbar">
@@ -80,7 +81,14 @@ export const ColaboradorDetails = ({ data, onClose }: ColaboradorDetailsProps) =
 
       <UserActions>
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
-          <DeleteUserButton userId={data.id} userName={data.nomeCompleto} onDelete={onClose} />
+          <DeleteUserButton 
+          userName={data.nomeCompleto} 
+          onConfirm={async (request) => {
+            await excluirColaborador(request, data.cpf)
+            onClose();
+            onDeleted();
+          }}
+          />
           <EditCoordButton user={data} />
           <Button variant="secondary" onClick={onClose} className="flex-1 md:flex-none">
             Fechar

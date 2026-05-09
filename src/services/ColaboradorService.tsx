@@ -61,9 +61,16 @@ export async function atualizarColaborador(
   return mapColaborador(data);
 }
 
-export async function excluirColaborador(cpf: string): Promise<void> {
-  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
-  await handleResponse<void>(res);
+type RequestFn = (
+  url: string,
+  options?: RequestInit,
+) => Promise<{
+  response: Response | null;
+  json: unknown;
+}>;
+
+export async function excluirColaborador(request: RequestFn, cpf: string): Promise<void> {
+  await request(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
 }
 
 export type ColaboradorCompleto = ColaboradorViewModel;

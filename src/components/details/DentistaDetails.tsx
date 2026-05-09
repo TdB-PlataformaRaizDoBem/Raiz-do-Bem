@@ -1,4 +1,4 @@
-import type { DentistaCompleto } from "../../services/DentistaService";
+import { excluirDentista, type DentistaCompleto } from "../../services/DentistaService";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
@@ -64,9 +64,10 @@ type DentistaDetailsProps = {
   data: DentistaCompleto;
   isAdmin: boolean;
   onClose: () => void;
+  onDeleted: () => void;
 };
  
-export const DentistaDetails = ({ data, isAdmin, onClose }: DentistaDetailsProps) => (
+export const DentistaDetails = ({ data, isAdmin, onClose, onDeleted }: DentistaDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
       <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -92,7 +93,14 @@ export const DentistaDetails = ({ data, isAdmin, onClose }: DentistaDetailsProps
       <UserActions>
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
           {isAdmin && (
-            <DeleteUserButton userId={data.id} userName={data.nomeCompleto} onDelete={onClose} />
+            <DeleteUserButton 
+              userName={data.nomeCompleto} 
+              onConfirm={async (request) => {
+                await excluirDentista(request, data.cpf);
+                onClose();
+                onDeleted();
+              }}
+            />
           )}
           <EditDentistaButton user={data}/>
           <Button variant="secondary" onClick={onClose} className="flex-1 md:flex-none">

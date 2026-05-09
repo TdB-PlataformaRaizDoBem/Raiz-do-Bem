@@ -7,17 +7,17 @@ import { AsyncEstado } from "../../components/ui/AsyncEstado";
 import { useColaboradores, useColaborador } from "../../hooks/useColaboradores";
 import { type ColaboradorCompleto } from "../../services/ColaboradorService";
 
-const ColaboradorPainel = ({ id, onClose }: { id: number; onClose: () => void }) => {
+const ColaboradorPainel = ({ id, onClose, onDeleted }: { id: number; onClose: () => void ; onDeleted: () => void}) => {
   const { data, loading, error } = useColaborador(id);
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <ColaboradorDetails data={data!} onClose={onClose} />
+      <ColaboradorDetails data={data!} onClose={onClose} onDeleted={onDeleted}/>
     </AsyncEstado>
   );
 };
 
 export default function Colaborador() {
-  const { data: colaboradores, loading, error } = useColaboradores();
+  const { data: colaboradores, loading, error, refetch } = useColaboradores();
 
   return (
     <AsyncEstado loading={loading} error={error} vazio={!colaboradores?.length} mensagemVazio="Nenhum colaborador cadastrado.">
@@ -47,7 +47,7 @@ export default function Colaborador() {
             </div>
           </UserCard>
         )}
-        renderDetails={(user, close) => <ColaboradorPainel id={user.id} onClose={close} />}
+        renderDetails={(user, close) => <ColaboradorPainel id={user.id} onClose={close} onDeleted={refetch} />}
       />
     </AsyncEstado>
   );
