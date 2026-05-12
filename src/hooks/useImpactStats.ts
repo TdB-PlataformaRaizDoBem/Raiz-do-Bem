@@ -18,8 +18,8 @@ export const useImpactStats = () => {
   useEffect(() => {
     getBeneficiariosCompletos()
       .then((lista: BeneficiarioViewModel[]) => {
-        const qtdTdb = lista.filter((b) => b.programaSocial === "Turma do Bem").length;
-        const qtdAdb = lista.filter((b) => b.programaSocial === "Apolônias do Bem").length;
+        const qtdTdb = lista.filter((b) => b.programaSocial === "DENTISTA_DO_BEM").length;
+        const qtdAdb = lista.filter((b) => b.programaSocial === "APOLONIA_DO_BEM").length;
 
         const countByEstado = lista.reduce<Record<string, number>>((acc, b) => {
           const uf = b.endereco?.estado ?? "Não informado";

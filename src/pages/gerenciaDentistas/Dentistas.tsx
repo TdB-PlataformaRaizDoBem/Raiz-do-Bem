@@ -7,6 +7,7 @@ import { AsyncEstado } from "../../components/ui/AsyncEstado";
 import { useDentistas, useDentista } from "../../hooks/useDentistas";
 import type { DentistaCompleto } from "../../services/DentistaService";
 import { getUser } from "../../hooks/useUser";
+import { dentistaFilterConfig } from "../../hooks/pageFilterConfigs";
 
 const DentistaPainel = ({
   cpf,
@@ -22,12 +23,7 @@ const DentistaPainel = ({
   const { data, loading, error } = useDentista(cpf);
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <DentistaDetails
-        data={data!}
-        isAdmin={isAdmin}
-        onClose={onClose}
-        onDeleted={onDeleted}
-      />
+      <DentistaDetails data={data!} isAdmin={isAdmin} onClose={onClose} onDeleted={onDeleted} />
     </AsyncEstado>
   );
 };
@@ -48,29 +44,38 @@ export const Dentistas = () => {
         title="Gerenciamento de Dentistas"
         users={dentistas ?? []}
         getId={(u) => u.id}
+        filterConfig={dentistaFilterConfig}
         renderCreateForm={(close) => <CreateDentista onSuccess={close} />}
         renderCard={(u, selected, select) => (
           <UserCard
-            className={`transition-all border-l-4 border-lightgreen p-5 ${selected ? "shadow-md scale-[1.02] bg-gray-50" : "hover:shadow-sm"}`}
+            className={`transition-all border-l-4 border-lightgreen p-5 ${
+              selected ? "shadow-md scale-[1.02] bg-gray-50" : "hover:shadow-sm"
+            }`}
           >
             <div className="flex flex-col gap-2">
               <p className="text-xl font-bold text-darkgray leading-tight">
                 {u.nomeCompleto}
               </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-darkgray uppercase text-xs mr-1">
-                  CRO:
-                </span>
+                <span className="font-bold text-darkgray uppercase text-xs mr-1">CRO:</span>
                 {u.croDentista}
               </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-darkgray uppercase text-xs mr-1">
-                  Especialidade:
-                </span>
+                <span className="font-bold text-darkgray uppercase text-xs mr-1">Especialidade:</span>
                 {u.especialidades.length > 0
                   ? u.especialidades.map((e) => e.descricao).join(", ")
                   : "Não informado"}
               </p>
+              {/* Badge de disponibilidade */}
+              <span
+                className={`text-xs font-bold px-2 py-0.5 rounded-full w-fit ${
+                  u.disponivel
+                    ? "bg-green-50 text-green-700"
+                    : "bg-gray-100 text-gray-500"
+                }`}
+              >
+                {u.disponivel ? "Disponível" : "Indisponível"}
+              </span>
             </div>
             <div className="flex flex-col gap-4">
               <span className="text-xs lg:text-end font-black uppercase text-gray-400 tracking-widest">

@@ -75,3 +75,16 @@ export async function excluirColaborador(request: RequestFn, cpf: string): Promi
 
 export type ColaboradorCompleto = ColaboradorViewModel;
  
+export async function criarColaborador(
+  payload: Omit<ColaboradorAPI, "id">
+): Promise<ColaboradorViewModel> {
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: jsonHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await handleResponse<ColaboradorAPI>(res);
+
+  return mapColaborador(data);
+}

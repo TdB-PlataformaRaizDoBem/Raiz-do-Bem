@@ -9,6 +9,7 @@ import { useNotification } from "../../hooks/useNotification";
 import { usePedidos } from "../../hooks/usePedidos";
 import { aprovarPedido, negarPedido, type PedidoCompleto } from "../../services/PedidoService";
 import { PedidoDetails } from "../../components/details/PedidosDetails";
+import { pedidoFilterConfig } from "../../hooks/pageFilterConfigs";
 
 type AcaoPendente = "aprovar" | "suspender" | null;
 
@@ -53,11 +54,24 @@ export const PedidosAjuda = () => {
   const loggedUser = getUser();
   const isCoord = loggedUser?.role === "coordenador";
   const { data: pedidos, loading, error, refetch } = usePedidos();
-  const { acaoPendente, pedidoEmFoco, solicitarConfirmacao, cancelarConfirmacao, confirmarAcao } = usePedidoActions(refetch);
+  const { acaoPendente, pedidoEmFoco, solicitarConfirmacao, cancelarConfirmacao, confirmarAcao } =
+    usePedidoActions(refetch);
 
   const modalConfig = {
-    aprovar: { titulo: "Confirmar Aprovação", descricao: `Aprovar o protocolo #${pedidoEmFoco?.id}?`, labelConfirmar: "Aprovar", variantConfirmar: "secondary" as const, acento: "bg-lightgreen" },
-    suspender: { titulo: "Confirmar Suspensão", descricao: `Suspender o protocolo #${pedidoEmFoco?.id}?`, labelConfirmar: "Suspender", variantConfirmar: "danger" as const, acento: "bg-red-500" },
+    aprovar: {
+      titulo: "Confirmar Aprovação",
+      descricao: `Aprovar o protocolo #${pedidoEmFoco?.id}?`,
+      labelConfirmar: "Aprovar",
+      variantConfirmar: "secondary" as const,
+      acento: "bg-lightgreen",
+    },
+    suspender: {
+      titulo: "Confirmar Suspensão",
+      descricao: `Suspender o protocolo #${pedidoEmFoco?.id}?`,
+      labelConfirmar: "Suspender",
+      variantConfirmar: "danger" as const,
+      acento: "bg-red-500",
+    },
   };
   const configAtual = acaoPendente ? modalConfig[acaoPendente] : null;
 
@@ -72,8 +86,12 @@ export const PedidosAjuda = () => {
             </div>
             <p className="text-gray-600 leading-relaxed">{configAtual.descricao}</p>
             <div className="flex gap-3 justify-end flex-wrap">
-              <Button variant="secondary" onClick={cancelarConfirmacao} className="flex-1 sm:flex-none">Cancelar</Button>
-              <Button variant={configAtual.variantConfirmar} onClick={confirmarAcao} className="flex-1 sm:flex-none">{configAtual.labelConfirmar}</Button>
+              <Button variant="secondary" onClick={cancelarConfirmacao} className="flex-1 sm:flex-none">
+                Cancelar
+              </Button>
+              <Button variant={configAtual.variantConfirmar} onClick={confirmarAcao} className="flex-1 sm:flex-none">
+                {configAtual.labelConfirmar}
+              </Button>
             </div>
           </div>
         )}
@@ -84,6 +102,7 @@ export const PedidosAjuda = () => {
           title="Pedidos de Ajuda"
           users={pedidos ?? []}
           getId={(p) => p.id}
+          filterConfig={pedidoFilterConfig}
           renderCard={(p, selected, select) => (
             <UserCard
               className={`transition-all border-l-4
@@ -106,7 +125,8 @@ export const PedidosAjuda = () => {
                 </span>
 
                 <p className="text-md text-gray-500 line-clamp-3 mt-1 italic">
-                  <span className="font-semibold text-gray">Descrição do Problema:</span><br />
+                  <span className="font-semibold text-gray">Descrição do Problema:</span>
+                  <br />
                   {p.descricaoProblema}
                 </p>
               </div>
@@ -116,7 +136,11 @@ export const PedidosAjuda = () => {
                   <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Data do Envio</p>
                   <p className="text-sm font-bold text-darkgray">{p.dataPedido}</p>
                 </div>
-                <Button onClick={select} variant={selected ? "primary" : "secondary"} className="w-[80%] py-3 text-sm font-bold shadow-sm active:scale-95 transition-transform">
+                <Button
+                  onClick={select}
+                  variant={selected ? "primary" : "secondary"}
+                  className="w-[80%] py-3 text-sm font-bold shadow-sm active:scale-95 transition-transform"
+                >
                   Analisar Pedido
                 </Button>
               </div>
