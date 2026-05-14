@@ -12,11 +12,11 @@ import type { DentistaViewModel } from "../domain/mappers/DentistaMapper ";
 import type { ColaboradorViewModel } from "../domain/mappers/ColaboradorMapper";
 import type { PedidoViewModel } from "../domain/mappers/PedidoMapper";
 
-/* ───────────────────────────────────────────────
+/*
    COLABORADORES
    Filtros: Nível de acesso
    Busca: nome, e-mail
-─────────────────────────────────────────────── */
+   */
 export const colaboradorFilterConfig: PageFilterConfig<ColaboradorViewModel> = {
   groups: [
     {
@@ -48,11 +48,11 @@ export const colaboradorFilterConfig: PageFilterConfig<ColaboradorViewModel> = {
   },
 };
 
-/* ───────────────────────────────────────────────
+/*
    BENEFICIÁRIOS
    Filtros: Programa Social, Status do Pedido
    Busca: nome, CPF, cidade
-─────────────────────────────────────────────── */
+ */
 export const beneficiarioFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
   {
     groups: [
@@ -102,11 +102,11 @@ export const beneficiarioFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
     },
   };
 
-/* ───────────────────────────────────────────────
+/* 
    DENTISTAS
    Filtros: Disponibilidade, Programa
    Busca: nome, CRO, especialidade, cidade
-─────────────────────────────────────────────── */
+*/
 export const dentistaFilterConfig: PageFilterConfig<DentistaViewModel> = {
   groups: [
     {
@@ -155,11 +155,11 @@ export const dentistaFilterConfig: PageFilterConfig<DentistaViewModel> = {
   },
 };
 
-/* ───────────────────────────────────────────────
+/* 
    PEDIDOS DE AJUDA
    Filtros: Status
    Busca: nome, CPF, protocolo (id), cidade, descrição do problema
-─────────────────────────────────────────────── */
+ */
 export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
   groups: [
     {
@@ -202,11 +202,11 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
   },
 };
 
-/* ───────────────────────────────────────────────
+/*
    DESIGNAÇÃO (beneficiários pendentes)
    Filtros: Programa, Localização (estado)
    Busca: nome, CPF, cidade, protocolo
-─────────────────────────────────────────────── */
+*/
 export const designacaoFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
   {
     groups: [

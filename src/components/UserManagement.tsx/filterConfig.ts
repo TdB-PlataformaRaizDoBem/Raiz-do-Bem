@@ -1,13 +1,4 @@
-/**
- * Sistema de filtros inteligentes para UserManagementPage.
- *
- * Cada página declara sua própria configuração de filtros, que é
- * processada pelo hook useSmartFilter para produzir listas filtradas
- * e os controles de UI corretos — sem nenhum acoplamento ao componente genérico.
- */
-
-/** Um único filtro do tipo "botão toggle" (ex: "Apenas Aprovados") */
-export interface FilterOption {
+/** Um único filtro do tipo "botão toggle" (ex: "Apenas Aprovados") */export interface FilterOption {
   /** Rótulo exibido no botão */
   label: string;
   /** Valor usado internamente para identificar qual filtro está ativo */

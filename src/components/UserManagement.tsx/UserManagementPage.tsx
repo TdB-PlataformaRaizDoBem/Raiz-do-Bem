@@ -20,7 +20,6 @@ type UserManagementPageProps<T> = {
   ) => React.ReactNode;
   renderDetails: (user: T, close: () => void) => React.ReactNode;
   renderCreateForm?: (close: () => void) => React.ReactNode;
-  /** Configuração de filtros inteligentes (opcional). Se omitido, apenas busca por texto. */
   filterConfig?: PageFilterConfig<T>;
 };
 
@@ -130,7 +129,6 @@ export function UserManagementPage<T>({
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
       {/* ── FilterBar com filtros inteligentes ── */}
       <FilterBar
-        searchLabel="Opções e Filtros:"
         searchPlaceholder={`Pesquisar ${title.toLowerCase()}...`}
         searchValue={searchText}
         onSearchChange={(e) => setSearchText(e.target.value)}
