@@ -18,8 +18,17 @@ export const useImpactStats = () => {
   useEffect(() => {
     getBeneficiariosCompletos()
       .then((lista: BeneficiarioViewModel[]) => {
-        const qtdTdb = lista.filter((b) => b.programaSocial === "DENTISTA_DO_BEM").length;
-        const qtdAdb = lista.filter((b) => b.programaSocial === "APOLONIA_DO_BEM").length;
+        const qtdTdb = lista.filter((b) => {
+          const prog = b.programaSocial ?? "";
+          const lower = prog.toLowerCase();
+          return prog === "Turma do Bem" || lower.includes("turma");
+        }).length;
+
+        const qtdAdb = lista.filter((b) => {
+          const prog = b.programaSocial ?? "";
+          const lower = prog.toLowerCase();
+          return prog === "Apolônias do Bem" || lower.includes("apol");
+        }).length;
 
         const countByEstado = lista.reduce<Record<string, number>>((acc, b) => {
           const uf = b.endereco?.estado ?? "Não informado";
