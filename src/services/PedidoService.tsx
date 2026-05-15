@@ -110,7 +110,7 @@ async function atualizarStatus(
   const res = await fetch(`${ENDPOINT}/${id}`, {
     method: "PUT",
     headers: jsonHeaders(),
-    body: JSON.stringify({ status: novoStatus }),
+    body: JSON.stringify({ statusPedido: novoStatus, idDentista: 0 }),
   });
   await handleResponse<void>(res);
 }

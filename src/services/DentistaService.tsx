@@ -12,11 +12,9 @@ import type { CriarDentistaPayload } from "../domain/entities/CriarDentista"
 import {
   mapDentista,
   mapDentistas,
-  isDentistaDisponivel,
-  programaCompativel,
   type DentistaViewModel,
-} from "../domain/mappers/DentistaMapper ";
-import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
+} from "../domain/mappers/DentistaMapper";
+import type { AtualizarDentistaPayload } from "../domain/entities/AtualizarDentista";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/dentista`;
@@ -54,44 +52,33 @@ export async function getDentistaCompleto(
 }
 
 /**
- * Retorna dentistas disponíveis próximos ao beneficiário.
- */
-export async function getDentistasProximos(
-  beneficiario: BeneficiarioViewModel
-): Promise<DentistaViewModel[]> {
-  const todos = await getDentistasCompletos();
-
-  const disponiveis = todos.filter(
-    (d) =>
-      isDentistaDisponivel(d) &&
-      programaCompativel(d, beneficiario.programaSocial)
-  );
-
-  const cidade = beneficiario.endereco?.cidade;
-  const estado = beneficiario.endereco?.estado;
-
-  const porCidade = cidade
-    ? disponiveis.filter((d) => d.endereco?.cidade === cidade)
-    : [];
-
-  if (porCidade.length > 0) return porCidade;
-
-  return estado
-    ? disponiveis.filter((d) => d.endereco?.estado === estado)
-    : disponiveis;
-}
-
-/**
  * POST /dentista
  * Cadastro de voluntário (VoluntaryForm.tsx).
  */
 export async function criarDentista(
   payload: CriarDentistaPayload
 ): Promise<DentistaViewModel> {
+  const disponivelRaw: unknown = (payload as { disponivel?: unknown }).disponivel;
+  const disponivelStr =
+    disponivelRaw === true || disponivelRaw === "true" || disponivelRaw === "S"
+      ? "S"
+      : "N";
+
+  const bodyPayload = {
+    ...payload,
+    disponivel: disponivelStr,
+    endereco: payload.endereco
+      ? {
+          cep: payload.endereco.cep,
+          numero: payload.endereco.numero,
+        }
+      : undefined,
+  };
+
   const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: jsonHeaders(),
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyPayload),
   });
   const data = await handleResponse<DentistaAPI>(res);
   return mapDentista(data);
@@ -99,7 +86,7 @@ export async function criarDentista(
 
 export async function atualizarDentista(
   cpf: string,
-  payload: Partial<CriarDentistaPayload>
+  payload: Partial<AtualizarDentistaPayload>
 ): Promise<DentistaViewModel> {
   const res = await fetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",
@@ -110,21 +97,9 @@ export async function atualizarDentista(
   return mapDentista(data);
 }
 
-type RequestFn = (
-  url: string,
-  options?: RequestInit,
-) => Promise<{
-  response: Response | null;
-  json: unknown;
-}>;
-
-export async function excluirDentista(
-  request: RequestFn,
-  cpf: string,
-): Promise<void> {
-  await request(`${ENDPOINT}/${cpf}`, {
-    method: "DELETE",
-  });
+export async function excluirDentista(cpf: string): Promise<void> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
+  await handleResponse<void>(res);
 }
 
 export type DentistaCompleto = DentistaViewModel;
