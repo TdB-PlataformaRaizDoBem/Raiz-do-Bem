@@ -13,7 +13,7 @@ import {
   mapColaborador,
   mapColaboradores,
   type ColaboradorViewModel,
-} from '../domain/mappers/ColaboradorMapper';
+} from "../domain/mappers/ColaboradorMapper";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/colaborador`;
@@ -24,7 +24,9 @@ async function handleResponse<T>(res: Response): Promise<T> {
     try {
       const body = await res.json();
       mensagem = body?.message ?? body?.error ?? mensagem;
-    } catch { /* manter mensagem padrão */ }
+    } catch {
+      /* manter mensagem padrão */
+    }
     throw new Error(mensagem);
   }
   if (res.status === 204) return undefined as T;
@@ -35,14 +37,16 @@ function jsonHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
 }
 
-export async function getColaboradoresCompletos(): Promise<ColaboradorViewModel[]> {
+export async function getColaboradoresCompletos(): Promise<
+  ColaboradorViewModel[]
+> {
   const res = await fetch(ENDPOINT);
   const data = await handleResponse<ColaboradorAPI[]>(res);
   return mapColaboradores(data);
-} 
+}
 
 export async function getColaboradorCompleto(
-  id: number
+  id: number,
 ): Promise<ColaboradorViewModel | null> {
   const todos = await getColaboradoresCompletos();
   return todos.find((c) => c.id === id) ?? null;
@@ -50,7 +54,7 @@ export async function getColaboradorCompleto(
 
 export async function atualizarColaborador(
   cpf: string,
-  payload: Partial<Omit<ColaboradorAPI, "id">>
+  payload: Partial<Omit<ColaboradorAPI, "id">>,
 ): Promise<ColaboradorViewModel> {
   const res = await fetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",
@@ -61,22 +65,15 @@ export async function atualizarColaborador(
   return mapColaborador(data);
 }
 
-type RequestFn = (
-  url: string,
-  options?: RequestInit,
-) => Promise<{
-  response: Response | null;
-  json: unknown;
-}>;
-
-export async function excluirColaborador(request: RequestFn, cpf: string): Promise<void> {
-  await request(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
+export async function excluirColaborador(cpf: string): Promise<void> {
+  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
+  await handleResponse<void>(res);
 }
 
 export type ColaboradorCompleto = ColaboradorViewModel;
- 
+
 export async function criarColaborador(
-  payload: Omit<ColaboradorAPI, "id">
+  payload: Omit<ColaboradorAPI, "id">,
 ): Promise<ColaboradorViewModel> {
   const res = await fetch(ENDPOINT, {
     method: "POST",

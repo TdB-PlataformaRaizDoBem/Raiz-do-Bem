@@ -2,7 +2,9 @@
  * Endpoints consumidos (AtendimentoResource.java):
  *   GET    /atendimento          → listar todos
  *   GET    /atendimento/:cpf     → buscar por CPF do beneficiário
- *   POST   /atendimento          → criar designação (beneficiário + dentista)
+ *   * POST   /atendimento
+ *      Cria atendimento a partir do CPF do beneficiário.
+ *      O dentista é selecionado automaticamente pelo back-end.
  *   PUT    /atendimento/:cpf     → encerrar atendimento (prontuário + idColaborador)
  *   DELETE /atendimento/:id      → excluir atendimento
  */
@@ -32,18 +34,15 @@ function jsonHeaders(): HeadersInit {
 }
 
 export interface CriarAtendimentoPayload {
-  prontuario?: string;
-  beneficiario: { id: number };
-  dentista: { id: number };
+  prontuario: string;
+  cpfBeneficiario: string;
 }
 
 /**
  * POST /atendimento
- * Cria designação vinculando beneficiário a um dentista.
- * O back-end seta dataInicial = LocalDate.now() automaticamente.
  */
 export async function criarAtendimento(
-  payload: CriarAtendimentoPayload
+  payload: CriarAtendimentoPayload,
 ): Promise<AtendimentoAPI> {
   const res = await fetch(ENDPOINT, {
     method: "POST",
@@ -64,10 +63,9 @@ export async function getAtendimentos(): Promise<AtendimentoAPI[]> {
 
 /**
  * GET /atendimento/:cpf
- * Busca atendimento pelo CPF do beneficiário.
  */
 export async function getAtendimentoPorCpf(
-  cpf: string
+  cpf: string,
 ): Promise<AtendimentoAPI | null> {
   const res = await fetch(`${ENDPOINT}/${cpf}`);
   if (res.status === 404) return null;
@@ -85,7 +83,7 @@ export interface EncerrarAtendimentoPayload {
  */
 export async function encerrarAtendimento(
   cpf: string,
-  payload: EncerrarAtendimentoPayload
+  payload: EncerrarAtendimentoPayload,
 ): Promise<void> {
   const res = await fetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",
