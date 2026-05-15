@@ -1,18 +1,17 @@
-import type { DisponibilidadeAPI, EspecialidadeAPI, ProgramaSocialAPI, SexoAPI } from "../types/api-schema";
-import type { EnderecoAPI } from "../types/enderecoAPI";
-
 export interface DentistaAPI {
   id: number;
   croDentista: string;
   cpf: string;
   nomeCompleto: string;
-  sexo: SexoAPI;
+  sexo: string;
   email: string;
   telefone: string;
-  categoria?: string | null;
-  disponivel: DisponibilidadeAPI;
-  endereco?: EnderecoAPI | null;
-
-  especialidades?: EspecialidadeAPI[] | null;
-  programaSocial?: ProgramaSocialAPI | null;
+  categoria: string | null;
+  disponivel: string;
+  especialidades: string[];
+  programasSociais: string[];
+  logradouro: string | null;
+  numero: string | null;
+  cidade: string | null;
+  estado: string | null;
 }

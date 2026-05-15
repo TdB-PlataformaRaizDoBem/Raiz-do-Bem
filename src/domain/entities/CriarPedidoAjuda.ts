@@ -1,16 +1,13 @@
-import type { SexoAPI, TipoEnderecoAPI } from "../types/api-schema";
-
 export interface CriarPedidoAjudaPayload {
-  nomeCompleto: string;
+  nome: string;
   cpf?: string;
-  dataNascimento?: string;       // ISO-8601
-  sexo?: SexoAPI;
+  dataNascimento?: string;
+  sexo?: string;
   telefone: string;
   email: string;
   descricaoProblema: string;
   endereco?: {
     cep: string;
     numero: string;
-    tipoEndereco?: TipoEnderecoAPI;
   };
 }

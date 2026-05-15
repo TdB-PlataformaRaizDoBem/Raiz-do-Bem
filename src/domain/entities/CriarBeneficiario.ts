@@ -1,10 +1,4 @@
-export interface CriarBeneficiario {
-  cpf: string;
-  nomeCompleto: string;
-  dataNascimento: string;        
-  telefone: string;
-  email: string;
-  idPedidoAjuda?: number;
-  idProgramaSocial?: number;
-  idEndereco?: number;
+export interface CriarBeneficiarioPayload {
+  idPedidoAjuda: number;
+  idProgramaSocial: number;
 }

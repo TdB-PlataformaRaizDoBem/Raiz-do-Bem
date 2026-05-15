@@ -1,6 +1,4 @@
-import type { ProgramaSocialAPI } from "../types/api-schema";
 import type { EnderecoAPI } from "../types/enderecoAPI";
-import type { PedidoAjudaAPI } from "./PedidoAjudaAPI";
 
 export interface BeneficiarioAPI {
   id: number;
@@ -9,7 +7,10 @@ export interface BeneficiarioAPI {
   dataNascimento: string;
   telefone: string;
   email: string;
-  pedido: PedidoAjudaAPI | null;
-  programaSocial: ProgramaSocialAPI | null;
+  programaSocial: string | null;
+  pedido: {
+    id: number;
+    dentistaAprovador: string | null;
+  } | null;
   endereco: EnderecoAPI | null;
 }
