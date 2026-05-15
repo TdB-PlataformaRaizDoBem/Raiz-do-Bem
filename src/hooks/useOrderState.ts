@@ -24,7 +24,7 @@ export const useOrderStats = () => {
 
         // Top-10 mais antigos (ISO-8601 → comparação lexicográfica funciona diretamente)
         const pedidosCriticos = [...pendentes]
-          .sort((a, b) => a.dataPedido.localeCompare(b.dataPedido))
+          .sort((a, b) => a.dataPedidoISO.localeCompare(b.dataPedidoISO))
           .slice(0, 10);
 
         setStats({ pendentes: pendentes.length, aprovados, negados, total: lista.length, pedidosCriticos });

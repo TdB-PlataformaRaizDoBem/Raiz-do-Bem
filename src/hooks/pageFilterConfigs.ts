@@ -8,7 +8,7 @@
 import type { PageFilterConfig } from "../components/UserManagement.tsx/FilterConfig";
 import { normalizeText } from "./useSmartFilter";
 import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
-import type { DentistaViewModel } from "../domain/mappers/DentistaMapper ";
+import type { DentistaViewModel } from "../domain/mappers/DentistaMapper";
 import type { ColaboradorViewModel } from "../domain/mappers/ColaboradorMapper";
 import type { PedidoViewModel } from "../domain/mappers/PedidoMapper";
 
@@ -39,7 +39,7 @@ export const colaboradorFilterConfig: PageFilterConfig<ColaboradorViewModel> = {
     // Busca por texto
     if (searchText) {
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.email} ${item.cpf}`
+        `${item.nomeCompleto} ${item.email} ${item.cpf}`,
       );
       if (!haystack.includes(searchText)) return false;
     }
@@ -78,9 +78,7 @@ export const beneficiarioFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
       // Filtro de programa
       const programa = activeFilters["programa"];
       if (programa) {
-        const itemPrograma = normalizeText(
-          item.programaSocial?.programa ?? ""
-        );
+        const itemPrograma = normalizeText(item.programaSocial?.programa ?? "");
         if (itemPrograma !== normalizeText(programa)) return false;
       }
 
@@ -93,7 +91,7 @@ export const beneficiarioFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
       // Busca por texto
       if (searchText) {
         const haystack = normalizeText(
-          `${item.nomeCompleto} ${item.cpf} ${item.email} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`
+          `${item.nomeCompleto} ${item.cpf} ${item.email} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`,
         );
         if (!haystack.includes(searchText)) return false;
       }
@@ -146,7 +144,7 @@ export const dentistaFilterConfig: PageFilterConfig<DentistaViewModel> = {
         .map((e) => e.descricao)
         .join(" ");
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.croDentista} ${item.cpf} ${especialidades} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`
+        `${item.nomeCompleto} ${item.croDentista} ${item.cpf} ${especialidades} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`,
       );
       if (!haystack.includes(searchText)) return false;
     }
@@ -193,7 +191,7 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
     // Busca por texto (inclui número do protocolo)
     if (searchText) {
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.cpf} ${item.id} ${item.descricaoProblema} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`
+        `${item.nomeCompleto} ${item.cpf} ${item.id} ${item.descricaoProblema} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`,
       );
       if (!haystack.includes(searchText)) return false;
     }
@@ -207,38 +205,37 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
    Filtros: Programa, Localização (estado)
    Busca: nome, CPF, cidade, protocolo
 */
-export const designacaoFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
-  {
-    groups: [
-      {
-        label: "Programa Social",
-        key: "programa",
-        options: [
-          { label: "Turma do Bem", value: "turma_do_bem" },
-          { label: "Apolônias do Bem", value: "apollonias_do_bem" },
-        ],
-      },
-    ],
-    predicate(item, activeFilters, searchText) {
-      // Filtro de programa
-      const programa = activeFilters["programa"];
-      if (programa) {
-        const itemPrograma = normalizeText(
-          typeof item.programaSocial === "string"
-            ? item.programaSocial
-            : item.programaSocial?.programa ?? ""
-        );
-        if (itemPrograma !== normalizeText(programa)) return false;
-      }
-
-      // Busca por texto
-      if (searchText) {
-        const haystack = normalizeText(
-          `${item.nomeCompleto} ${item.cpf} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""} ${item.pedido?.id ?? ""}`
-        );
-        if (!haystack.includes(searchText)) return false;
-      }
-
-      return true;
+export const designacaoFilterConfig: PageFilterConfig<BeneficiarioViewModel> = {
+  groups: [
+    {
+      label: "Programa Social",
+      key: "programa",
+      options: [
+        { label: "Turma do Bem", value: "turma_do_bem" },
+        { label: "Apolônias do Bem", value: "apollonias_do_bem" },
+      ],
     },
-  };
+  ],
+  predicate(item, activeFilters, searchText) {
+    // Filtro de programa
+    const programa = activeFilters["programa"];
+    if (programa) {
+      const itemPrograma = normalizeText(
+        typeof item.programaSocial === "string"
+          ? item.programaSocial
+          : (item.programaSocial?.programa ?? ""),
+      );
+      if (itemPrograma !== normalizeText(programa)) return false;
+    }
+
+    // Busca por texto
+    if (searchText) {
+      const haystack = normalizeText(
+        `${item.nomeCompleto} ${item.cpf} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""} ${item.pedido?.id ?? ""}`,
+      );
+      if (!haystack.includes(searchText)) return false;
+    }
+
+    return true;
+  },
+};
