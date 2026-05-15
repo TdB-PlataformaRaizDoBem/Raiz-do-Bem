@@ -1,18 +1,14 @@
-import {SexoAPI} from '../types/api-schema'
-import {TipoEnderecoAPI} from '../types/api-schema'
-
 export interface CriarDentistaPayload {
-  croDentista: string;       
+  croDentista: string;
   cpf: string;
   nomeCompleto: string;
-  sexo: SexoAPI;                 
+  sexo: string;
   email: string;
   telefone: string;
-  categoria?: string;
-  disponivel: boolean;           
-  endereco?: {
+  categoria: string;
+  disponivel: string;
+  endereco: {
     cep: string;
     numero: string;
-    tipoEndereco: TipoEnderecoAPI;
   };
 }
