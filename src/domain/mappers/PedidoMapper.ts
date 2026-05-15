@@ -30,10 +30,11 @@ export interface PedidoViewModel {
   // Status
   statusAPI: StatusPedidoAPI;
   statusLabel: string;
-  statusClass: string; // classe Tailwind
+  statusClass: string;
 
   // Datas
   dataPedido: string;
+  dataPedidoISO: string;
 
   endereco: {
     logradouro: string;
@@ -67,7 +68,7 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
     email: api.email ?? "—",
     telefone: api.telefone ?? "—",
 
-    dataNascimento: formatDate(api.dataNascimento),
+    dataNascimento: api.dataNascimento ? formatDate(api.dataNascimento) : "—",
     sexoLabel: SEXO_LABEL[api.sexo ?? ""] ?? "—",
 
     descricaoProblema: api.descricaoProblema ?? "Sem descrição informada.",
@@ -76,7 +77,8 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
     statusLabel: STATUS_LABEL[statusAPI],
     statusClass: STATUS_CLASS[statusAPI],
 
-    dataPedido: formatDate(api.dataPedido),
+    dataPedido: api.dataPedido ? formatDate(api.dataPedido) : "—",
+    dataPedidoISO: api.dataPedido ?? "",
 
     endereco: api.endereco
       ? {
@@ -91,9 +93,9 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
 
     dentistaAtribuido: api.dentista
       ? {
-          id: api.dentista.id,
-          nomeCompleto: api.dentista.nomeCompleto ?? "—",
-          croDentista: api.dentista.croDentista ?? "—",
+          id: api.dentista?.id ?? 0,
+          nomeCompleto: api.dentista?.nomeCompleto ?? "—",
+          croDentista: api.dentista?.croDentista ?? "—",
         }
       : null,
   };

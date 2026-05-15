@@ -9,13 +9,6 @@ export interface ColaboradorViewModel {
   dataNascimento: string;
   dataContratacao: string; 
   email: string;
-
-  /**
-   * Virá do claim JWT ou de campo no back-end quando implementado.
-   * Por enquanto, undefined para todos os colaboradores reais.
-   * ProtectedRoutes.tsx deve tratar undefined como "colaborador".
-   */
-  nivelAcesso?: "admin" | "colaborador";
 }
 
 export function mapColaborador(api: ColaboradorAPI): ColaboradorViewModel {
