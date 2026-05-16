@@ -9,14 +9,19 @@ import { criarPedidoAjuda } from "../../../services/PedidoService";
 import type { SexoAPI } from "../../../domain/types/api-schema";
 
 export interface ContactFormData {
-  nomeCompleto: string;
+  nome: string;
   cpf: string;
   email: string;
   telefone: string;
-  nascimento: string;
+  dataNascimento: string;
   sexo: "masculino" | "feminino" | "outros" | "";
   violenciaDomestica?: "sim" | "nao" | "";
   descricaoProblema: string;
+
+  endereco: {
+    cep: string;
+    numero: string;
+  };
 }
 
 // Mapeia sexo do formulário para o enum da API
@@ -38,10 +43,10 @@ const ContactForm = () => {
     formState: { errors, isSubmitting },
   } = methods;
 
-  const nascimento = watch("nascimento");
+  const dataNascimento = watch("dataNascimento");
   const sexo = watch("sexo");
   const violencia = watch("violenciaDomestica");
-  const idade = nascimento ? validateAge(nascimento) : 0;
+  const idade = dataNascimento ? validateAge(dataNascimento) : 0;
 
   const isHomemAdulto = sexo === "masculino" && idade >= 18;
   const isMulherInativa =
@@ -58,13 +63,17 @@ const ContactForm = () => {
   const onSubmit = async (data: ContactFormData) => {
     try {
       await criarPedidoAjuda({
-      nomeCompleto: data.nomeCompleto,
-      cpf: data.cpf.replace(/\D/g, ""),
-      dataNascimento: data.nascimento,
-      sexo: SEXO_API_MAP[data.sexo] ?? "O",
-      telefone: data.telefone.replace(/\D/g, ""),
-      email: data.email,
-      descricaoProblema: data.descricaoProblema,
+        nome: data.nome,
+        cpf: data.cpf.replace(/\D/g, ""),
+        dataNascimento: data.dataNascimento,
+        sexo: SEXO_API_MAP[data.sexo] ?? "O",
+        telefone: data.telefone.replace(/\D/g, ""),
+        email: data.email,
+        descricaoProblema: data.descricaoProblema,
+        endereco: {
+          cep: data.endereco.cep.replace(/\D/g, ""),
+          numero: data.endereco.numero,
+        },
       });
 
       showNotification("Pedido enviado com sucesso!", "success");
@@ -95,7 +104,7 @@ const ContactForm = () => {
             label="Nome Completo: *"
             labelClassName="text-white"
             errorClassName="text-white"
-            {...register("nomeCompleto", {
+            {...register("nome", {
               required: "Nome é obrigatório",
               minLength: {
                 value: 3,
@@ -106,7 +115,7 @@ const ContactForm = () => {
                 message: "Nome deve conter apenas letras",
               },
             })}
-            error={errors.nomeCompleto?.message}
+            error={errors.nome?.message}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,10 +139,10 @@ const ContactForm = () => {
               labelClassName="text-white"
               errorClassName="text-white"
               type="date"
-              {...register("nascimento", {
+              {...register("dataNascimento", {
                 required: "Data de nascimento é obrigatória",
               })}
-              error={errors.nascimento?.message}
+              error={errors.dataNascimento?.message}
             />
           </div>
 
@@ -215,6 +224,30 @@ const ContactForm = () => {
                 },
               })}
               error={errors.telefone?.message}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="CEP: *"
+              labelClassName="text-white"
+              {...register("endereco.cep", {
+                required: "CEP é obrigatório",
+                pattern: {
+                  value: /^\d{5}-?\d{3}$/,
+                  message: "CEP inválido",
+                },
+              })}
+              error={errors.endereco?.cep?.message}
+            />
+
+            <Input
+              label="Número: *"
+              labelClassName="text-white"
+              {...register("endereco.numero", {
+                required: "Número é obrigatório",
+              })}
+              error={errors.endereco?.numero?.message}
             />
           </div>
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import type { CriarDentistaPayload } from "../../../domain/entities/CriarDentista";
-import VoluntaryFormFields from './VoluntaryFormFields';
+import VoluntaryFormFields, { type VoluntaryFormValues } from './VoluntaryFormFields';
 import { Button } from '../../../components/ui/Button';
 import { ToastNotificationContext } from '../../../components/context/NotificationContext';
 import { criarDentista } from '../../../services/DentistaService';
@@ -16,10 +15,10 @@ const SEXO_ID_MAP: Record<string, SexoAPI> = {
 };
 
 const VoluntaryForm = () => {
-  const methods = useForm<CriarDentistaPayload>({ mode: "onBlur" });
+  const methods = useForm<VoluntaryFormValues>({ mode: "onBlur" });
   const { showNotification } = React.useContext(ToastNotificationContext)!;
 
-  const onSubmit = async (data: CriarDentistaPayload) => {
+  const onSubmit = async (data: VoluntaryFormValues) => {
     try {
       await criarDentista({
         croDentista: data.cro,
@@ -29,7 +28,7 @@ const VoluntaryForm = () => {
         email: data.email,
         telefone: data.telefone,
         categoria: data.especialidades,
-        disponivel: true,
+        disponivel: "S",
         endereco: {
           cep: data.cep,
           numero: data.numero,

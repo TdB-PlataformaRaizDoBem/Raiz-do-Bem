@@ -2,11 +2,12 @@ export interface CriarDentistaPayload {
   croDentista: string;
   cpf: string;
   nomeCompleto: string;
-  sexo: string;
+  sexo: "M" | "F" | "O";
   email: string;
   telefone: string;
-  categoria: string;
-  disponivel: string;
+  categoria: "DENTISTA" | "COORDENADOR";
+  disponivel: "S" | "N";
+
   endereco: {
     cep: string;
     numero: string;
