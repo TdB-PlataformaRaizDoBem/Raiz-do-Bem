@@ -14,6 +14,13 @@ export const STATUS_CLASS: Record<StatusPedidoAPI, string> = {
   REJEITADO: "text-red-500 bg-red-500/10",
 };
 
+function formatarPrograma(programa: string): string {
+  return programa
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
 export interface PedidoViewModel {
   // Identificação
   id: number;
@@ -49,6 +56,13 @@ export interface PedidoViewModel {
     id: number;
     nomeCompleto: string;
     croDentista: string;
+    categoria: string;
+    disponivel: boolean;
+    disponibilidadeLabel: string;
+    telefone: string;
+    email: string;
+    especialidades: string[];
+    programasSociais: string[];
   } | null;
 }
 
@@ -93,9 +107,22 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
 
     dentistaAtribuido: api.dentista
       ? {
-          id: api.dentista?.id ?? 0,
-          nomeCompleto: api.dentista?.nomeCompleto ?? "—",
-          croDentista: api.dentista?.croDentista ?? "—",
+          id: api.dentista.id ?? 0,
+          nomeCompleto: api.dentista.nomeCompleto ?? "—",
+          croDentista: api.dentista.croDentista ?? "—",
+          categoria: api.dentista.categoria ?? "—",
+          disponivel: api.dentista.disponivel === "S",
+          disponibilidadeLabel:
+            api.dentista.disponivel === "S" ? "Disponível" : "Indisponível",
+          telefone: api.dentista.telefone ?? "—",
+          email: api.dentista.email ?? "—",
+          especialidades:
+            api.dentista.especialidades?.map((e) => e.descricao) ?? [],
+
+          programasSociais:
+            api.dentista.programasSociais?.map((p) =>
+              formatarPrograma(p.programa),
+            ) ?? [],
         }
       : null,
   };

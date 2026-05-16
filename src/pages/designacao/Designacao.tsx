@@ -7,7 +7,7 @@ import { AsyncEstado } from "../../components/ui/AsyncEstado";
 import { useDesignacao } from "../../hooks/useDesignacao";
 import { DesignacaoDetails } from "../../components/details/DesignacaoDetails";
 import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
-import type { DentistaViewModel } from "../../domain/mappers/DentistaMapper ";
+import type { DentistaViewModel } from "../../domain/mappers/DentistaMapper";
 import { criarAtendimento } from "../../services/AtendimentoService";
 import { useNotification } from "../../hooks/useNotification";
 import { designacaoFilterConfig } from "../../hooks/pageFilterConfigs";
@@ -25,7 +25,7 @@ export const Designacao = () => {
 
   const solicitarDesignacao = (
     b: BeneficiarioViewModel,
-    d: DentistaViewModel
+    d: DentistaViewModel,
   ) => {
     setBeneficiarioEmFoco(b);
     setDentistaSelecionado(d);
@@ -56,7 +56,7 @@ export const Designacao = () => {
 
       showNotification(
         `Designação confirmada: ${dentistaSelecionado.nomeCompleto} irá atender ${beneficiarioEmFoco.nomeCompleto}.`,
-        "success"
+        "success",
       );
 
       cancelarDesignacao();
@@ -171,7 +171,7 @@ export const Designacao = () => {
                   </span>
                   {typeof b.programaSocial === "string"
                     ? b.programaSocial
-                    : b.programaSocial?.programaLabel ?? "—"}
+                    : (b.programaSocial?.programaLabel ?? "—")}
                 </p>
                 <p className="text-sm text-gray-500 font-medium">
                   <span className="font-bold text-xs uppercase mr-1">

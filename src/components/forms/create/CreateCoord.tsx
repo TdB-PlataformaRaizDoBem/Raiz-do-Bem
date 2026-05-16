@@ -25,8 +25,7 @@ export type CreateCoordFormData = {
 export const CreateCoord = ({ onSuccess }: CreateCoordProps) => {
   const methods = useForm<CreateCoordFormData>({
     defaultValues: {
-      dataContratacao: new Date().toISOString().split("T")[0],
-      nivelAcesso: "coord",
+      dataContratacao: new Date().toISOString().split("T")[0]
     },
   });
 

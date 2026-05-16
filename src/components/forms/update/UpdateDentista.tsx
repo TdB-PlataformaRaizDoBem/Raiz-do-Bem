@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import type { DentistaViewModel } from "../../../domain/mappers/DentistaMapper ";
+import type { DentistaViewModel } from "../../../domain/mappers/DentistaMapper";
 import { atualizarDentista } from "../../../services/DentistaService";
 import { useNotification } from "../../../hooks/useNotification";
 import { useCep } from "../../../hooks/useCep";
@@ -47,17 +47,24 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
     },
   });
 
-  const { buscarCep } = useCep<DentistaEditavel>(setValue, setError, clearErrors);
+  const { buscarCep } = useCep<DentistaEditavel>(
+    setValue,
+    setError,
+    clearErrors,
+  );
 
   const onSubmit = async (data: DentistaEditavel) => {
     try {
       await atualizarDentista(initialData.cpf, {
-        email:      data.email,
-        telefone:   data.telefone,
-        disponivel: data.disponivel === "true",   // converte string → boolean para a API
+        email: data.email,
+        telefone: data.telefone,
+        disponivel: data.disponivel === "true", // converte string → boolean para a API
         // programa e especialidades: aguardam implementação back-end (@ManyToMany)
       });
-      showNotification(`Dentista ${initialData.nomeCompleto} atualizado!`, "success");
+      showNotification(
+        `Dentista ${initialData.nomeCompleto} atualizado!`,
+        "success",
+      );
       onSuccess();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Erro ao atualizar";
@@ -96,7 +103,7 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
         />
         <Input
           label="Sexo"
-          defaultValue={initialData.sexoLabel} 
+          defaultValue={initialData.sexoLabel}
           readOnly
           className="bg-gray-200 cursor-not-allowed"
         />
@@ -108,7 +115,10 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
           label="Email"
           {...register("email", {
             required: "Obrigatório",
-            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Email inválido" },
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Email inválido",
+            },
           })}
           error={errors.email?.message}
         />
@@ -117,7 +127,10 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
           label="Telefone"
           {...register("telefone", {
             required: "Obrigatório",
-            pattern: { value: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/, message: "Telefone inválido" },
+            pattern: {
+              value: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/,
+              message: "Telefone inválido",
+            },
           })}
           error={errors.telefone?.message}
         />
@@ -142,7 +155,9 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-bold text-gray-400">
             Programa{" "}
-            <span className="text-xs font-normal text-amber">(aguardando back-end)</span>
+            <span className="text-xs font-normal text-amber">
+              (aguardando back-end)
+            </span>
           </label>
           <input
             {...register("programa")}
@@ -160,7 +175,9 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
       <div className="flex flex-col gap-1">
         <label className="text-sm font-bold text-gray-400">
           Especialidades{" "}
-          <span className="text-xs font-normal text-amber">(aguardando back-end)</span>
+          <span className="text-xs font-normal text-amber">
+            (aguardando back-end)
+          </span>
         </label>
         <input
           defaultValue={
@@ -205,9 +222,24 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
             {...register("endereco.numero", { required: "Obrigatório" })}
             error={errors["endereco.numero"]?.message}
           />
-          <Input label="Logradouro" {...register("endereco.logradouro")} readOnly className="bg-gray-100" />
-          <Input label="Cidade"     {...register("endereco.cidade")}     readOnly className="bg-gray-100" />
-          <Input label="Estado"     {...register("endereco.estado")}     readOnly className="bg-gray-100" />
+          <Input
+            label="Logradouro"
+            {...register("endereco.logradouro")}
+            readOnly
+            className="bg-gray-100"
+          />
+          <Input
+            label="Cidade"
+            {...register("endereco.cidade")}
+            readOnly
+            className="bg-gray-100"
+          />
+          <Input
+            label="Estado"
+            {...register("endereco.estado")}
+            readOnly
+            className="bg-gray-100"
+          />
         </div>
       </div>
 
