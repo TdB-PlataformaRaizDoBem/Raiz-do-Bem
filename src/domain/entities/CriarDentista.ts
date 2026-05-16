@@ -5,7 +5,7 @@ export interface CriarDentistaPayload {
   sexo: "M" | "F" | "O";
   email: string;
   telefone: string;
-  categoria: "DENTISTA" | "COORDENADOR";
+  categoria?: "DENTISTA" | "COORDENADOR";
   disponivel: "S" | "N";
 
   endereco: {

@@ -4,19 +4,30 @@ import Input from "../../../components/formElements/Input";
 
 export interface VoluntaryFormValues {
   nomeCompleto: string;
+  croDentista: string;
   cpf: string;
-  dataNascimento: string;
   email: string;
   telefone: string;
-  idSexo: string;
-  cro: string;
-  especialidades: string;
-  cep: string;
-  logradouro: string;
-  numero: string;
-  cidade: string;
-  estado: string;
+  sexo: "Masculino" | "Feminino" | "Outro";
+  categoria: "DENTISTA" | "COORDENADOR";
+  disponivel: "S" | "N";
+  endereco: {
+    cep: string;
+    numero: string;
+  };
 }
+
+const REGEX = {
+  nome: /^[A-Za-zÀ-ÿ\s]{3,}$/,
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  telefone: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/,
+  cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/,
+  cro: /^(CRO[-/ ]?)?[A-Za-z]{2}[-/ ]?\d{4,7}$|^\d{4,7}[-/ ]?[A-Za-z]{2}$/,
+  cep: /^\d{5}-?\d{3}$/,
+};
+
+const selectClass =
+  "h-[48px] rounded-md bg-gray-200 px-3 text-black border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange transition";
 
 const VoluntaryFormFields = () => {
   const {
@@ -27,7 +38,12 @@ const VoluntaryFormFields = () => {
     formState: { errors },
   } = useFormContext<VoluntaryFormValues>();
 
-  const { buscarCep } = useCep<VoluntaryFormValues>(setValue, setError, clearErrors);
+  const { buscarCep } = useCep<VoluntaryFormValues>(
+    setValue,
+    setError,
+    clearErrors,
+  );
+  const req = "Campo obrigatório";
 
   return (
     <div className="w-full mx-auto px-4">
@@ -40,8 +56,8 @@ const VoluntaryFormFields = () => {
         <Input
           label="Nome Completo:"
           {...register("nomeCompleto", {
-            required: "Nome é obrigatório",
-            minLength: { value: 3, message: "Mínimo 3 caracteres" },
+            required: req,
+            pattern: { value: REGEX.nome, message: "Nome inválido" },
           })}
           error={errors.nomeCompleto?.message}
         />
@@ -50,32 +66,17 @@ const VoluntaryFormFields = () => {
           label="CPF:"
           placeholder="000.000.000-00"
           {...register("cpf", {
-            required: "CPF obrigatório",
-            pattern: {
-              value: /^\d{11}$|^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-              message: "CPF inválido",
-            },
+            required: req,
+            pattern: { value: REGEX.cpf, message: "CPF inválido" },
           })}
           error={errors.cpf?.message}
         />
 
         <Input
-          label="Data de Nascimento:"
-          type="date"
-          {...register("dataNascimento", {
-            required: "Data obrigatória",
-          })}
-          error={errors.dataNascimento?.message}
-        />
-
-        <Input
           label="Email:"
           {...register("email", {
-            required: "Email obrigatório",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Email inválido",
-            },
+            required: req,
+            pattern: { value: REGEX.email, message: "Email inválido" },
           })}
           error={errors.email?.message}
         />
@@ -84,42 +85,26 @@ const VoluntaryFormFields = () => {
           label="Telefone:"
           placeholder="(11) 99999-9999"
           {...register("telefone", {
-            required: "Telefone obrigatório",
-            pattern: {
-              value: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/,
-              message: "Telefone inválido",
-            },
+            required: req,
+            pattern: { value: REGEX.telefone, message: "Telefone inválido" },
           })}
           error={errors.telefone?.message}
         />
 
         <div className="flex flex-col">
           <label className="mb-1 font-medium text-sm">Sexo:</label>
-
           <select
-            {...register("idSexo", { required: "Selecione o sexo" })}
-            className={`
-              h-[48px]
-              rounded-md
-              bg-gray-200
-              px-3
-              text-black
-              border border-gray-200
-              focus:outline-none
-              focus:ring-2 focus:ring-orange
-              transition
-              ${errors.idSexo ? "border-red-600" : ""}
-            `}
+            {...register("sexo", { required: req })}
+            className={`${selectClass} ${errors.sexo ? "border-red-600" : ""}`}
           >
             <option value="">Selecione</option>
-            <option value="1">Masculino</option>
-            <option value="2">Feminino</option>
-            <option value="3">Outros</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Outro">Outro</option>
           </select>
-
-          {errors.idSexo && (
+          {errors.sexo && (
             <span className="text-red-500 text-xs mt-1">
-              {errors.idSexo.message}
+              {errors.sexo.message}
             </span>
           )}
         </div>
@@ -133,22 +118,15 @@ const VoluntaryFormFields = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[60px] gap-y-[30px]">
         <Input
           label="CRO:"
-          {...register("cro", {
-            required: "CRO obrigatório",
+          placeholder="SP-12345"
+          {...register("croDentista", {
+            required: req,
             pattern: {
-              value: /^\d{2,6}-[A-Z]{2}$/i,
-              message: "Formato inválido (ex: 12345-SP)",
+              value: REGEX.cro,
+              message: "Formato inválido (ex: SP-12345)",
             },
           })}
-          error={errors.cro?.message}
-        />
-
-        <Input
-          label="Especialidade:"
-          {...register("especialidades", {
-            required: "Informe a especialidade",
-          })}
-          error={errors.especialidades?.message}
+          error={errors.croDentista?.message}
         />
       </div>
 
@@ -160,45 +138,20 @@ const VoluntaryFormFields = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[60px] gap-y-[30px]">
         <Input
           label="CEP:"
-          {...register("cep", {
-            required: "CEP obrigatório",
+          {...register("endereco.cep", {
+            required: req,
+            pattern: { value: REGEX.cep, message: "CEP inválido" },
             onBlur: (e) => buscarCep(e.target.value),
-            pattern: {
-              value: /^\d{5}-?\d{3}$/,
-              message: "CEP inválido",
-            },
           })}
-          error={errors.cep?.message}
+          error={errors.endereco?.cep?.message}
         />
 
         <Input
           label="Número:"
-          {...register("numero", {
-            required: "Número obrigatório",
+          {...register("endereco.numero", {
+            required: req,
           })}
-          error={errors.numero?.message}
-        />
-
-        <Input
-          label="Logradouro:"
-          {...register("logradouro", {
-            required: "Logradouro obrigatório",
-          })}
-          error={errors.logradouro?.message}
-        />
-
-        <Input
-          label="Cidade:"
-          readOnly
-          {...register("cidade")}
-          className="bg-gray-200/70 cursor-not-allowed"
-        />
-
-        <Input
-          label="Estado:"
-          readOnly
-          {...register("estado")}
-          className="bg-gray-200/70 cursor-not-allowed"
+          error={errors.endereco?.numero?.message}
         />
       </div>
     </div>

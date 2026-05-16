@@ -201,37 +201,15 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
 };
 
 /*
-   DESIGNAÇÃO (beneficiários pendentes)
-   Filtros: Programa, Localização (estado)
-   Busca: nome, CPF, cidade, protocolo
+   DESIGNAÇÃO (pedidos aprovados pendentes)
+   Busca: nome, CPF, cidade, estado, protocolo
 */
-export const designacaoFilterConfig: PageFilterConfig<BeneficiarioViewModel> = {
-  groups: [
-    {
-      label: "Programa Social",
-      key: "programa",
-      options: [
-        { label: "Turma do Bem", value: "turma_do_bem" },
-        { label: "Apolônias do Bem", value: "apollonias_do_bem" },
-      ],
-    },
-  ],
-  predicate(item, activeFilters, searchText) {
-    // Filtro de programa
-    const programa = activeFilters["programa"];
-    if (programa) {
-      const itemPrograma = normalizeText(
-        typeof item.programaSocial === "string"
-          ? item.programaSocial
-          : (item.programaSocial?.programa ?? ""),
-      );
-      if (itemPrograma !== normalizeText(programa)) return false;
-    }
-
-    // Busca por texto
+export const designacaoFilterConfig: PageFilterConfig<PedidoViewModel> = {
+  groups: [],
+  predicate(item, _activeFilters, searchText) {
     if (searchText) {
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.cpf} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""} ${item.pedido?.id ?? ""}`,
+        `${item.nomeCompleto} ${item.cpf} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""} ${item.id}`,
       );
       if (!haystack.includes(searchText)) return false;
     }

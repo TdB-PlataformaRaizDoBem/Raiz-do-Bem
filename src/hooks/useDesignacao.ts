@@ -1,46 +1,49 @@
 import { useAsync } from "./useAsync";
-import { getPedidosAprovadosLivres } from "../services/PedidoService";
-import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
+import {
+  getPedidosCompletos,
+  getPedidosAprovadosLivres,
+} from "../services/PedidoService";
+import { getAtendimentos } from "../services/AtendimentoService";
 import type { PedidoViewModel } from "../domain/mappers/PedidoMapper";
 
-function pedidoParaBeneficiario(pedido: PedidoViewModel): BeneficiarioViewModel {
-  return {
-    id: pedido.id,
-    cpf: pedido.cpf,
-    nomeCompleto: pedido.nomeCompleto,
-    dataNascimento: pedido.dataNascimento,
-    telefone: pedido.telefone,
-    email: pedido.email,
-    programaSocial: "—",
-    programaSocialId: null,
-    endereco: pedido.endereco
-      ? {
-          logradouro: pedido.endereco.logradouro,
-          numero: pedido.endereco.numero,
-          bairro: pedido.endereco.bairro,
-          cidade: pedido.endereco.cidade,
-          estado: pedido.endereco.estado,
-          cep: pedido.endereco.cep,
-        }
-      : null,
-    pedido: {
-      id: pedido.id,
-      descricaoProblema: pedido.descricaoProblema,
-      statusLabel: pedido.statusLabel,
-      dataPedido: pedido.dataPedido,
-    },
-  };
+export type DesignacaoTab = "PENDENTE" | "EM_ATENDIMENTO" | "CONCLUIDO" | "TODOS";
+
+async function fetchPorTab(tab: DesignacaoTab): Promise<PedidoViewModel[]> {
+  switch (tab) {
+    case "PENDENTE":
+      return getPedidosAprovadosLivres();
+
+    case "EM_ATENDIMENTO": {
+      const todos = await getPedidosCompletos();
+      return todos.filter((p) => p.dentistaAtribuido !== null);
+    }
+
+    case "CONCLUIDO": {
+      const [todos, atendimentos] = await Promise.all([
+        getPedidosCompletos(),
+        getAtendimentos(),
+      ]);
+      const cpfsConcluidos = new Set(
+        atendimentos
+          .filter((a) => a.dataFim !== null)
+          .map((a) => a.beneficiario)
+          .filter((b): b is string => b !== null),
+      );
+      return todos.filter((p) => cpfsConcluidos.has(p.cpf));
+    }
+
+    case "TODOS":
+      return getPedidosCompletos();
+  }
 }
 
-async function getBeneficiariosPendentes(): Promise<BeneficiarioViewModel[]> {
-  const pedidos = await getPedidosAprovadosLivres();
-  return pedidos.map(pedidoParaBeneficiario);
-}
-
-export const useDesignacao = () => {
-  const { data, loading, error, refetch } = useAsync(getBeneficiariosPendentes);
+export const useDesignacao = (tab: DesignacaoTab) => {
+  const { data, loading, error, refetch } = useAsync(
+    () => fetchPorTab(tab),
+    [tab],
+  );
   return {
-    pendentes: data ?? [],
+    pendentes: data ?? ([] as PedidoViewModel[]),
     loading,
     error,
     refetch,
