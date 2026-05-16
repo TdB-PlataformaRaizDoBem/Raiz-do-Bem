@@ -58,29 +58,10 @@ export async function getDentistaCompleto(
 export async function criarDentista(
   payload: CriarDentistaPayload
 ): Promise<DentistaViewModel> {
-  const disponivelRaw: unknown = (payload as { disponivel?: unknown }).disponivel;
-  const disponivelStr =
-    disponivelRaw === true || disponivelRaw === "true" || disponivelRaw === "S"
-      ? "S"
-      : "N";
-
-  const bodyPayload = {
-    ...payload,
-    disponivel: disponivelStr,
-    endereco: payload.endereco
-      ? {
-          cep: payload.endereco.cep,
-          numero: payload.endereco.numero,
-        }
-      : undefined,
-  };
-
-  console.log(bodyPayload);
-
   const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: jsonHeaders(),
-    body: JSON.stringify(bodyPayload),
+    body: JSON.stringify(payload),
   });
   const data = await handleResponse<DentistaAPI>(res);
   return mapDentista(data);

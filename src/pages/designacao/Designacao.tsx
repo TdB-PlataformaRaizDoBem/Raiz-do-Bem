@@ -1,61 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { AsyncEstado } from "../../components/ui/AsyncEstado";
-import { useDesignacao } from "../../hooks/useDesignacao";
+import { useDesignacao, type DesignacaoTab } from "../../hooks/useDesignacao";
 import { DesignacaoDetails } from "../../components/details/DesignacaoDetails";
-import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
-import type { DentistaViewModel } from "../../domain/mappers/DentistaMapper";
+import type { PedidoViewModel } from "../../domain/mappers/PedidoMapper";
 import { criarAtendimento } from "../../services/AtendimentoService";
 import { useNotification } from "../../hooks/useNotification";
 import { designacaoFilterConfig } from "../../hooks/pageFilterConfigs";
 
+const TAB_LABELS: Record<DesignacaoTab, string> = {
+  PENDENTE: "Pendentes",
+  EM_ATENDIMENTO: "Em atendimento",
+  CONCLUIDO: "Concluídos",
+  TODOS: "Todos",
+};
+
+const EMPTY_MESSAGES: Record<DesignacaoTab, string> = {
+  PENDENTE: "Nenhum beneficiário pendente de designação.",
+  EM_ATENDIMENTO: "Nenhum atendimento em andamento.",
+  CONCLUIDO: "Nenhum atendimento concluído.",
+  TODOS: "Nenhum pedido encontrado.",
+};
+
 export const Designacao = () => {
-  const { pendentes, loading, error, refetch } = useDesignacao();
+  const [tab, setTab] = useState<DesignacaoTab>("PENDENTE");
+  const { pendentes, loading, error, refetch } = useDesignacao(tab);
   const { showNotification } = useNotification();
 
-  const [beneficiarioEmFoco, setBeneficiarioEmFoco] =
-    useState<BeneficiarioViewModel | null>(null);
-  const [dentistaSelecionado, setDentistaSelecionado] =
-    useState<DentistaViewModel | null>(null);
+  const [pedidoEmFoco, setPedidoEmFoco] = useState<PedidoViewModel | null>(null);
+  const [prontuario, setProntuario] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
-  const solicitarDesignacao = (
-    b: BeneficiarioViewModel,
-    d: DentistaViewModel,
-  ) => {
-    setBeneficiarioEmFoco(b);
-    setDentistaSelecionado(d);
+  useEffect(() => {
+    setModalOpen(false);
+    setPedidoEmFoco(null);
+    setProntuario("");
+  }, [tab]);
+
+  const solicitarDesignacao = (pedido: PedidoViewModel, pront: string) => {
+    setPedidoEmFoco(pedido);
+    setProntuario(pront);
     setModalOpen(true);
   };
 
   const cancelarDesignacao = () => {
     if (salvando) return;
     setModalOpen(false);
-    setBeneficiarioEmFoco(null);
-    setDentistaSelecionado(null);
+    setPedidoEmFoco(null);
+    setProntuario("");
   };
 
-  /**
-   * Confirma designação via POST /atendimento.
-   * Payload: { beneficiario: { id }, dentista: { id } }
-   * O back-end seta dataInicial = LocalDate.now() automaticamente.
-   */
   const confirmarDesignacao = async () => {
-    if (!beneficiarioEmFoco || !dentistaSelecionado) return;
+    if (!pedidoEmFoco) return;
 
     setSalvando(true);
     try {
       await criarAtendimento({
-        beneficiario: { id: beneficiarioEmFoco.id },
-        dentista: { id: dentistaSelecionado.id },
+        prontuario,
+        cpfBeneficiario: pedidoEmFoco.cpf,
       });
 
       showNotification(
-        `Designação confirmada: ${dentistaSelecionado.nomeCompleto} irá atender ${beneficiarioEmFoco.nomeCompleto}.`,
+        `Designação criada com sucesso para ${pedidoEmFoco.nomeCompleto}. O dentista será selecionado automaticamente.`,
         "success",
       );
 
@@ -73,7 +83,7 @@ export const Designacao = () => {
   return (
     <>
       <Modal open={modalOpen} onClose={cancelarDesignacao}>
-        {beneficiarioEmFoco && dentistaSelecionado && (
+        {pedidoEmFoco && (
           <div className="flex flex-col gap-6">
             <div>
               <h2 className="text-xl font-bold text-darkgray font-fredoka">
@@ -88,37 +98,31 @@ export const Designacao = () => {
                   Beneficiário
                 </p>
                 <p className="font-bold text-darkgray">
-                  {beneficiarioEmFoco.nomeCompleto}
+                  {pedidoEmFoco.nomeCompleto}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {beneficiarioEmFoco.email} · {beneficiarioEmFoco.telefone}
+                  {pedidoEmFoco.email} · {pedidoEmFoco.telefone}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {beneficiarioEmFoco.endereco
-                    ? `${beneficiarioEmFoco.endereco.cidade} — ${beneficiarioEmFoco.endereco.estado}`
+                  {pedidoEmFoco.endereco
+                    ? `${pedidoEmFoco.endereco.cidade} — ${pedidoEmFoco.endereco.estado}`
                     : "Localização não informada"}
                 </p>
               </div>
 
               <div className="bg-lightgreen/5 rounded-xl p-4 border border-lightgreen/20">
                 <p className="text-xs font-black uppercase text-darkgreen mb-1">
-                  Dentista
+                  Prontuário inicial
                 </p>
-                <p className="font-bold text-darkgray">
-                  {dentistaSelecionado.nomeCompleto}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {dentistaSelecionado.email} · {dentistaSelecionado.telefone}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  CRO: {dentistaSelecionado.croDentista}
+                <p className="text-sm text-darkgray leading-relaxed italic">
+                  "{prontuario}"
                 </p>
               </div>
             </div>
 
             <p className="text-sm text-gray-500 leading-relaxed">
-              Recomenda-se entrar em contato com o dentista antes da confirmação
-              para alinhar disponibilidade e detalhes do atendimento.
+              O sistema selecionará automaticamente o dentista mais próximo
+              disponível após a confirmação.
             </p>
 
             <div className="flex gap-3 justify-end">
@@ -142,18 +146,36 @@ export const Designacao = () => {
         )}
       </Modal>
 
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {(Object.keys(TAB_LABELS) as DesignacaoTab[]).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTab(t)}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+              tab === t
+                ? "bg-darkgreen text-white shadow-sm"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+            }`}
+          >
+            {TAB_LABELS[t]}
+          </button>
+        ))}
+      </div>
+
       <AsyncEstado
         loading={loading}
         error={error}
         vazio={!pendentes.length}
-        mensagemVazio="Nenhum beneficiário pendente de designação."
+        mensagemVazio={EMPTY_MESSAGES[tab]}
       >
-        <UserManagementPage<BeneficiarioViewModel>
+        <UserManagementPage<PedidoViewModel>
+          key={tab}
           title="Designação"
           users={pendentes}
-          getId={(b) => b.id}
+          getId={(p) => p.id}
           filterConfig={designacaoFilterConfig}
-          renderCard={(b, selected, select) => (
+          renderCard={(p, selected, select) => (
             <UserCard
               className={`border-l-4 border-l-amber p-5 transition-all ${
                 selected
@@ -163,52 +185,41 @@ export const Designacao = () => {
             >
               <div className="flex flex-col gap-2">
                 <p className="text-xl sm:text-2xl font-bold text-black leading-tight">
-                  {b.nomeCompleto}
-                </p>
-                <p className="text-sm text-gray-500 font-medium">
-                  <span className="font-bold text-xs uppercase mr-1">
-                    Programa:
-                  </span>
-                  {typeof b.programaSocial === "string"
-                    ? b.programaSocial
-                    : (b.programaSocial?.programaLabel ?? "—")}
+                  {p.nomeCompleto}
                 </p>
                 <p className="text-sm text-gray-500 font-medium">
                   <span className="font-bold text-xs uppercase mr-1">
                     Localização:
                   </span>
-                  {b.endereco
-                    ? `${b.endereco.cidade} — ${b.endereco.estado}`
+                  {p.endereco
+                    ? `${p.endereco.cidade} — ${p.endereco.estado}`
                     : "Não informado"}
                 </p>
-                {b.pedido && (
-                  <p className="text-xs text-gray-400 italic mt-1 line-clamp-2">
-                    <span className="font-bold not-italic">
-                      Protocolo #{b.pedido.id}:
-                    </span>{" "}
-                    {b.pedido.descricaoProblema}
-                  </p>
-                )}
+                <p className="text-xs text-gray-400 italic mt-1 line-clamp-2">
+                  <span className="font-bold not-italic">
+                    Protocolo #{p.id}:
+                  </span>{" "}
+                  {p.descricaoProblema}
+                </p>
               </div>
               <div className="mt-4 pt-4 flex flex-col gap-3 border-t border-gray/10 lg:border-t-0 lg:text-end">
                 <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
-                  ID: #{b.id}
+                  {p.dataPedido}
                 </span>
                 <Button
                   onClick={select}
                   variant={selected ? "primary" : "secondary"}
                   className="w-full text-xs font-bold shadow-sm active:scale-95 transition-transform"
                 >
-                  Designar Dentista
+                  {tab === "PENDENTE" ? "Designar Dentista" : "Ver detalhes"}
                 </Button>
               </div>
             </UserCard>
           )}
-          renderDetails={(b, close) => (
+          renderDetails={(p, close) => (
             <DesignacaoDetails
-              data={b}
-              dentistaSelecionado={dentistaSelecionado}
-              setDentistaSelecionado={setDentistaSelecionado}
+              data={p}
+              modoLeitura={tab !== "PENDENTE"}
               onDesignar={solicitarDesignacao}
               onClose={close}
             />

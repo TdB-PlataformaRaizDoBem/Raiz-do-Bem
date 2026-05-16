@@ -1,38 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
-import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
-import type { DentistaViewModel } from "../../domain/mappers/DentistaMapper";
+import type { PedidoViewModel } from "../../domain/mappers/PedidoMapper";
 
 type Props = {
-  data: BeneficiarioViewModel;
-  dentistaSelecionado: DentistaViewModel | null;
-  setDentistaSelecionado: (d: DentistaViewModel | null) => void;
-  onDesignar: (b: BeneficiarioViewModel, d: DentistaViewModel) => void;
+  data: PedidoViewModel;
+  modoLeitura?: boolean;
+  onDesignar?: (pedido: PedidoViewModel, prontuario: string) => void;
   onClose: () => void;
 };
 
 export const DesignacaoDetails = ({
   data,
-  dentistaSelecionado,
-  setDentistaSelecionado,
+  modoLeitura = false,
   onDesignar,
   onClose,
 }: Props) => {
-  const [dentistas, setDentistas] = useState<DentistaViewModel[]>([]);
-  const [loadingDentistas, setLoadingDentistas] = useState(true);
-
-  // Busca dentistas disponíveis via service real (era buscarDentistasProximos do mock síncrono)
-  useEffect(() => {
-    setLoadingDentistas(true);
-    getDentistasProximos(data)
-      .then(setDentistas)
-      .catch(() => setDentistas([]))
-      .finally(() => setLoadingDentistas(false));
-  }, [data.id]);
-
-  const semDentistas = !loadingDentistas && dentistas.length === 0;
+  const [prontuario, setProntuario] = useState("");
 
   return (
     <UserInformation>
@@ -40,7 +25,6 @@ export const DesignacaoDetails = ({
         <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 custom-scrollbar">
           <div className="flex justify-between items-start mb-6">
             <div>
-              {/* era data.nome — campo do mock */}
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">
                 {data.nomeCompleto}
               </h3>
@@ -48,7 +32,7 @@ export const DesignacaoDetails = ({
             </div>
             <div className="text-right">
               <span className="block text-xs font-black text-gray-400 uppercase tracking-widest">
-                ID Beneficiário
+                Protocolo
               </span>
               <span className="text-lg font-mono font-bold text-darkgray">
                 #{data.id}
@@ -60,16 +44,15 @@ export const DesignacaoDetails = ({
             <div className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
               <div>
                 <p className="text-xs font-black uppercase text-gray-400">
-                  Programa
+                  Data do pedido
                 </p>
-                <p className="font-bold text-amber">{data.programaSocial}</p>
+                <p className="font-bold text-darkgray">{data.dataPedido}</p>
               </div>
               <div className="w-px h-8 bg-gray-200" />
               <div>
                 <p className="text-xs font-black uppercase text-gray-400">
                   Localização
                 </p>
-                {/* era data.cidade / data.estado — campos planos do mock */}
                 <p className="font-bold text-darkgray">
                   {data.endereco
                     ? `${data.endereco.cidade} — ${data.endereco.estado}`
@@ -78,99 +61,60 @@ export const DesignacaoDetails = ({
               </div>
             </div>
 
-            {/* Pedido vinculado — vem do ViewModel (não mais do PedidoAjuda mock) */}
-            {data.pedido && (
-              <div className="bg-lightgreen/5 p-6 rounded-2xl border border-lightgreen/20">
-                <h4 className="text-xs font-black uppercase text-darkgreen tracking-wider mb-2">
-                  Pedido aprovado vinculado
+            <div className="bg-lightgreen/5 p-6 rounded-2xl border border-lightgreen/20">
+              <h4 className="text-xs font-black uppercase text-darkgreen tracking-wider mb-2">
+                Descrição do caso
+              </h4>
+              <p className="text-sm text-darkgray italic leading-relaxed">
+                "{data.descricaoProblema}"
+              </p>
+            </div>
+
+            {modoLeitura && data.dentistaAtribuido && (
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                <h4 className="text-xs font-black uppercase text-gray-400 tracking-wider mb-3">
+                  Dentista responsável
                 </h4>
-                <p className="text-xs text-gray-500 font-mono">
-                  Protocolo #{data.pedido.id} · {data.pedido.dataPedido}
+                <p className="font-bold text-darkgray">
+                  {data.dentistaAtribuido.nomeCompleto}
                 </p>
-                {/* era pedido.descricao_problema — campo do mock */}
-                <p className="text-sm text-darkgray mt-3 italic leading-relaxed">
-                  "{data.pedido.descricaoProblema}"
+                <p className="text-xs text-gray-500 mt-0.5">
+                  CRO: {data.dentistaAtribuido.croDentista}
                 </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {data.dentistaAtribuido.email} ·{" "}
+                  {data.dentistaAtribuido.telefone}
+                </p>
+                <span
+                  className={`inline-block mt-2 text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                    data.dentistaAtribuido.disponivel
+                      ? "bg-lightgreen/20 text-darkgreen"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  {data.dentistaAtribuido.disponibilidadeLabel}
+                </span>
               </div>
             )}
 
-            <div>
-              <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-3">
-                Dentistas disponíveis por proximidade
-              </p>
-
-              {loadingDentistas && (
-                <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
-                  <p className="text-sm text-gray-400">Buscando dentistas...</p>
-                </div>
-              )}
-
-              {semDentistas && (
-                <div className="p-4 rounded-xl bg-red-50 border border-red-200">
-                  <p className="text-sm font-bold text-red-700">
-                    Nenhum dentista disponível
-                  </p>
-                  <p className="text-xs text-red-500 mt-1 leading-relaxed">
-                    Não há dentistas disponíveis em{" "}
-                    {data.endereco?.cidade ?? "sua cidade"} ou no estado{" "}
-                    {data.endereco?.estado ?? "informado"}.
-                  </p>
-                </div>
-              )}
-
-              {!loadingDentistas && dentistas.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  {dentistas.map((d) => {
-                    const selecionado = dentistaSelecionado?.id === d.id;
-                    // era d.endereco.cidade === data.cidade (campos planos do mock)
-                    const mesmaCidade =
-                      d.endereco?.cidade === data.endereco?.cidade ||
-                      d.endereco?.estado === data.endereco?.estado;
-
-                    return (
-                      <button
-                        key={d.id}
-                        type="button"
-                        onClick={() =>
-                          setDentistaSelecionado(selecionado ? null : d)
-                        }
-                        className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selecionado ? "border-darkgreen bg-lightgreen/10 shadow-sm" : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <div>
-                            {/* era d.nome — campo do mock */}
-                            <p className="font-bold text-darkgray text-sm">
-                              {d.nomeCompleto}
-                            </p>
-                            {/* era d.cro — campo do mock */}
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              CRO: {d.croDentista}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {d.endereco
-                                ? `${d.endereco.cidade} — ${d.endereco.estado}`
-                                : "Localização não informada"}
-                            </p>
-                          </div>
-                          <div className="flex flex-col items-end gap-1 shrink-0">
-                            <span
-                              className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${mesmaCidade ? "bg-lightgreen/20 text-darkgreen" : "bg-amber/10 text-amber"}`}
-                            >
-                              {mesmaCidade ? "Mesma cidade" : "Mesmo estado"}
-                            </span>
-                            {selecionado && (
-                              <span className="text-[10px] font-black text-darkgreen uppercase tracking-wide">
-                                Selecionado
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            {!modoLeitura && (
+              <div>
+                <label
+                  htmlFor="prontuario"
+                  className="block text-xs font-black uppercase text-gray-400 tracking-widest mb-2"
+                >
+                  Prontuário inicial
+                </label>
+                <textarea
+                  id="prontuario"
+                  rows={4}
+                  value={prontuario}
+                  onChange={(e) => setProntuario(e.target.value)}
+                  placeholder="Descreva o estado inicial do paciente, queixa principal e observações relevantes..."
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-darkgray placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-lightgreen/50 focus:border-lightgreen transition"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -183,19 +127,16 @@ export const DesignacaoDetails = ({
             >
               Fechar
             </Button>
-            <Button
-              variant="primary"
-              disabled={!dentistaSelecionado || semDentistas}
-              className={`flex-1 md:flex-none ${!dentistaSelecionado || semDentistas ? "opacity-50 cursor-not-allowed" : ""}`}
-              onClick={() =>
-                dentistaSelecionado && onDesignar(data, dentistaSelecionado)
-              }
-            >
-              {/* era dentistaSelecionado.nome — campo do mock */}
-              {dentistaSelecionado
-                ? `Designar ${dentistaSelecionado.nomeCompleto.split(" ")[0]}`
-                : "Selecione um dentista"}
-            </Button>
+            {!modoLeitura && (
+              <Button
+                variant="primary"
+                disabled={!prontuario.trim()}
+                className={`flex-1 md:flex-none ${!prontuario.trim() ? "opacity-50 cursor-not-allowed" : ""}`}
+                onClick={() => onDesignar?.(data, prontuario.trim())}
+              >
+                Designar dentista
+              </Button>
+            )}
           </div>
         </UserActions>
       </div>
