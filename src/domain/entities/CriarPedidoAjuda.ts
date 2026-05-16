@@ -1,13 +1,10 @@
 export interface CriarPedidoAjudaPayload {
+  cpf: string;
   nome: string;
-  cpf?: string;
-  dataNascimento?: string;
-  sexo?: string;
+  dataNascimento: string; // ISO yyyy-MM-dd
+  sexo: "M" | "F" | "O";
   telefone: string;
   email: string;
   descricaoProblema: string;
-  endereco?: {
-    cep: string;
-    numero: string;
-  };
+  endereco: { cep: string; numero: string };
 }

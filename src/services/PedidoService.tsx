@@ -9,7 +9,11 @@
 
 import type { CriarPedidoAjudaPayload } from "../domain/entities/CriarPedidoAjuda";
 import type { PedidoAjudaAPI } from "../domain/entities/PedidoAjudaAPI";
-import { mapPedido, mapPedidos, type PedidoViewModel } from "../domain/mappers/PedidoMapper";
+import {
+  mapPedido,
+  mapPedidos,
+  type PedidoViewModel,
+} from "../domain/mappers/PedidoMapper";
 import type { StatusPedidoAPI } from "../domain/types/api-schema";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -53,7 +57,7 @@ export async function getPedidosCompletos(): Promise<PedidoViewModel[]> {
  * Retorna pedido específico ou null se não encontrado (404).
  */
 export async function getPedidoCompleto(
-  id: number
+  id: number,
 ): Promise<PedidoViewModel | null> {
   const res = await fetch(`${ENDPOINT}/${id}`);
   if (res.status === 404) return null;
@@ -67,7 +71,20 @@ export async function getPedidoCompleto(
  */
 export async function getPedidosAprovadosLivres(): Promise<PedidoViewModel[]> {
   const todos = await getPedidosCompletos();
-  return todos.filter((p) => p.statusAPI === "APROVADO");
+  // Excluir pedidos que já possuem beneficiário vinculado
+  try {
+    const { getBeneficiariosCompletos } = await import("./Beneficiarioservice");
+    const beneficiarios = await getBeneficiariosCompletos();
+    const vinculados = new Set(
+      beneficiarios.map((b) => b.pedido?.id).filter(Boolean) as number[],
+    );
+    return todos.filter(
+      (p) => p.statusAPI === "APROVADO" && !vinculados.has(p.id),
+    );
+  } catch {
+    // Se falhar, retorna ao comportamento anterior (apenas por status)
+    return todos.filter((p) => p.statusAPI === "APROVADO");
+  }
 }
 
 /**
@@ -75,7 +92,7 @@ export async function getPedidosAprovadosLivres(): Promise<PedidoViewModel[]> {
  * Cria um novo pedido de ajuda (formulário público — sem autenticação).
  */
 export async function criarPedidoAjuda(
-  payload: CriarPedidoAjudaPayload
+  payload: CriarPedidoAjudaPayload,
 ): Promise<PedidoViewModel> {
   const res = await fetch(ENDPOINT, {
     method: "POST",
@@ -105,7 +122,7 @@ export async function negarPedido(id: number): Promise<void> {
  */
 async function atualizarStatus(
   id: number,
-  novoStatus: StatusPedidoAPI
+  novoStatus: StatusPedidoAPI,
 ): Promise<void> {
   const res = await fetch(`${ENDPOINT}/${id}`, {
     method: "PUT",

@@ -75,6 +75,8 @@ export async function criarDentista(
       : undefined,
   };
 
+  console.log(bodyPayload);
+
   const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: jsonHeaders(),

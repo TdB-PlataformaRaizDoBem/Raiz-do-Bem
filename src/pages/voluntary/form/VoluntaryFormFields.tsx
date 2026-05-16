@@ -1,7 +1,22 @@
 import { useFormContext } from "react-hook-form";
 import { useCep } from "../../../hooks/useCep";
 import Input from "../../../components/formElements/Input";
-import type { CriarDentistaPayload } from "../../../domain/entities/CriarDentista";
+
+export interface VoluntaryFormValues {
+  nomeCompleto: string;
+  cpf: string;
+  dataNascimento: string;
+  email: string;
+  telefone: string;
+  idSexo: string;
+  cro: string;
+  especialidades: string;
+  cep: string;
+  logradouro: string;
+  numero: string;
+  cidade: string;
+  estado: string;
+}
 
 const VoluntaryFormFields = () => {
   const {
@@ -10,9 +25,9 @@ const VoluntaryFormFields = () => {
     setError,
     clearErrors,
     formState: { errors },
-  } = useFormContext<CriarDentistaPayload>();
+  } = useFormContext<VoluntaryFormValues>();
 
-  const { buscarCep } = useCep<CriarDentistaPayload>(setValue, setError, clearErrors);
+  const { buscarCep } = useCep<VoluntaryFormValues>(setValue, setError, clearErrors);
 
   return (
     <div className="w-full mx-auto px-4">
@@ -157,19 +172,19 @@ const VoluntaryFormFields = () => {
         />
 
         <Input
-          label="Logradouro:"
-          {...register("logradouro", {
-            required: "Logradouro obrigatório",
-          })}
-          error={errors.logradouro?.message}
-        />
-
-        <Input
           label="Número:"
           {...register("numero", {
             required: "Número obrigatório",
           })}
           error={errors.numero?.message}
+        />
+
+        <Input
+          label="Logradouro:"
+          {...register("logradouro", {
+            required: "Logradouro obrigatório",
+          })}
+          error={errors.logradouro?.message}
         />
 
         <Input
