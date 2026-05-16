@@ -1,5 +1,13 @@
 import type { DentistaAPI } from "../entities/DentistaAPI";
 
+function formatarPrograma(programa: string): string {
+  return programa
+    .toLowerCase()
+    .split("_")
+    .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+    .join(" ");
+}
+
 export const SEXO_LABEL: Record<string, string> = {
   M: "Masculino",
   F: "Feminino",
@@ -72,10 +80,9 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
 
     programasSociais: api.programasSociais ?? [],
 
-    programa:
-      api.programasSociais?.[0] ??
-      api.categoria ??
-      "Não informado",
+    programa: api.programasSociais?.[0]
+      ? formatarPrograma(api.programasSociais[0])
+      : (api.categoria ?? "Não informado"),
 
     especialidades: api.especialidades ?? [],
 
@@ -90,15 +97,11 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
   };
 }
 
-export function mapDentistas(
-  apiList: DentistaAPI[],
-): DentistaViewModel[] {
+export function mapDentistas(apiList: DentistaAPI[]): DentistaViewModel[] {
   return apiList.map(mapDentista);
 }
 
-export function isDentistaDisponivel(
-  d: DentistaViewModel,
-): boolean {
+export function isDentistaDisponivel(d: DentistaViewModel): boolean {
   return d.disponivel === true;
 }
 
@@ -115,7 +118,6 @@ export function programaCompativel(
   }
 
   return (
-    dentista.programa === "Ambos" ||
-    dentista.programa === programaBeneficiario
+    dentista.programa === "Ambos" || dentista.programa === programaBeneficiario
   );
 }

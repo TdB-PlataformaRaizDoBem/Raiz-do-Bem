@@ -7,12 +7,6 @@ import EditCoordButton from "../ui/buttonFilters/EditCoordButton";
 
 const SecaoAcesso = ({ data }: { data: ColaboradorCompleto }) => (
   <div className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl">
-    <div>
-      <p className="text-xs font-black uppercase text-gray-400">Nível de Acesso</p>
-      <p className={`font-bold ${data.nivelAcesso === "admin" ? "text-amber" : "text-darkgreen"}`}>
-        {data.nivelAcesso?.toUpperCase()}
-      </p>
-    </div>
     <div className="w-px h-8 bg-gray-200" />
     <div>
       <p className="text-xs font-black uppercase text-gray-400">Contratado em</p>
@@ -61,7 +55,6 @@ export const ColaboradorDetails = ({ data, onClose, onDeleted }: ColaboradorDeta
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">{data.nomeCompleto}</h3>
-              <div className={`h-1.5 w-20 mt-1 ${data.nivelAcesso === "admin" ? "bg-amber" : "bg-darkgreen"}`} />
             </div>
             <div className="text-right">
               <span className="block text-xs font-black text-gray-400 uppercase tracking-widest">
@@ -83,8 +76,8 @@ export const ColaboradorDetails = ({ data, onClose, onDeleted }: ColaboradorDeta
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
           <DeleteUserButton 
           userName={data.nomeCompleto} 
-          onConfirm={async (request) => {
-            await excluirColaborador(request, data.cpf)
+          onConfirm={async () => {
+            await excluirColaborador(data.cpf)
             onClose();
             onDeleted();
           }}

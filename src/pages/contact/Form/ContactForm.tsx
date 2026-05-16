@@ -58,13 +58,13 @@ const ContactForm = () => {
   const onSubmit = async (data: ContactFormData) => {
     try {
       await criarPedidoAjuda({
-        nomeCompleto: data.nomeCompleto,
-        cpf: data.cpf,
-        dataNascimento: data.nascimento,
-        sexo: SEXO_API_MAP[data.sexo] ?? "O",
-        telefone: data.telefone,
-        email: data.email,
-        descricaoProblema: data.descricaoProblema,
+      nomeCompleto: data.nomeCompleto,
+      cpf: data.cpf.replace(/\D/g, ""),
+      dataNascimento: data.nascimento,
+      sexo: SEXO_API_MAP[data.sexo] ?? "O",
+      telefone: data.telefone.replace(/\D/g, ""),
+      email: data.email,
+      descricaoProblema: data.descricaoProblema,
       });
 
       showNotification("Pedido enviado com sucesso!", "success");
@@ -247,16 +247,21 @@ const ContactForm = () => {
 
             <div className="grid grid-cols-1 gap-3 text-left">
               <div className="bg-white/10 p-3 rounded-lg border-l-4 border-orange">
-                <span className="text-white font-bold text-xs">REDE PÚBLICA (SUS)</span>
+                <span className="text-white font-bold text-xs">
+                  REDE PÚBLICA (SUS)
+                </span>
                 <p className="text-white/70 text-sm mt-1">
                   Procure a <strong>Unidade Básica de Saúde (UBS)</strong> mais
                   próxima de você. Solicite informações sobre o programa{" "}
-                  <strong>Brasil Sorridente</strong> para triagem odontológica gratuita.
+                  <strong>Brasil Sorridente</strong> para triagem odontológica
+                  gratuita.
                 </p>
               </div>
 
               <div className="bg-white/10 p-3 rounded-lg border-l-4 border-lightgreen">
-                <span className="text-white font-bold text-xs">FACULDADES DE ODONTOLOGIA</span>
+                <span className="text-white font-bold text-xs">
+                  FACULDADES DE ODONTOLOGIA
+                </span>
                 <p className="text-white/70 text-sm mt-1">
                   Busque por <strong>"Clínica de Odontologia"</strong> em
                   universidades federais ou estaduais da sua região.
@@ -283,7 +288,9 @@ const ContactForm = () => {
           type="submit"
           disabled={!!mensagemErro || isSubmitting}
           className={`bg-orange mt-2 ${
-            mensagemErro || isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-amber"
+            mensagemErro || isSubmitting
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-amber"
           }`}
         >
           {isSubmitting ? "Enviando..." : "Enviar para Triagem"}

@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
-import { type DentistFormData } from "./VoluntaryFormData";
 import { useCep } from "../../../hooks/useCep";
 import Input from "../../../components/formElements/Input";
+import type { CriarDentistaPayload } from "../../../domain/entities/CriarDentista";
 
 const VoluntaryFormFields = () => {
   const {
@@ -10,9 +10,9 @@ const VoluntaryFormFields = () => {
     setError,
     clearErrors,
     formState: { errors },
-  } = useFormContext<DentistFormData>();
+  } = useFormContext<CriarDentistaPayload>();
 
-  const { buscarCep } = useCep<DentistFormData>(setValue, setError, clearErrors);
+  const { buscarCep } = useCep<CriarDentistaPayload>(setValue, setError, clearErrors);
 
   return (
     <div className="w-full mx-auto px-4">

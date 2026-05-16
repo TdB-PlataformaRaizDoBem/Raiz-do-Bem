@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { type DentistFormData } from './VoluntaryFormData';
+import type { CriarDentistaPayload } from "../../../domain/entities/CriarDentista";
 import VoluntaryFormFields from './VoluntaryFormFields';
 import { Button } from '../../../components/ui/Button';
 import { ToastNotificationContext } from '../../../components/context/NotificationContext';
@@ -16,10 +16,10 @@ const SEXO_ID_MAP: Record<string, SexoAPI> = {
 };
 
 const VoluntaryForm = () => {
-  const methods = useForm<DentistFormData>({ mode: "onBlur" });
+  const methods = useForm<CriarDentistaPayload>({ mode: "onBlur" });
   const { showNotification } = React.useContext(ToastNotificationContext)!;
 
-  const onSubmit = async (data: DentistFormData) => {
+  const onSubmit = async (data: CriarDentistaPayload) => {
     try {
       await criarDentista({
         croDentista: data.cro,

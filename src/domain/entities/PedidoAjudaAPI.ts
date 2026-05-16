@@ -1,7 +1,6 @@
 import type { SexoAPI, StatusPedidoAPI } from "../types/api-schema";
 import type { EnderecoAPI } from "../types/enderecoAPI";
-import type { DentistaAPI } from "./DentistaAPI";
-
+import type { DentistaResumoPedidoAPI } from "./DentistaResumoPedidoAPI";
 export interface PedidoAjudaAPI {
   id: number;
   cpf?: string | null;
@@ -14,5 +13,5 @@ export interface PedidoAjudaAPI {
   dataPedido: string;           
   status: StatusPedidoAPI;
   endereco?: EnderecoAPI | null;
-  dentista?: DentistaAPI | null;
+  dentista?: DentistaResumoPedidoAPI | null;
 }

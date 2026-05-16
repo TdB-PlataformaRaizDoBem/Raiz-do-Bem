@@ -1,4 +1,7 @@
-import { excluirBeneficiario, type BeneficiarioCompleto } from "../../services/Beneficiarioservice";
+import {
+  excluirBeneficiario,
+  type BeneficiarioCompleto,
+} from "../../services/Beneficiarioservice";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
@@ -7,39 +10,20 @@ import EditBeneficiarioButton from "../ui/buttonFilters/EditBeneficiarioButton";
 
 const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-300">
-    <h4 className="text-xs font-black uppercase text-gray-500 tracking-wider mb-3">
-      Relato Inicial do Pedido {data.pedido ? `(#${data.pedido.id})` : ""}
+    <h4 className="font-black uppercase text-gray-500 tracking-wider mb-3">
+      Pedido ID: {data.pedido ? `(#${data.pedido.id})` : ""}
     </h4>
 
     {data.pedido ? (
       <>
-        <p className="text-sm text-darkgray leading-relaxed italic">
-          "{data.pedido.descricaoProblema}"
-        </p>
-
-        <div className="mt-3 flex justify-between items-center flex-wrap gap-2">
-          <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded">
-            SITUAÇÃO: {data.pedido.statusLabel}
-          </span>
-          <span className="text-[10px] text-gray-400 font-medium">
-            Data do Pedido: {data.pedido.dataPedido}
-          </span>
-        </div>
-
         {/* Dentista responsável pelo pedido */}
-        {data.pedido.dentistaResponsavel ? (
+        {data.pedido.dentistaAprovador ? (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <p className="text-[10px] font-black text-gray-400 uppercase mb-1">
-              Dentista Responsável
+              Dentista Aprovador
             </p>
             <p className="text-sm font-bold text-darkgray">
-              {data.pedido.dentistaResponsavel.nomeCompleto}
-            </p>
-            <p className="text-xs text-gray-500">
-              CRO: {data.pedido.dentistaResponsavel.croDentista}
-            </p>
-            <p className="text-xs text-gray-500">
-              {data.pedido.dentistaResponsavel.email}
+              {data.pedido.dentistaAprovador}
             </p>
           </div>
         ) : (
@@ -63,7 +47,7 @@ const SecaoPrograma = ({ data }: { data: BeneficiarioCompleto }) => (
         Programa Vinculado
       </p>
       <p className="text-lg font-bold text-amber">
-        {data.programaSocial?.programaLabel ?? "Não informado"}
+        {data.programaSocial ?? "Não informado"}
       </p>
     </div>
   </div>
@@ -122,11 +106,6 @@ const SecaoEndereco = ({ data }: { data: BeneficiarioCompleto }) => (
           <br />
           <span className="text-sm font-bold">CEP: {data.endereco.cep}</span>
         </p>
-        {data.endereco.tipoEndereco && (
-          <span className="mt-2 inline-block text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded">
-            {data.endereco.tipoEndereco}
-          </span>
-        )}
       </>
     ) : (
       <p className="text-xs text-gray-400 italic">Endereço não informado.</p>
@@ -183,8 +162,9 @@ export const BeneficiarioDetails = ({
           {isAdmin && (
             <DeleteUserButton
               userName={data.nomeCompleto}
-              onConfirm={async (request) => {
-                await excluirBeneficiario(request, data.cpf);
+              onConfirm={async () => {
+                await excluirBeneficiario(data.cpf);
+
                 onClose();
                 onDeleted();
               }}
@@ -203,4 +183,3 @@ export const BeneficiarioDetails = ({
     </div>
   </UserInformation>
 );
-
