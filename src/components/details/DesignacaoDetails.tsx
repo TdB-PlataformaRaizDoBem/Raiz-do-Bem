@@ -5,12 +5,6 @@ import { Button } from "../ui/Button";
 import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
 import type { AtendimentoViewModel } from "../../domain/mappers/AtendimentoMapper";
 
-/*
- *  BeneficiarioDesignacaoDetails — aba PENDENTE
- *  Mostra os dados do beneficiário + input de prontuário inicial
- *  que será enviado em POST /atendimento.
- */
-
 type BeneficiarioDetailsProps = {
   data: BeneficiarioViewModel;
   onDesignar: (beneficiario: BeneficiarioViewModel, prontuario: string) => void;
@@ -178,6 +172,7 @@ export interface EncerramentoPayload {
 
 type AtendimentoDetailsProps = {
   data: AtendimentoViewModel;
+  isAdmin?: boolean;
   modoLeitura?: boolean;
   permitirAtualizar?: boolean;
   onEncerrar?: (atendimento: AtendimentoViewModel, payload: EncerramentoPayload) => void;
@@ -332,6 +327,7 @@ export const AtendimentoDetails = ({
 
         <UserActions>
           <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
+
             <Button
               variant="secondary"
               onClick={onClose}

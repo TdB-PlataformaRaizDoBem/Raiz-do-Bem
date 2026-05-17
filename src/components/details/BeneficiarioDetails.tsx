@@ -1,5 +1,6 @@
 import {
   excluirBeneficiario,
+  exportarBeneficiariosCsv,
   type BeneficiarioCompleto,
 } from "../../services/Beneficiarioservice";
 import UserInformation from "../userInformation/UserInformation";
@@ -7,6 +8,7 @@ import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
 import DeleteUserButton from "../ui/buttonFilters/DeleteUserButton";
 import EditBeneficiarioButton from "../ui/buttonFilters/EditBeneficiarioButton";
+import ExportCsvButton from "../ui/buttonFilters/ExportCsvButton";
 
 const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-300">
@@ -118,7 +120,7 @@ type BeneficiarioDetailsProps = {
   isAdmin: boolean;
   onClose: () => void;
   onDeleted: () => void;
-  onUpdated: () => void; 
+  onUpdated: () => void;
 };
 
 export const BeneficiarioDetails = ({
@@ -126,7 +128,7 @@ export const BeneficiarioDetails = ({
   isAdmin,
   onClose,
   onDeleted,
-  onUpdated, // <--- Recebido por parâmetro
+  onUpdated,
 }: BeneficiarioDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
@@ -160,6 +162,15 @@ export const BeneficiarioDetails = ({
 
       <UserActions>
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
+          {/* Botão de exportação CSV — visível apenas para administradores */}
+          {isAdmin && (
+            <ExportCsvButton
+              onExport={exportarBeneficiariosCsv}
+              fileName="beneficiarios.csv"
+              label="Exportar CSV"
+            />
+          )}
+
           {isAdmin && (
             <DeleteUserButton
               userName={data.nomeCompleto}
@@ -170,8 +181,9 @@ export const BeneficiarioDetails = ({
               }}
             />
           )}
-          {/* Conectado o gatilho de sucesso ao botão modificador */}
+
           <EditBeneficiarioButton user={data} onUpdated={onUpdated} />
+
           <Button
             variant="secondary"
             onClick={onClose}

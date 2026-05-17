@@ -17,6 +17,7 @@ import {
 import {
   criarAtendimento,
   encerrarAtendimento,
+  exportarAtendimentosCsv,
 } from "../../services/AtendimentoService";
 import { getBeneficiariosCompletos } from "../../services/Beneficiarioservice";
 import { useNotification } from "../../hooks/useNotification";
@@ -26,6 +27,8 @@ import {
 } from "../../hooks/pageFilterConfigs";
 import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
 import type { AtendimentoViewModel } from "../../domain/mappers/AtendimentoMapper";
+import { getUser } from "../../hooks/useUser";
+import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
 
 const TAB_LABELS: Record<DesignacaoTab, string> = {
   PENDENTE: "Pendentes",
@@ -219,9 +222,10 @@ const AbaPendentes = () => {
  * ------------------------------------------------------------------ */
 type AbaAtendimentosProps = {
   tab: "EM_ATENDIMENTO" | "CONCLUIDO" | "TODOS";
+  isAdmin: boolean;
 };
 
-const AbaAtendimentos = ({ tab }: AbaAtendimentosProps) => {
+const AbaAtendimentos = ({ tab, isAdmin }: AbaAtendimentosProps) => {
   const { atendimentos, loading, error, refetch } = useAtendimentos(tab);
   const { showNotification } = useNotification();
 
@@ -246,11 +250,6 @@ const AbaAtendimentos = ({ tab }: AbaAtendimentosProps) => {
     setPayload(null);
   };
 
-  /**
-   * O endpoint PUT /atendimento/{cpf} exige o CPF do beneficiário, mas o
-   * AtendimentoDTO devolve apenas o nome. Precisamos buscar a lista de
-   * beneficiários e localizar pelo nome para obter o CPF.
-   */
   const confirmar = async () => {
     if (!emFoco || !payload) return;
     setSalvando(true);
@@ -362,6 +361,15 @@ const AbaAtendimentos = ({ tab }: AbaAtendimentosProps) => {
           users={atendimentos}
           getId={(a) => a.id}
           filterConfig={atendimentoFilterConfig}
+          extraActions={
+            isAdmin ? (
+              <ExportCsvButton
+                onExport={exportarAtendimentosCsv}
+                fileName="atendimentos.csv"
+                label="Exportar CSV"
+              />
+            ) : undefined
+          }
           renderCard={(a, selected, select) => {
             const cor = a.encerrado ? "border-l-darkgreen" : "border-l-amber";
             return (
@@ -422,6 +430,9 @@ const AbaAtendimentos = ({ tab }: AbaAtendimentosProps) => {
 export const Designacao = () => {
   const [tab, setTab] = useState<DesignacaoTab>("PENDENTE");
 
+  const loggedUser = getUser();
+  const isAdmin = loggedUser?.role === "admin";
+
   return (
     <>
       <div className="flex gap-2 mb-6 flex-wrap">
@@ -441,7 +452,11 @@ export const Designacao = () => {
         ))}
       </div>
 
-      {tab === "PENDENTE" ? <AbaPendentes /> : <AbaAtendimentos tab={tab} />}
+      {tab === "PENDENTE" ? (
+        <AbaPendentes />
+      ) : (
+        <AbaAtendimentos tab={tab} isAdmin={isAdmin} />
+      )}
     </>
   );
 };
