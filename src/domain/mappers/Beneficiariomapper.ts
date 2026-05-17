@@ -28,7 +28,7 @@ export interface BeneficiarioViewModel {
   endereco: EnderecoViewModel | null;
   pedido: {
     id: number;
-    dentistaAprovador: string | null;
+    dentistaResponsavel: string | null;
   } | null;
 }
 
@@ -48,6 +48,13 @@ function mapEndereco(
   };
 }
 
+function formatarPrograma(programa: string): string {
+  return programa
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
 export function mapBeneficiario(api: BeneficiarioAPI): BeneficiarioViewModel {
   return {
     id: api.id,
@@ -56,12 +63,12 @@ export function mapBeneficiario(api: BeneficiarioAPI): BeneficiarioViewModel {
     dataNascimento: formatDate(api.dataNascimento),
     telefone: api.telefone ?? "—",
     email: api.email ?? "—",
-    programaSocial: api.programaSocial ?? null,
+    programaSocial: formatarPrograma(api.programaSocial) ?? null,
     endereco: mapEndereco(api.endereco),
     pedido: api.pedido
       ? {
           id: api.pedido.id,
-          dentistaAprovador: api.pedido.dentistaAprovador ?? null,
+          dentistaResponsavel: api.pedido.dentistaResponsavel ?? null,
         }
       : null,
   };

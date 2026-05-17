@@ -45,9 +45,15 @@ type ColaboradorDetailsProps = {
   data: ColaboradorCompleto;
   onClose: () => void;
   onDeleted: () => void;
+  onUpdated: () => void; // <--- Adicionado na tipagem
 };
 
-export const ColaboradorDetails = ({ data, onClose, onDeleted }: ColaboradorDetailsProps) => (
+export const ColaboradorDetails = ({ 
+  data, 
+  onClose, 
+  onDeleted, 
+  onUpdated
+}: ColaboradorDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
       <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 custom-scrollbar">
@@ -75,14 +81,16 @@ export const ColaboradorDetails = ({ data, onClose, onDeleted }: ColaboradorDeta
       <UserActions>
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
           <DeleteUserButton 
-          userName={data.nomeCompleto} 
-          onConfirm={async () => {
-            await excluirColaborador(data.cpf)
-            onClose();
-            onDeleted();
-          }}
+            userName={data.nomeCompleto} 
+            onConfirm={async () => {
+              await excluirColaborador(data.cpf);
+              onClose();
+              onDeleted();
+            }}
           />
-          <EditCoordButton user={data} />
+          {/* Repassando o gatilho para o botão de edição */}
+          <EditCoordButton user={data} onUpdated={onUpdated} /> 
+          
           <Button variant="secondary" onClick={onClose} className="flex-1 md:flex-none">
             Fechar
           </Button>

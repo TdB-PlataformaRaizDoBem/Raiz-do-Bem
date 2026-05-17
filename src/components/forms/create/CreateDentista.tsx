@@ -65,15 +65,15 @@ export const CreateDentista = ({ onSuccess }: CreateDentistaProps) => {
     try {
       const payload = {
         croDentista: formatCRO(data.croDentista),
-        cpf: data.cpf,
+        cpf: data.cpf.replace(/\D/g, ""),
         nomeCompleto: data.nomeCompleto,
         sexo: SEXO_MAP[data.sexo],
         email: data.email,
-        telefone: data.telefone,
+        telefone: data.telefone.replace(/\D/g, ""),
         disponivel: data.disponivel,
         categoria: data.categoria,
         endereco: {
-          cep: data.endereco.cep,
+          cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,
           tipoEndereco: "PROFISSIONAL",
         },

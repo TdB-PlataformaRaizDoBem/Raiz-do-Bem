@@ -6,9 +6,10 @@ import type { ColaboradorViewModel } from "../../../domain/mappers/ColaboradorMa
 
 type EditCoordButtonProps = {
   user: ColaboradorViewModel;
+  onUpdated: () => void; // <--- Adicionado na tipagem do botão
 };
 
-const EditCoordButton = ({ user }: EditCoordButtonProps) => {
+const EditCoordButton = ({ user, onUpdated }: EditCoordButtonProps) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -18,7 +19,13 @@ const EditCoordButton = ({ user }: EditCoordButtonProps) => {
       </Button>
 
       <Modal open={open} onClose={() => setOpen(false)}>
-        <UpdateCoord initialData={user} onSuccess={() => setOpen(false)} />
+        <UpdateCoord 
+          initialData={user} 
+          onSuccess={() => {
+            setOpen(false); // Fecha o modal de edição
+            onUpdated();    // Dispara a revalidação dos dados do back
+          }} 
+        />
       </Modal>
     </>
   );

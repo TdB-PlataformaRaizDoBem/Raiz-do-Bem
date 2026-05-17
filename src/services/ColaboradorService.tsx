@@ -1,13 +1,3 @@
-/**
- * Endpoints consumidos (ColaboradorController.java):
- *   GET    /colaborador         → listar todos
- *   PUT    /colaborador/:cpf    → atualizar
- *   DELETE /colaborador/:cpf    → excluir
- *
- * NOTA: ColaboradorController não possui GET /:cpf individual ainda.
- *       getColaboradorCompleto busca da lista completa como fallback temporário.
- */
-
 import type { ColaboradorAPI } from "../domain/entities/ColaboradorAPI";
 import {
   mapColaborador,
@@ -23,7 +13,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
     let mensagem = `Erro ${res.status}`;
     try {
       const body = await res.json();
-      mensagem = body?.message ?? body?.error ?? mensagem;
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
     } catch {
       /* manter mensagem padrão */
     }
@@ -55,13 +45,21 @@ export async function getColaboradorCompleto(
 export async function atualizarColaborador(
   cpf: string,
   payload: Partial<Omit<ColaboradorAPI, "id">>,
-): Promise<ColaboradorViewModel> {
+): Promise<ColaboradorViewModel | null> {
   const res = await fetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
-  const data = await handleResponse<ColaboradorAPI>(res);
+
+  if (res.status === 204 || res.headers.get("content-length") === "0") {
+    // Retorna algo genérico ou mapeia apenas o que você enviou, já que não veio corpo
+    return null; 
+  }
+
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : {};
+
   return mapColaborador(data);
 }
 

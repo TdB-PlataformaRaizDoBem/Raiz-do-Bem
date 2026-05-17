@@ -6,9 +6,10 @@ import UpdateDentista from "../../forms/update/UpdateDentista";
 
 type EditDentistaButtonProps = {
   user: DentistaViewModel;
+  onUpdated: () => void;
 };
 
-const EditDentistaButton = ({ user }: EditDentistaButtonProps) => {
+const EditDentistaButton = ({ user, onUpdated }: EditDentistaButtonProps) => {
   const [open, setOpen] = React.useState(false);
   return (
     <>
@@ -20,7 +21,13 @@ const EditDentistaButton = ({ user }: EditDentistaButtonProps) => {
         Editar Dados
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <UpdateDentista initialData={user} onSuccess={() => setOpen(false)} />
+        <UpdateDentista 
+          initialData={user} 
+          onSuccess={() => {
+            setOpen(false);
+            onUpdated(); 
+          }} 
+        />
       </Modal>
     </>
   );

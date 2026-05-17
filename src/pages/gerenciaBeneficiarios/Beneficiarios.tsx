@@ -14,16 +14,29 @@ const BeneficiarioPainel = ({
   isAdmin,
   onClose,
   onDeleted,
+  onUpdated, // <--- Adicionado
 }: {
   cpf: string;
   isAdmin: boolean;
   onClose: () => void;
   onDeleted: () => void;
+  onUpdated: () => void; // <--- Adicionado
 }) => {
-  const { data, loading, error } = useBeneficiario(cpf);
+  // Desestruturado a função 'refetch' nativa do hook e renomeada para refetchSingle
+  const { data, loading, error, refetch: refetchSingle } = useBeneficiario(cpf);
+
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <BeneficiarioDetails data={data!} isAdmin={isAdmin} onClose={onClose} onDeleted={onDeleted} />
+      <BeneficiarioDetails 
+        data={data!} 
+        isAdmin={isAdmin} 
+        onClose={onClose} 
+        onDeleted={onDeleted} 
+        onUpdated={() => {
+          onUpdated(); // Recarrega a listagem de cards ao fundo
+          if (refetchSingle) refetchSingle(); // Atualiza a gaveta de visualização atual
+        }}
+      />
     </AsyncEstado>
   );
 };
@@ -47,25 +60,12 @@ export const Beneficiarios = () => {
               <p className="text-xl font-bold text-darkgray leading-tight">{u.nomeCompleto}</p>
               <p className="text-sm text-gray-500 font-medium">
                 <span className="font-bold text-gray uppercase text-xs mr-1">Programa:</span>
-                {u.programaSocial?.programaLabel ?? "Não informado"}
+                {u.programaSocial ?? "Não informado"}
               </p>
               <p className="text-sm text-gray-500 font-medium">
                 <span className="font-bold text-gray uppercase text-xs mr-1">Cidade:</span>
                 {u.endereco ? `${u.endereco.cidade} • ${u.endereco.estado}` : "Não informado"}
               </p>
-              {u.pedido && (
-                <span
-                  className={`mt-1 text-xs font-bold px-2 py-0.5 rounded-full w-fit ${
-                    u.pedido.statusAPI === "APROVADO"
-                      ? "bg-green-50 text-green-700"
-                      : u.pedido.statusAPI === "REJEITADO"
-                        ? "bg-red-50 text-red-600"
-                        : "bg-amber/10 text-amber"
-                  }`}
-                >
-                  {u.pedido.statusLabel}
-                </span>
-              )}
             </div>
             <div className="mt-4 pt-4 flex flex-col gap-6">
               <span className="text-xs font-black lg:text-end border-t border-gray/10 pt-4 lg:border-t-0 uppercase text-gray-400 tracking-widest">
@@ -82,7 +82,13 @@ export const Beneficiarios = () => {
           </UserCard>
         )}
         renderDetails={(user, close) => (
-          <BeneficiarioPainel cpf={user.cpf} isAdmin={isAdmin} onClose={close} onDeleted={refetch} />
+          <BeneficiarioPainel 
+            cpf={user.cpf} 
+            isAdmin={isAdmin} 
+            onClose={close} 
+            onDeleted={refetch} 
+            onUpdated={refetch} // <--- Passando o trigger de atualização aqui
+          />
         )}
       />
     </AsyncEstado>

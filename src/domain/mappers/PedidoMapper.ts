@@ -1,6 +1,6 @@
 import { formatDate } from "../../utils/dateUtils";
 import type { PedidoAjudaAPI } from "../entities/PedidoAjudaAPI";
-import type { StatusPedidoAPI } from "../types/api-schema";
+import type { StatusPedidoAPI, SexoAPI } from "../types/api-schema";
 
 export const STATUS_LABEL: Record<StatusPedidoAPI, string> = {
   PENDENTE: "Pendente",
@@ -14,59 +14,25 @@ export const STATUS_CLASS: Record<StatusPedidoAPI, string> = {
   REJEITADO: "text-red-500 bg-red-500/10",
 };
 
-function formatarPrograma(programa: string): string {
-  return programa
-    .toLowerCase()
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
-}
-
 export interface PedidoViewModel {
-  // Identificação
   id: number;
   nomeCompleto: string;
   cpf: string;
   email: string;
   telefone: string;
-
-  // Dados pessoais do solicitante
   dataNascimento: string;
   sexoLabel: string;
   descricaoProblema: string;
-
-  // Status
   statusAPI: StatusPedidoAPI;
   statusLabel: string;
   statusClass: string;
-
-  // Datas
   dataPedido: string;
   dataPedidoISO: string;
-
-  endereco: {
-    logradouro: string;
-    numero: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-  } | null;
-
-  dentistaAtribuido: {
-    id: number;
-    nomeCompleto: string;
-    croDentista: string;
-    categoria: string;
-    disponivel: boolean;
-    disponibilidadeLabel: string;
-    telefone: string;
-    email: string;
-    especialidades: string[];
-    programasSociais: string[];
-  } | null;
+  endereco: string | null;
+  dentistaResponsavel: string | null;
 }
 
-const SEXO_LABEL: Record<string, string> = {
+const SEXO_LABEL: Record<SexoAPI, string> = {
   M: "Masculino",
   F: "Feminino",
   O: "Outro",
@@ -81,50 +47,26 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
     cpf: api.cpf ?? "—",
     email: api.email ?? "—",
     telefone: api.telefone ?? "—",
-
-    dataNascimento: api.dataNascimento ? formatDate(api.dataNascimento) : "—",
-    sexoLabel: SEXO_LABEL[api.sexo ?? ""] ?? "—",
-
-    descricaoProblema: api.descricaoProblema ?? "Sem descrição informada.",
-
+    dataNascimento: api.dataNascimento
+      ? formatDate(api.dataNascimento)
+      : "—",
+    sexoLabel: api.sexo
+      ? (SEXO_LABEL[api.sexo] ?? "—")
+      : "—",
+    descricaoProblema:
+      api.descricaoProblema ?? "Sem descrição informada.",
     statusAPI,
-    statusLabel: STATUS_LABEL[statusAPI],
-    statusClass: STATUS_CLASS[statusAPI],
-
-    dataPedido: api.dataPedido ? formatDate(api.dataPedido) : "—",
+    statusLabel:
+      STATUS_LABEL[statusAPI] ?? "Desconhecido",
+    statusClass:
+      STATUS_CLASS[statusAPI] ?? "",
+    dataPedido: api.dataPedido
+      ? formatDate(api.dataPedido)
+      : "—",
     dataPedidoISO: api.dataPedido ?? "",
-
-    endereco: api.endereco
-      ? {
-          logradouro: api.endereco.logradouro ?? "—",
-          numero: api.endereco.numero ?? "S/N",
-          bairro: api.endereco.bairro ?? "—",
-          cidade: api.endereco.cidade ?? "—",
-          estado: api.endereco.estado ?? "—",
-          cep: api.endereco.cep ?? "—",
-        }
-      : null,
-
-    dentistaAtribuido: api.dentista
-      ? {
-          id: api.dentista.id ?? 0,
-          nomeCompleto: api.dentista.nomeCompleto ?? "—",
-          croDentista: api.dentista.croDentista ?? "—",
-          categoria: api.dentista.categoria ?? "—",
-          disponivel: api.dentista.disponivel === "S",
-          disponibilidadeLabel:
-            api.dentista.disponivel === "S" ? "Disponível" : "Indisponível",
-          telefone: api.dentista.telefone ?? "—",
-          email: api.dentista.email ?? "—",
-          especialidades:
-            api.dentista.especialidades?.map((e) => e.descricao) ?? [],
-
-          programasSociais:
-            api.dentista.programasSociais?.map((p) =>
-              formatarPrograma(p.programa),
-            ) ?? [],
-        }
-      : null,
+    endereco: api.endereco ?? null,
+    dentistaResponsavel:
+      api.dentistaResponsavel ?? null,
   };
 }
 

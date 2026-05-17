@@ -1,12 +1,3 @@
-/**
- * Endpoints consumidos (BeneficiarioController.java):
- *   GET    /beneficiario         → listar todos
- *   GET    /beneficiario/:cpf    → buscar por CPF
- *   POST   /beneficiario         → criar
- *   PUT    /beneficiario/:cpf    → atualizar
- *   DELETE /beneficiario/:cpf    → excluir
- */
-
 import type { AtualizarBeneficiarioPayload } from "../domain/entities/AtualizarBeneficiario.ts";
 import type { BeneficiarioAPI } from "../domain/entities/BeneficiarioAPI";
 import type { CriarBeneficiarioPayload } from "../domain/entities/CriarBeneficiario.ts";
@@ -24,7 +15,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
     let mensagem = `Erro ${res.status}`;
     try {
       const body = await res.json();
-      mensagem = body?.message ?? body?.error ?? mensagem;
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
     } catch {
       /* manter mensagem padrão */
     }

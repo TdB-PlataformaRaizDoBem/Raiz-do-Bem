@@ -14,16 +14,28 @@ const DentistaPainel = ({
   isAdmin,
   onClose,
   onDeleted,
+  onUpdated,
 }: {
   cpf: string;
   isAdmin: boolean;
   onClose: () => void;
   onDeleted: () => void;
+  onUpdated: () => void;
 }) => {
-  const { data, loading, error } = useDentista(cpf);
+  const { data, loading, error, refetch: refetchSingle } = useDentista(cpf);
+  
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <DentistaDetails data={data!} isAdmin={isAdmin} onClose={onClose} onDeleted={onDeleted} />
+      <DentistaDetails 
+        data={data!} 
+        isAdmin={isAdmin} 
+        onClose={onClose} 
+        onDeleted={onDeleted} 
+        onUpdated={() => {
+          onUpdated();
+          if (refetchSingle) refetchSingle();
+        }}
+      />
     </AsyncEstado>
   );
 };
@@ -66,7 +78,6 @@ export const Dentistas = () => {
                   ? u.especialidades.map((e) => e.descricao).join(", ")
                   : "Não informado"}
               </p>
-              {/* Badge de disponibilidade */}
               <span
                 className={`text-xs font-bold px-2 py-0.5 rounded-full w-fit ${
                   u.disponivel
@@ -97,6 +108,7 @@ export const Dentistas = () => {
             isAdmin={isAdmin}
             onClose={close}
             onDeleted={refetch}
+            onUpdated={refetch}
           />
         )}
       />

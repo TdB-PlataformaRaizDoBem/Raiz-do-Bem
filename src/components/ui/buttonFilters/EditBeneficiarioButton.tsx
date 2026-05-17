@@ -5,10 +5,11 @@ import type { BeneficiarioViewModel } from "../../../domain/mappers/Beneficiario
 import UpdateBeneficiario from "../../forms/update/UpdateBeneficiario";
 
 type EditBeneficiarioButtonProps = {
-  user: BeneficiarioViewModel;   // era: Beneficiario do mock
+  user: BeneficiarioViewModel;
+  onUpdated: () => void;
 };
 
-export const EditBeneficiarioButton = ({ user }: EditBeneficiarioButtonProps) => {
+export const EditBeneficiarioButton = ({ user, onUpdated }: EditBeneficiarioButtonProps) => {
   const [open, setOpen] = React.useState(false);
   return (
     <>
@@ -16,7 +17,13 @@ export const EditBeneficiarioButton = ({ user }: EditBeneficiarioButtonProps) =>
         Editar Dados
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <UpdateBeneficiario initialData={user} onSuccess={() => setOpen(false)} />
+        <UpdateBeneficiario 
+          initialData={user} 
+          onSuccess={() => {
+            setOpen(false); 
+            onUpdated(); 
+          }} 
+        />
       </Modal>
     </>
   );

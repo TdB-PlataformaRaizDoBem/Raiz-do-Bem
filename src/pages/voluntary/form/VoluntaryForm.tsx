@@ -40,17 +40,17 @@ const VoluntaryForm = () => {
     try {
       await criarDentista({
         croDentista: formatCRO(data.croDentista),
-        cpf: data.cpf,
+        cpf: data.cpf.replace(/\D/g, ""),
         nomeCompleto: data.nomeCompleto,
         sexo: SEXO_MAP[data.sexo],
         email: data.email,
-        telefone: data.telefone,
+        telefone: data.telefone.replace(/\D/g, ""),
 
         categoria: "DENTISTA",
         disponivel: "S",
 
         endereco: {
-          cep: data.endereco.cep,
+          cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,
         },
       });

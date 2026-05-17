@@ -1,12 +1,3 @@
-/**
- * Endpoints consumidos (PedidoAjudaController.java):
- *   GET    /pedido-ajuda          → listar todos
- *   GET    /pedido-ajuda/:id      → buscar por id
- *   POST   /pedido-ajuda          → criar novo pedido (formulário público)
- *   PUT    /pedido-ajuda/:id      → atualizar (inclui mudar status)
- *   DELETE /pedido-ajuda/:id      → excluir
- */
-
 import type { CriarPedidoAjudaPayload } from "../domain/entities/CriarPedidoAjuda";
 import type { PedidoAjudaAPI } from "../domain/entities/PedidoAjudaAPI";
 import {
@@ -27,7 +18,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
     let mensagem = `Erro ${res.status}`;
     try {
       const body = await res.json();
-      mensagem = body?.message ?? body?.error ?? mensagem;
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
     } catch {
       // body não é JSON — mantém mensagem padrão
     }
@@ -82,7 +73,6 @@ export async function getPedidosAprovadosLivres(): Promise<PedidoViewModel[]> {
       (p) => p.statusAPI === "APROVADO" && !vinculados.has(p.id),
     );
   } catch {
-    // Se falhar, retorna ao comportamento anterior (apenas por status)
     return todos.filter((p) => p.statusAPI === "APROVADO");
   }
 }
@@ -106,28 +96,35 @@ export async function criarPedidoAjuda(
 /**
  * PATCH /pedido-ajuda/:id — Aprovar pedido
  */
-export async function aprovarPedido(id: number): Promise<void> {
-  await atualizarStatus(id, "APROVADO");
+export async function aprovarPedido(
+  id: number,
+  idDentista: number,
+): Promise<void> {
+  await atualizarStatus(id, "APROVADO", idDentista);
 }
 
 /**
  * PATCH /pedido-ajuda/:id — Rejeitar pedido
  */
-export async function negarPedido(id: number): Promise<void> {
-  await atualizarStatus(id, "REJEITADO");
+export async function negarPedido(
+  id: number,
+  idDentista: number,
+): Promise<void> {
+  await atualizarStatus(id, "REJEITADO", idDentista);
 }
 
 /**
- * PUT /pedido-ajuda/:id — Atualização genérica de status
+ * PUT /pedido-ajuda/:id —  Atualização genérica de status
  */
 async function atualizarStatus(
   id: number,
   novoStatus: StatusPedidoAPI,
+  idDentista: number,
 ): Promise<void> {
   const res = await fetch(`${ENDPOINT}/${id}`, {
     method: "PUT",
     headers: jsonHeaders(),
-    body: JSON.stringify({ statusPedido: novoStatus, idDentista: 0 }),
+    body: JSON.stringify({ statusPedido: novoStatus, idDentista }),
   });
   await handleResponse<void>(res);
 }
@@ -140,5 +137,4 @@ export async function excluirPedido(id: number): Promise<void> {
   await handleResponse<void>(res);
 }
 
-/** Tipo público consumido por hooks e componentes */
 export type PedidoCompleto = PedidoViewModel;

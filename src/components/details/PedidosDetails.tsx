@@ -20,7 +20,7 @@ const SecaoStatus = ({ data }: { data: PedidoViewModel }) => (
         Situação Atual
       </p>
 
-      <p className={`font-bold ${data.statusClass}`}>
+      <p className={`font-bold ${data.statusClass} bg-transparent`}>
         {data.statusLabel}
       </p>
     </div>
@@ -52,16 +52,6 @@ const SecaoDadosPessoais = ({
 
       <p className="text-darkgray font-medium text-lg">
         {data.cpf}
-      </p>
-    </div>
-
-    <div>
-      <h4 className="text-xs font-black uppercase text-gray-400 mb-1">
-        Sexo
-      </h4>
-
-      <p className="text-darkgray font-medium text-lg">
-        {data.sexoLabel}
       </p>
     </div>
 
@@ -149,18 +139,7 @@ const SecaoEndereco = ({
 
     {data.endereco ? (
       <p className="text-darkgray leading-relaxed text-lg">
-        {data.endereco.logradouro}, {data.endereco.numero}
-        <br />
-
-        {data.endereco.bairro}
-        <br />
-
-        {data.endereco.cidade} - {data.endereco.estado}
-        <br />
-
-        <span className="text-sm font-bold">
-          CEP: {data.endereco.cep}
-        </span>
+        {data.endereco}
       </p>
     ) : (
       <p className="text-darkgray">
@@ -174,75 +153,27 @@ const SecaoDentista = ({
   data,
 }: {
   data: PedidoViewModel;
-}) => (
-  <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-    <h4 className="text-xs font-black uppercase text-gray-400 mb-4">
-      Dentista Responsável
-    </h4>
+}) => {
+  return (
+    <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+      <h4 className="text-xs font-black uppercase text-gray-400 mb-4">
+        Dentista Responsável
+      </h4>
 
-    {data.dentistaAtribuido ? (
-      <div className="space-y-4">
-        <div>
-          <p className="text-xl font-bold text-darkgray">
-            {data.dentistaAtribuido.nomeCompleto}
-          </p>
-
-          <p className="text-sm text-gray-500">
-            CRO: {data.dentistaAtribuido.croDentista}
+      {data.dentistaResponsavel ? (
+        <div className="space-y-2">
+          <p className="text-lg font-bold text-darkgray">
+            {data.dentistaResponsavel}
           </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h5 className="text-xs uppercase text-gray-400 font-bold">
-              Categoria
-            </h5>
-
-            <p className="font-medium text-darkgray">
-              {data.dentistaAtribuido.categoria}
-            </p>
-          </div>
-
-          <div>
-            <h5 className="text-xs uppercase text-gray-400 font-bold">
-              Disponibilidade
-            </h5>
-
-            <p className="font-medium text-darkgray">
-              {data.dentistaAtribuido.disponibilidadeLabel}
-            </p>
-          </div>
-
-          <div>
-            <h5 className="text-xs uppercase text-gray-400 font-bold">
-              Especialidades
-            </h5>
-
-            <p className="font-medium text-darkgray">
-              {data.dentistaAtribuido.especialidades.join(", ") ||
-                "Não informado"}
-            </p>
-          </div>
-
-          <div>
-            <h5 className="text-xs uppercase text-gray-400 font-bold">
-              Programas
-            </h5>
-
-            <p className="font-medium text-darkgray">
-              {data.dentistaAtribuido.programasSociais.join(", ") ||
-                "Não informado"}
-            </p>
-          </div>
-        </div>
-      </div>
-    ) : (
-      <p className="text-darkgray">
-        Nenhum dentista atribuído.
-      </p>
-    )}
-  </div>
-);
+      ) : (
+        <p className="text-darkgray">
+          Nenhum dentista atribuído.
+        </p>
+      )}
+    </div>
+  );
+};
 
 export const PedidoDetails = ({
   data,

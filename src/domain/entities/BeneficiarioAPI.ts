@@ -7,10 +7,10 @@ export interface BeneficiarioAPI {
   dataNascimento: string;
   telefone: string;
   email: string;
-  programaSocial: string | null;
+  programaSocial: string;
   pedido: {
     id: number;
-    dentistaAprovador: string | null;
+    dentistaResponsavel: string;
   } | null;
   endereco: EnderecoAPI | null;
 }

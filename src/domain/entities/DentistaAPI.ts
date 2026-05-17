@@ -10,6 +10,7 @@ export interface DentistaAPI {
   disponivel: string;
   especialidades: string[];
   programasSociais: string[];
+  cep?: string | null;
   logradouro: string | null;
   numero: string | null;
   cidade: string | null;

@@ -1,14 +1,3 @@
-/**
- * Endpoints consumidos (AtendimentoResource.java):
- *   GET    /atendimento          → listar todos
- *   GET    /atendimento/:cpf     → buscar por CPF do beneficiário
- *   * POST   /atendimento
- *      Cria atendimento a partir do CPF do beneficiário.
- *      O dentista é selecionado automaticamente pelo back-end.
- *   PUT    /atendimento/:cpf     → encerrar atendimento (prontuário + idColaborador)
- *   DELETE /atendimento/:id      → excluir atendimento
- */
-
 import type { AtendimentoAPI } from "../domain/entities/AtendimentoAPI";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -19,7 +8,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
     let mensagem = `Erro ${res.status}`;
     try {
       const body = await res.json();
-      mensagem = body?.message ?? body?.error ?? mensagem;
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
     } catch {
       /* manter mensagem padrão */
     }
@@ -54,7 +43,6 @@ export async function criarAtendimento(
 
 /**
  * GET /atendimento
- * Lista todos os atendimentos.
  */
 export async function getAtendimentos(): Promise<AtendimentoAPI[]> {
   const res = await fetch(ENDPOINT);

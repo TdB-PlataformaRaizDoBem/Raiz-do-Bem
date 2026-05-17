@@ -12,18 +12,24 @@ const ColaboradorPainel = ({
   id,
   onClose,
   onDeleted,
+  onUpdated,
 }: {
   id: number;
   onClose: () => void;
   onDeleted: () => void;
+  onUpdated: () => void;
 }) => {
-  const { data, loading, error } = useColaborador(id);
+  const { data, loading, error, refetch: refetchSingle } = useColaborador(id);
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
       <ColaboradorDetails
         data={data!}
         onClose={onClose}
         onDeleted={onDeleted}
+        onUpdated={() => {
+          onUpdated(); 
+          if (refetchSingle) refetchSingle();
+        }}
       />
     </AsyncEstado>
   );
@@ -61,9 +67,6 @@ export default function Colaborador() {
                 {u.nomeCompleto}
               </p>
               <p className="text-sm text-gray-500 font-medium mb-2">
-                <span className="font-bold text-darkgray uppercase text-xs mr-1">
-                  {u.nivelAcesso ?? "colaborador"}:
-                </span>
                 {u.email}
               </p>
             </div>
@@ -82,7 +85,12 @@ export default function Colaborador() {
           </UserCard>
         )}
         renderDetails={(user, close) => (
-          <ColaboradorPainel id={user.id} onClose={close} onDeleted={refetch} />
+          <ColaboradorPainel
+            id={user.id}
+            onClose={close}
+            onDeleted={refetch}
+            onUpdated={refetch}
+          />
         )}
       />
     </AsyncEstado>

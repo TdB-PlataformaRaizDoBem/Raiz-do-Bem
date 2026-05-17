@@ -12,8 +12,6 @@ interface UpdateCoordProps {
 
 type CoordEditavel = {
   email: string;
-  // nivelAcesso: campo de débito técnico — mantido no form para UX mas não enviado
-  nivelAcesso: "admin" | "colaborador";
 };
 
 const UpdateCoord = ({ initialData, onSuccess }: UpdateCoordProps) => {
@@ -22,11 +20,10 @@ const UpdateCoord = ({ initialData, onSuccess }: UpdateCoordProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting }, // Adicionado isSubmitting aqui
   } = useForm<CoordEditavel>({
     defaultValues: {
-      email:       initialData.email,
-      nivelAcesso: initialData.nivelAcesso ?? "colaborador",
+      email: initialData.email,
     },
   });
 
@@ -43,6 +40,9 @@ const UpdateCoord = ({ initialData, onSuccess }: UpdateCoordProps) => {
       showNotification(msg, "error");
     }
   };
+
+  // O botão deve ser desativado se o formulário não foi mexido OU se já estiver enviando
+  const isButtonDisabled = !isDirty || isSubmitting;
 
   return (
     <div className="max-h-[80vh] overflow-y-auto pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -89,50 +89,25 @@ const UpdateCoord = ({ initialData, onSuccess }: UpdateCoordProps) => {
             label="E-mail Corporativo"
             {...register("email", {
               required: "O e-mail é obrigatório",
-              pattern: { value: /^\S+@\S+$/i, message: "E-mail inválido" },
+              pattern: { 
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 
+                message: "E-mail inválido" 
+              },
             })}
             error={errors.email?.message}
           />
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-bold text-gray-400">
-              Nível de Acesso{" "}
-              <span className="text-xs font-normal text-amber">(aguardando JWT — não salvo)</span>
-            </label>
-            <select
-              {...register("nivelAcesso")}
-              className="p-3 rounded-md bg-gray-50 border border-gray-200 h-[52px] text-gray-400 cursor-not-allowed"
-              disabled
-            >
-              <option value="colaborador">Colaborador</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="border-t pt-4">
-          <h3 className="font-bold text-darkgray mb-2">Endereço</h3>
-          <div className="p-4 bg-amber/5 border border-amber/20 rounded-lg">
-            <p className="text-xs text-amber font-bold mb-1">
-              ⚠ Endereço não disponível
-            </p>
-            <p className="text-xs text-gray-500">
-              <code>Colaborador.java</code> não possui relação com <code>Endereco</code>.
-              Aguardando implementação do back-end.
-            </p>
-          </div>
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
           <Button
             type="submit"
             variant="primary"
-            disabled={!isDirty}
+            disabled={isButtonDisabled}
             className={`w-full py-4 uppercase tracking-widest font-bold ${
-              !isDirty ? "opacity-50 cursor-not-allowed" : ""
+              isButtonDisabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            Confirmar Atualização
+            {isSubmitting ? "Salvando..." : "Confirmar Atualização"}
           </Button>
         </div>
       </form>

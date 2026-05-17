@@ -17,13 +17,13 @@ const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
     {data.pedido ? (
       <>
         {/* Dentista responsável pelo pedido */}
-        {data.pedido.dentistaAprovador ? (
+        {data.pedido.dentistaResponsavel ? (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <p className="text-[10px] font-black text-gray-400 uppercase mb-1">
               Dentista Aprovador
             </p>
             <p className="text-sm font-bold text-darkgray">
-              {data.pedido.dentistaAprovador}
+              {data.pedido.dentistaResponsavel}
             </p>
           </div>
         ) : (
@@ -118,6 +118,7 @@ type BeneficiarioDetailsProps = {
   isAdmin: boolean;
   onClose: () => void;
   onDeleted: () => void;
+  onUpdated: () => void; 
 };
 
 export const BeneficiarioDetails = ({
@@ -125,12 +126,12 @@ export const BeneficiarioDetails = ({
   isAdmin,
   onClose,
   onDeleted,
+  onUpdated, // <--- Recebido por parâmetro
 }: BeneficiarioDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
       <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex-1 w-full text-left">
-          {/* Cabeçalho */}
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">
@@ -164,13 +165,13 @@ export const BeneficiarioDetails = ({
               userName={data.nomeCompleto}
               onConfirm={async () => {
                 await excluirBeneficiario(data.cpf);
-
                 onClose();
                 onDeleted();
               }}
             />
           )}
-          <EditBeneficiarioButton user={data} />
+          {/* Conectado o gatilho de sucesso ao botão modificador */}
+          <EditBeneficiarioButton user={data} onUpdated={onUpdated} />
           <Button
             variant="secondary"
             onClick={onClose}

@@ -1,14 +1,5 @@
-/**
- * Endpoints consumidos (DentistaController.java):
- *   GET    /dentista         → listar todos
- *   GET    /dentista/:cpf    → buscar por CPF
- *   POST   /dentista         → criar (voluntário)
- *   PUT    /dentista/:cpf    → atualizar
- *   DELETE /dentista/:cpf    → excluir
- */
-
 import type { DentistaAPI } from "../domain/entities/DentistaAPI";
-import type { CriarDentistaPayload } from "../domain/entities/CriarDentista"
+import type { CriarDentistaPayload } from "../domain/entities/CriarDentista";
 import {
   mapDentista,
   mapDentistas,
@@ -24,8 +15,10 @@ async function handleResponse<T>(res: Response): Promise<T> {
     let mensagem = `Erro ${res.status}`;
     try {
       const body = await res.json();
-      mensagem = body?.message ?? body?.error ?? mensagem;
-    } catch { /* manter mensagem padrão */ }
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
+    } catch { 
+      /* manter mensagem padrão baseada no status HTTP */ 
+    }
     throw new Error(mensagem);
   }
   if (res.status === 204) return undefined as T;
@@ -53,7 +46,6 @@ export async function getDentistaCompleto(
 
 /**
  * POST /dentista
- * Cadastro de voluntário (VoluntaryForm.tsx).
  */
 export async function criarDentista(
   payload: CriarDentistaPayload

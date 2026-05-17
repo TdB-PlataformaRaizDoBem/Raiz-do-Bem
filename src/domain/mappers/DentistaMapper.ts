@@ -41,6 +41,7 @@ export interface DentistaViewModel {
   especialidades: string[];
 
   // Endereço flat
+  cep: string | null;
   logradouro: string | null;
   numero: string | null;
   cidade: string | null;
@@ -87,6 +88,8 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
     especialidades: api.especialidades ?? [],
 
     // Endereço flat
+    cep: api.cep ?? null,
+
     logradouro: api.logradouro ?? null,
 
     numero: api.numero ?? null,
