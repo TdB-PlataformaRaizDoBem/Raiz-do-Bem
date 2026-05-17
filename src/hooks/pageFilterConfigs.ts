@@ -11,6 +11,7 @@ import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper
 import type { DentistaViewModel } from "../domain/mappers/DentistaMapper";
 import type { ColaboradorViewModel } from "../domain/mappers/ColaboradorMapper";
 import type { PedidoViewModel } from "../domain/mappers/PedidoMapper";
+import type { AtendimentoViewModel } from "../domain/mappers/AtendimentoMapper";
 
 /*
    COLABORADORES
@@ -178,15 +179,33 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
 };
 
 /*
-   DESIGNAÇÃO (pedidos aprovados pendentes)
-   Busca: nome, CPF, cidade, estado, protocolo
+   DESIGNAÇÃO — aba PENDENTE (Beneficiários ainda sem atendimento)
+   Busca: nome completo, CPF, cidade do endereço.
 */
-export const designacaoFilterConfig: PageFilterConfig<PedidoViewModel> = {
+export const designacaoFilterConfig: PageFilterConfig<BeneficiarioViewModel> = {
   groups: [],
   predicate(item, _activeFilters, searchText) {
     if (searchText) {
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.cpf} ${item.endereco ?? ""} ${item.id}`,
+        `${item.nomeCompleto} ${item.cpf} ${item.endereco?.cidade ?? ""}`,
+      );
+      if (!haystack.includes(searchText)) return false;
+    }
+
+    return true;
+  },
+};
+
+/*
+   DESIGNAÇÃO — abas EM_ATENDIMENTO, CONCLUIDO e TODOS (Atendimentos)
+   Busca: nome do beneficiário, nome do dentista, prontuário, id do atendimento.
+*/
+export const atendimentoFilterConfig: PageFilterConfig<AtendimentoViewModel> = {
+  groups: [],
+  predicate(item, _activeFilters, searchText) {
+    if (searchText) {
+      const haystack = normalizeText(
+        `${item.beneficiario} ${item.dentista} ${item.prontuario} ${item.id}`,
       );
       if (!haystack.includes(searchText)) return false;
     }
