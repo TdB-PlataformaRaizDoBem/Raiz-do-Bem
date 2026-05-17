@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from "react";
-import type { PageFilterConfig } from "../components/UserManagement.tsx/FilterConfig";
+import type { PageFilterConfig } from "../components/UserManagement/FilterConfig";
 
 /** Normaliza texto para comparação sem acentos e minúsculas */
 export function normalizeText(text: string): string {
@@ -25,7 +25,7 @@ export function useSmartFilter<T>(items: T[], config: PageFilterConfig<T>) {
       Object.fromEntries(config.groups.map((g) => [g.key, ""])) as Record<
         string,
         string
-      >
+      >,
   );
 
   /** Alterna um filtro: clica no mesmo valor desativa, outro valor ativa */
@@ -43,7 +43,7 @@ export function useSmartFilter<T>(items: T[], config: PageFilterConfig<T>) {
       Object.fromEntries(config.groups.map((g) => [g.key, ""])) as Record<
         string,
         string
-      >
+      >,
     );
   }, [config.groups]);
 
@@ -58,7 +58,7 @@ export function useSmartFilter<T>(items: T[], config: PageFilterConfig<T>) {
   const filteredItems = useMemo(() => {
     const normalizedSearch = normalizeText(searchText);
     return items.filter((item) =>
-      config.predicate(item, activeFilters, normalizedSearch)
+      config.predicate(item, activeFilters, normalizedSearch),
     );
   }, [items, activeFilters, searchText, config]);
 

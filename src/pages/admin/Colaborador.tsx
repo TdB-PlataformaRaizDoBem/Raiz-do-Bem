@@ -1,4 +1,4 @@
-import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
+import { UserManagementPage } from "../../components/UserManagement/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { CreateCoord } from "../../components/forms/create/CreateCoord";
@@ -27,7 +27,7 @@ const ColaboradorPainel = ({
         onClose={onClose}
         onDeleted={onDeleted}
         onUpdated={() => {
-          onUpdated(); 
+          onUpdated();
           if (refetchSingle) refetchSingle();
         }}
       />

@@ -1,10 +1,13 @@
-import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
+import { UserManagementPage } from "../../components/UserManagement/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { CreateBeneficiario } from "../../components/forms/create/CreateBeneficiario";
 import { BeneficiarioDetails } from "../../components/details/BeneficiarioDetails";
 import { AsyncEstado } from "../../components/ui/AsyncEstado";
-import { useBeneficiarios, useBeneficiario } from "../../hooks/useBeneficiarios";
+import {
+  useBeneficiarios,
+  useBeneficiario,
+} from "../../hooks/useBeneficiarios";
 import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
 import { getUser } from "../../hooks/useUser";
 import { beneficiarioFilterConfig } from "../../hooks/pageFilterConfigs";
@@ -27,11 +30,11 @@ const BeneficiarioPainel = ({
 
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <BeneficiarioDetails 
-        data={data!} 
-        isAdmin={isAdmin} 
-        onClose={onClose} 
-        onDeleted={onDeleted} 
+      <BeneficiarioDetails
+        data={data!}
+        isAdmin={isAdmin}
+        onClose={onClose}
+        onDeleted={onDeleted}
         onUpdated={() => {
           onUpdated(); // Recarrega a listagem de cards ao fundo
           if (refetchSingle) refetchSingle(); // Atualiza a gaveta de visualização atual
@@ -47,7 +50,12 @@ export const Beneficiarios = () => {
   const { data: beneficiarios, loading, error, refetch } = useBeneficiarios();
 
   return (
-    <AsyncEstado loading={loading} error={error} vazio={!beneficiarios?.length} mensagemVazio="Nenhum beneficiário cadastrado.">
+    <AsyncEstado
+      loading={loading}
+      error={error}
+      vazio={!beneficiarios?.length}
+      mensagemVazio="Nenhum beneficiário cadastrado."
+    >
       <UserManagementPage<BeneficiarioCompleto>
         title="Gerenciamento de Beneficiários"
         users={beneficiarios ?? []}
@@ -55,16 +63,26 @@ export const Beneficiarios = () => {
         filterConfig={beneficiarioFilterConfig}
         renderCreateForm={(close) => <CreateBeneficiario onSuccess={close} />}
         renderCard={(u, selected, select) => (
-          <UserCard className={`transition-all border-l-4 border-amber p-5 ${selected ? "shadow-md scale-[1.02] bg-gray-50" : "hover:shadow-sm"}`}>
+          <UserCard
+            className={`transition-all border-l-4 border-amber p-5 ${selected ? "shadow-md scale-[1.02] bg-gray-50" : "hover:shadow-sm"}`}
+          >
             <div className="flex flex-col gap-2">
-              <p className="text-xl font-bold text-darkgray leading-tight">{u.nomeCompleto}</p>
+              <p className="text-xl font-bold text-darkgray leading-tight">
+                {u.nomeCompleto}
+              </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-gray uppercase text-xs mr-1">Programa:</span>
+                <span className="font-bold text-gray uppercase text-xs mr-1">
+                  Programa:
+                </span>
                 {u.programaSocial ?? "Não informado"}
               </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-gray uppercase text-xs mr-1">Cidade:</span>
-                {u.endereco ? `${u.endereco.cidade} • ${u.endereco.estado}` : "Não informado"}
+                <span className="font-bold text-gray uppercase text-xs mr-1">
+                  Cidade:
+                </span>
+                {u.endereco
+                  ? `${u.endereco.cidade} • ${u.endereco.estado}`
+                  : "Não informado"}
               </p>
             </div>
             <div className="mt-4 pt-4 flex flex-col gap-6">
@@ -82,11 +100,11 @@ export const Beneficiarios = () => {
           </UserCard>
         )}
         renderDetails={(user, close) => (
-          <BeneficiarioPainel 
-            cpf={user.cpf} 
-            isAdmin={isAdmin} 
-            onClose={close} 
-            onDeleted={refetch} 
+          <BeneficiarioPainel
+            cpf={user.cpf}
+            isAdmin={isAdmin}
+            onClose={close}
+            onDeleted={refetch}
             onUpdated={refetch} // <--- Passando o trigger de atualização aqui
           />
         )}

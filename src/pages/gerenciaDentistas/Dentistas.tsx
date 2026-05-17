@@ -1,4 +1,4 @@
-import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
+import { UserManagementPage } from "../../components/UserManagement/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { CreateDentista } from "../../components/forms/create/CreateDentista";
@@ -23,14 +23,14 @@ const DentistaPainel = ({
   onUpdated: () => void;
 }) => {
   const { data, loading, error, refetch: refetchSingle } = useDentista(cpf);
-  
+
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <DentistaDetails 
-        data={data!} 
-        isAdmin={isAdmin} 
-        onClose={onClose} 
-        onDeleted={onDeleted} 
+      <DentistaDetails
+        data={data!}
+        isAdmin={isAdmin}
+        onClose={onClose}
+        onDeleted={onDeleted}
         onUpdated={() => {
           onUpdated();
           if (refetchSingle) refetchSingle();
@@ -69,11 +69,15 @@ export const Dentistas = () => {
                 {u.nomeCompleto}
               </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-darkgray uppercase text-xs mr-1">CRO:</span>
+                <span className="font-bold text-darkgray uppercase text-xs mr-1">
+                  CRO:
+                </span>
                 {u.croDentista}
               </p>
               <p className="text-sm text-gray-500 font-medium">
-                <span className="font-bold text-darkgray uppercase text-xs mr-1">Especialidade:</span>
+                <span className="font-bold text-darkgray uppercase text-xs mr-1">
+                  Especialidade:
+                </span>
                 {u.especialidades.length > 0
                   ? u.especialidades.join(", ")
                   : "Não informado"}

@@ -5,7 +5,7 @@
  * useSmartFilter. O predicate une busca por texto + todos os filtros ativos.
  */
 
-import type { PageFilterConfig } from "../components/UserManagement.tsx/FilterConfig";
+import type { PageFilterConfig } from "../components/UserManagement/FilterConfig";
 import { normalizeText } from "./useSmartFilter";
 import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
 import type { DentistaViewModel } from "../domain/mappers/DentistaMapper";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
+import { UserManagementPage } from "../../components/UserManagement/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";

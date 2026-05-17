@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserManagementPage } from "../../components/UserManagement.tsx/UserManagementPage";
+import { UserManagementPage } from "../../components/UserManagement/UserManagementPage";
 import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
@@ -383,9 +383,7 @@ const AbaAtendimentos = ({ tab }: AbaAtendimentosProps) => {
                     {a.dentista}
                   </p>
                   <p className="text-xs text-gray-400 italic mt-1 line-clamp-2">
-                    <span className="font-bold not-italic">
-                      Prontuário:
-                    </span>{" "}
+                    <span className="font-bold not-italic">Prontuário:</span>{" "}
                     {a.prontuario}
                   </p>
                 </div>
@@ -443,11 +441,7 @@ export const Designacao = () => {
         ))}
       </div>
 
-      {tab === "PENDENTE" ? (
-        <AbaPendentes />
-      ) : (
-        <AbaAtendimentos tab={tab} />
-      )}
+      {tab === "PENDENTE" ? <AbaPendentes /> : <AbaAtendimentos tab={tab} />}
     </>
   );
 };
