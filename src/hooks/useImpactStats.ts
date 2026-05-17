@@ -21,7 +21,7 @@ export const useImpactStats = () => {
         const qtdTdb = lista.filter((b) => {
           const prog = b.programaSocial ?? "";
           const lower = prog.toLowerCase();
-          return prog === "Turma do Bem" || lower.includes("turma");
+          return prog === "Dentista do Bem" || lower.includes("dentista");
         }).length;
 
         const qtdAdb = lista.filter((b) => {

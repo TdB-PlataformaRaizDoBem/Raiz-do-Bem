@@ -7,19 +7,6 @@ import VoluntaryFormFields, {
 import { Button } from "../../../components/ui/Button";
 import { ToastNotificationContext } from "../../../components/context/NotificationContext";
 import { criarDentista } from "../../../services/DentistaService";
-import type { SexoAPI } from "../../../domain/types/api-schema";
-
-const SEXO_MAP: Record<VoluntaryFormValues["sexo"], SexoAPI> = {
-  Masculino: "M",
-  Feminino: "F",
-  Outro: "O",
-};
-
-const formatCRO = (value: string) => {
-  const cleaned = value.trim().toUpperCase();
-  if (cleaned.startsWith("CRO-")) return cleaned;
-  return `CRO-${cleaned}`;
-};
 
 const VoluntaryForm = () => {
   const methods = useForm<VoluntaryFormValues>({
@@ -30,7 +17,7 @@ const VoluntaryForm = () => {
       cpf: "",
       email: "",
       telefone: "",
-      sexo: "Feminino",
+      sexo: "F",
       endereco: { cep: "", numero: "" },
     },
   });
@@ -39,16 +26,14 @@ const VoluntaryForm = () => {
   const onSubmit = async (data: VoluntaryFormValues) => {
     try {
       await criarDentista({
-        croDentista: formatCRO(data.croDentista),
+        croDentista: data.croDentista,
         cpf: data.cpf.replace(/\D/g, ""),
         nomeCompleto: data.nomeCompleto,
-        sexo: SEXO_MAP[data.sexo],
+        sexo: data.sexo,
         email: data.email,
         telefone: data.telefone.replace(/\D/g, ""),
-
-        categoria: "DENTISTA",
+        categoria: "CLINICO",
         disponivel: "S",
-
         endereco: {
           cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,

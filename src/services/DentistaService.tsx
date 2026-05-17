@@ -16,8 +16,8 @@ async function handleResponse<T>(res: Response): Promise<T> {
     try {
       const body = await res.json();
       mensagem = body?.mensagem ?? body?.message ?? mensagem;
-    } catch { 
-      /* manter mensagem padrão baseada no status HTTP */ 
+    } catch {
+      /* manter mensagem padrão baseada no status HTTP */
     }
     throw new Error(mensagem);
   }
@@ -36,7 +36,7 @@ export async function getDentistasCompletos(): Promise<DentistaViewModel[]> {
 }
 
 export async function getDentistaCompleto(
-  cpf: string
+  cpf: string,
 ): Promise<DentistaViewModel | null> {
   const res = await fetch(`${ENDPOINT}/${cpf}`);
   if (res.status === 404) return null;
@@ -48,20 +48,21 @@ export async function getDentistaCompleto(
  * POST /dentista
  */
 export async function criarDentista(
-  payload: CriarDentistaPayload
+  payload: CriarDentistaPayload,
 ): Promise<DentistaViewModel> {
   const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
+
   const data = await handleResponse<DentistaAPI>(res);
   return mapDentista(data);
 }
 
 export async function atualizarDentista(
   cpf: string,
-  payload: Partial<AtualizarDentistaPayload>
+  payload: Partial<AtualizarDentistaPayload>,
 ): Promise<DentistaViewModel> {
   const res = await fetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",

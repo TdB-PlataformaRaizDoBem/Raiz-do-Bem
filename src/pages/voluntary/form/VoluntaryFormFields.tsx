@@ -8,8 +8,8 @@ export interface VoluntaryFormValues {
   cpf: string;
   email: string;
   telefone: string;
-  sexo: "Masculino" | "Feminino" | "Outro";
-  categoria: "DENTISTA" | "COORDENADOR";
+  sexo: "M" | "F" | "O";
+  categoria: "CLINICO" | "COORDENADOR";
   disponivel: "S" | "N";
   endereco: {
     cep: string;
@@ -98,9 +98,9 @@ const VoluntaryFormFields = () => {
             className={`${selectClass} ${errors.sexo ? "border-red-600" : ""}`}
           >
             <option value="">Selecione</option>
-            <option value="Feminino">Feminino</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Outro">Outro</option>
+            <option value="F">Feminino</option>
+            <option value="M">Masculino</option>
+            <option value="O">Outro</option>
           </select>
           {errors.sexo && (
             <span className="text-red-500 text-xs mt-1">

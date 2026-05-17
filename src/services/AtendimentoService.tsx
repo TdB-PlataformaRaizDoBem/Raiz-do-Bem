@@ -15,7 +15,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
     throw new Error(mensagem);
   }
   if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
+  const contentLength = res.headers.get("content-legth");
+  if (contentLength === "0") return undefined as T;
+  
+  try {
+    const texto = await res.text();
+    return texto ? JSON.parse(texto) : (undefined as T);
+  } catch {
+    return undefined as T;
+  }
 }
 
 function jsonHeaders(): HeadersInit {

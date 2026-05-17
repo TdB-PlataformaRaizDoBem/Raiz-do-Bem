@@ -8,10 +8,10 @@ import { useCep } from "../../../hooks/useCep";
 const REGEX = {
   nome: /^[A-Za-zÀ-ÿ\s]{3,}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  telefone: /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/,
-  cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/,
-  cro: /^(CRO[-/ ]?)?[A-Za-z]{2}[-/ ]?\d{4,7}$|^\d{4,7}[-/ ]?[A-Za-z]{2}$/,
-  cep: /^\d{5}-?\d{3}$/,
+  telefone: /^[0-9\D]{10,15}$/, 
+  cpf: /^(?:\d[.-]?){11}$/,     
+  cro: /^[A-Za-z0-9\s/-]{4,15}$/, 
+  cep: /^(?:\d[-]?){8}$/,       
 };
 
 interface Props {
@@ -37,7 +37,6 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
       </h2>
 
       <div className="flex-1 overflow-y-auto p-2 pr-3 custom-scrollbar space-y-6">
-
         {/* Dados Pessoais */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
@@ -53,7 +52,10 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
             label="CRO"
             {...register("croDentista", {
               required: requiredMsg,
-              pattern: { value: REGEX.cro, message: "Formato inválido (SP-12345)" },
+              pattern: {
+                value: REGEX.cro,
+                message: "Formato inválido (SP-12345)",
+              },
             })}
             error={errors.croDentista?.message}
           />
@@ -92,20 +94,19 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
               {...register("sexo", { required: requiredMsg })}
               className="p-3 border rounded-md"
             >
-              <option value="Feminino">Feminino</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Outro">Outro</option>
+              <option value="F">Feminino</option>
+              <option value="M">Masculino</option>
+              <option value="O">Outro</option>
             </select>
           </div>
 
-          {/* 🔥 NOVO CAMPO: CATEGORIA (OBRIGATÓRIO BACKEND) */}
           <div className="flex flex-col">
             <label className="text-sm font-bold">Categoria</label>
             <select
               {...register("categoria", { required: requiredMsg })}
               className="p-3 border rounded-md"
             >
-              <option value="DENTISTA">Dentista</option>
+              <option value="CLINICO">Clinico</option>
               <option value="COORDENADOR">Coordenador</option>
             </select>
             {errors.categoria && (
@@ -154,11 +155,7 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
 
       {/* Ações */}
       <div className="flex gap-3 justify-end pt-4 border-t">
-        <Button
-          variant="secondary"
-          type="button"
-          onClick={onCancel}
-        >
+        <Button variant="secondary" type="button" onClick={onCancel}>
           Cancelar
         </Button>
 

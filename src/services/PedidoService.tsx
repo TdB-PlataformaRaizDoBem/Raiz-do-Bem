@@ -10,9 +10,6 @@ import type { StatusPedidoAPI } from "../domain/types/api-schema";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/pedido-ajuda`;
 
-/**
- * Handler de resposta centralizado.
- */
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     let mensagem = `Erro ${res.status}`;
@@ -79,7 +76,6 @@ export async function getPedidosAprovadosLivres(): Promise<PedidoViewModel[]> {
 
 /**
  * POST /pedido-ajuda
- * Cria um novo pedido de ajuda (formulário público — sem autenticação).
  */
 export async function criarPedidoAjuda(
   payload: CriarPedidoAjudaPayload,
@@ -89,6 +85,8 @@ export async function criarPedidoAjuda(
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
+
+  console.log(payload)
   const data = await handleResponse<PedidoAjudaAPI>(res);
   return mapPedido(data);
 }
