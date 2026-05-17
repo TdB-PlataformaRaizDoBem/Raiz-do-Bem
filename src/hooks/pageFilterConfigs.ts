@@ -28,14 +28,8 @@ export const colaboradorFilterConfig: PageFilterConfig<ColaboradorViewModel> = {
       ],
     },
   ],
-  predicate(item, activeFilters, searchText) {
-    // Filtro de nível
-    const nivel = activeFilters["nivel"];
-    if (nivel) {
-      const itemNivel = (item.nivelAcesso ?? "colaborador").toLowerCase();
-      if (itemNivel !== nivel) return false;
-    }
-
+  predicate(item, _activeFilters, searchText) {
+    // Filtro de nível (nivelAcesso não disponível no ColaboradorViewModel)
     // Busca por texto
     if (searchText) {
       const haystack = normalizeText(
@@ -60,17 +54,8 @@ export const beneficiarioFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
         label: "Programa Social",
         key: "programa",
         options: [
-          { label: "Turma do Bem", value: "turma_do_bem" },
-          { label: "Apolônias do Bem", value: "apollonias_do_bem" },
-        ],
-      },
-      {
-        label: "Status do Pedido",
-        key: "status",
-        options: [
-          { label: "Aprovado", value: "APROVADO" },
-          { label: "Pendente", value: "PENDENTE" },
-          { label: "Negado", value: "REJEITADO" },
+          { label: "Turma do Bem", value: "Turma do Bem" },
+          { label: "Apolônias do Bem", value: "Apolonia do Bem" },
         ],
       },
     ],
@@ -78,14 +63,8 @@ export const beneficiarioFilterConfig: PageFilterConfig<BeneficiarioViewModel> =
       // Filtro de programa
       const programa = activeFilters["programa"];
       if (programa) {
-        const itemPrograma = normalizeText(item.programaSocial?.programa ?? "");
+        const itemPrograma = normalizeText(item.programaSocial ?? "");
         if (itemPrograma !== normalizeText(programa)) return false;
-      }
-
-      // Filtro de status do pedido
-      const status = activeFilters["status"];
-      if (status) {
-        if (item.pedido?.statusAPI !== status) return false;
       }
 
       // Busca por texto
@@ -119,8 +98,8 @@ export const dentistaFilterConfig: PageFilterConfig<DentistaViewModel> = {
       label: "Programa",
       key: "programa",
       options: [
-        { label: "Turma do Bem", value: "turma_do_bem" },
-        { label: "Apolônias do Bem", value: "apollonias_do_bem" },
+        { label: "Turma do Bem", value: "Turma do Bem" },
+        { label: "Apolônias do Bem", value: "Apolonia do Bem" },
         { label: "Ambos", value: "ambos" },
       ],
     },
@@ -140,11 +119,9 @@ export const dentistaFilterConfig: PageFilterConfig<DentistaViewModel> = {
 
     // Busca por texto
     if (searchText) {
-      const especialidades = item.especialidades
-        .map((e) => e.descricao)
-        .join(" ");
+      const especialidades = item.especialidades.join(" ");
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.croDentista} ${item.cpf} ${especialidades} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`,
+        `${item.nomeCompleto} ${item.croDentista} ${item.cpf} ${especialidades} ${item.cidade ?? ""} ${item.estado ?? ""}`,
       );
       if (!haystack.includes(searchText)) return false;
     }
@@ -185,13 +162,13 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
 
     // Filtro de dentista vinculado
     const dentista = activeFilters["dentista"];
-    if (dentista === "com" && !item.dentistaAtribuido) return false;
-    if (dentista === "sem" && item.dentistaAtribuido) return false;
+    if (dentista === "com" && !item.dentistaResponsavel) return false;
+    if (dentista === "sem" && item.dentistaResponsavel) return false;
 
     // Busca por texto (inclui número do protocolo)
     if (searchText) {
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.cpf} ${item.id} ${item.descricaoProblema} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""}`,
+        `${item.nomeCompleto} ${item.cpf} ${item.id} ${item.descricaoProblema} ${item.endereco ?? ""}`,
       );
       if (!haystack.includes(searchText)) return false;
     }
@@ -209,7 +186,7 @@ export const designacaoFilterConfig: PageFilterConfig<PedidoViewModel> = {
   predicate(item, _activeFilters, searchText) {
     if (searchText) {
       const haystack = normalizeText(
-        `${item.nomeCompleto} ${item.cpf} ${item.endereco?.cidade ?? ""} ${item.endereco?.estado ?? ""} ${item.id}`,
+        `${item.nomeCompleto} ${item.cpf} ${item.endereco ?? ""} ${item.id}`,
       );
       if (!haystack.includes(searchText)) return false;
     }

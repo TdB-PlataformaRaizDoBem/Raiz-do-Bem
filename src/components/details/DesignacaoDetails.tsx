@@ -54,9 +54,7 @@ export const DesignacaoDetails = ({
                   Localização
                 </p>
                 <p className="font-bold text-darkgray">
-                  {data.endereco
-                    ? `${data.endereco.cidade} — ${data.endereco.estado}`
-                    : "Não informado"}
+                  {data.endereco ?? "Não informado"}
                 </p>
               </div>
             </div>
@@ -70,30 +68,14 @@ export const DesignacaoDetails = ({
               </p>
             </div>
 
-            {modoLeitura && data.dentistaAtribuido && (
+            {modoLeitura && data.dentistaResponsavel && (
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
                 <h4 className="text-xs font-black uppercase text-gray-400 tracking-wider mb-3">
                   Dentista responsável
                 </h4>
                 <p className="font-bold text-darkgray">
-                  {data.dentistaAtribuido.nomeCompleto}
+                  {data.dentistaResponsavel}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  CRO: {data.dentistaAtribuido.croDentista}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {data.dentistaAtribuido.email} ·{" "}
-                  {data.dentistaAtribuido.telefone}
-                </p>
-                <span
-                  className={`inline-block mt-2 text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                    data.dentistaAtribuido.disponivel
-                      ? "bg-lightgreen/20 text-darkgreen"
-                      : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  {data.dentistaAtribuido.disponibilidadeLabel}
-                </span>
               </div>
             )}
 

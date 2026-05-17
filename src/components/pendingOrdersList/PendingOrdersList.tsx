@@ -26,19 +26,19 @@ export const CriticalOrdersList = () => {
                 </span>
                 
                 <span className="text-lg font-bold text-black group-hover:text-darkgreen transition-colors">
-                  {pedido.nome_completo}
+                  {pedido.nomeCompleto}
                 </span>
               </div>
 
               {/* Breve descrição do problema */}
               <p className="text-sm text-gray-500 line-clamp-1 max-w-[200px] sm:max-w-[300px]">
-                {pedido.descricao_problema}
+                {pedido.descricaoProblema}
               </p>
             </div>
 
             <div className="flex flex-col items-end gap-1">
               <span className="text-sm font-bold text-black bg-amber/5 border border-amber/20 px-2 py-1 rounded">
-                {pedido.data}
+                {pedido.dataPedidoISO}
               </span>
             </div>
 

@@ -15,7 +15,7 @@ async function fetchPorTab(tab: DesignacaoTab): Promise<PedidoViewModel[]> {
 
     case "EM_ATENDIMENTO": {
       const todos = await getPedidosCompletos();
-      return todos.filter((p) => p.dentistaAtribuido !== null);
+      return todos.filter((p) => p.dentistaResponsavel !== null);
     }
 
     case "CONCLUIDO": {

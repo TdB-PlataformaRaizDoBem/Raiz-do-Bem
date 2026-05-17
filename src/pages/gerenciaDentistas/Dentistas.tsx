@@ -75,7 +75,7 @@ export const Dentistas = () => {
               <p className="text-sm text-gray-500 font-medium">
                 <span className="font-bold text-darkgray uppercase text-xs mr-1">Especialidade:</span>
                 {u.especialidades.length > 0
-                  ? u.especialidades.map((e) => e.descricao).join(", ")
+                  ? u.especialidades.join(", ")
                   : "Não informado"}
               </p>
               <span

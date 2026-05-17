@@ -104,9 +104,7 @@ export const Designacao = () => {
                   {pedidoEmFoco.email} · {pedidoEmFoco.telefone}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {pedidoEmFoco.endereco
-                    ? `${pedidoEmFoco.endereco.cidade} — ${pedidoEmFoco.endereco.estado}`
-                    : "Localização não informada"}
+                  {pedidoEmFoco.endereco ?? "Localização não informada"}
                 </p>
               </div>
 
@@ -191,9 +189,7 @@ export const Designacao = () => {
                   <span className="font-bold text-xs uppercase mr-1">
                     Localização:
                   </span>
-                  {p.endereco
-                    ? `${p.endereco.cidade} — ${p.endereco.estado}`
-                    : "Não informado"}
+                  {p.endereco ?? "Não informado"}
                 </p>
                 <p className="text-xs text-gray-400 italic mt-1 line-clamp-2">
                   <span className="font-bold not-italic">
