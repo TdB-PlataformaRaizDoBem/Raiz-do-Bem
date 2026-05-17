@@ -92,7 +92,7 @@ type DentistaDetailsProps = {
   isAdmin: boolean;
   onClose: () => void;
   onDeleted: () => void;
-  onUpdated: () => void; // <--- Adicionado na tipagem
+  onUpdated: () => void;
 };
 
 export const DentistaDetails = ({
@@ -100,27 +100,27 @@ export const DentistaDetails = ({
   isAdmin,
   onClose,
   onDeleted,
-  onUpdated, // <--- Recebido aqui
+  onUpdated,
 }: DentistaDetailsProps) => (
   <UserInformation>
     <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
       <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="text-3xl font-bold text-darkgray font-fredoka">
-                {data.nomeCompleto}
-              </h3>
-              <div className="h-1.5 w-20 mt-1 bg-amber" />
-            </div>
-            <div className="text-right">
-              <span className="block text-xs font-black text-gray-400 uppercase tracking-widest">
-                ID:
-              </span>
-              <span className="text-lg font-mono font-bold text-darkgray">
-                #{data.id}
-              </span>
-            </div>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="text-3xl font-bold text-darkgray font-fredoka">
+              {data.nomeCompleto}
+            </h3>
+            <div className="h-1.5 w-20 mt-1 bg-amber" />
           </div>
+          <div className="text-right">
+            <span className="block text-xs font-black text-gray-400 uppercase tracking-widest">
+              ID:
+            </span>
+            <span className="text-lg font-mono font-bold text-darkgray">
+              #{data.id}
+            </span>
+          </div>
+        </div>
 
         <div className="space-y-6">
           <SecaoStatus data={data} />
@@ -143,7 +143,6 @@ export const DentistaDetails = ({
             />
           )}
 
-          {/* Conectado o trigger de atualização aqui */}
           <EditDentistaButton user={data} onUpdated={onUpdated} />
 
           <Button

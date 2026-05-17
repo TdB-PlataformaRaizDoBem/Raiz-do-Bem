@@ -76,4 +76,20 @@ export async function excluirBeneficiario(cpf: string): Promise<void> {
   await handleResponse<void>(res);
 }
 
+export async function exportarBeneficiariosCsv(): Promise<Blob> {
+  const res = await fetch(`${ENDPOINT}/exportarCsv`);
+
+  if (!res.ok) {
+    let mensagem = `Erro ${res.status}`;
+    try {
+      const body = await res.json();
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
+    } catch {
+      /* manter mensagem padrão */
+    }
+    throw new Error(mensagem);
+  }
+  return res.blob();
+}
+
 export type { BeneficiarioViewModel as BeneficiarioCompleto } from "../domain/mappers/Beneficiariomapper";

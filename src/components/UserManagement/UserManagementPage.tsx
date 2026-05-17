@@ -21,6 +21,12 @@ type UserManagementPageProps<T> = {
   renderDetails: (user: T, close: () => void) => React.ReactNode;
   renderCreateForm?: (close: () => void) => React.ReactNode;
   filterConfig?: PageFilterConfig<T>;
+  /**
+   * Ações extras exibidas na Toolbar ao lado do botão "Criar Conta".
+   * Use para injetar botões de exportação, relatórios, etc.
+   * A visibilidade/acesso de cada ação deve ser controlada pelo chamador.
+   */
+  extraActions?: React.ReactNode;
 };
 
 function FilterGroupSelect({
@@ -138,13 +144,13 @@ function Toolbar({
             lg:w-auto
           "
         >
-           {/* CTA */}
+          {/* CTAs */}
           {actions && (
-            <div className="shrink-0">
+            <div className="shrink-0 flex items-center gap-2">
               {actions}
             </div>
           )}
-          
+
           {/* Search */}
           <div className="flex-1 lg:w-[340px]">
             {search}
@@ -163,6 +169,7 @@ export function UserManagementPage<T>({
   renderDetails,
   renderCreateForm,
   filterConfig,
+  extraActions,
 }: UserManagementPageProps<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = React.useState(false);
@@ -225,10 +232,17 @@ export function UserManagementPage<T>({
           />
         }
         actions={
-          showCreateButton && renderCreateForm ? (
-            <Button variant="primary" onClick={() => setOpen(true)}>
-              Criar Conta
-            </Button>
+          (showCreateButton && renderCreateForm) || extraActions ? (
+            <>
+              {/* Botão de criar — respeita a regra de permissão original */}
+              {showCreateButton && renderCreateForm && (
+                <Button variant="primary" onClick={() => setOpen(true)}>
+                  Criar Conta
+                </Button>
+              )}
+
+              {extraActions}
+            </>
           ) : undefined
         }
       >

@@ -9,23 +9,24 @@ import {
   useBeneficiario,
 } from "../../hooks/useBeneficiarios";
 import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
+import { exportarBeneficiariosCsv } from "../../services/Beneficiarioservice";
 import { getUser } from "../../hooks/useUser";
 import { beneficiarioFilterConfig } from "../../hooks/pageFilterConfigs";
+import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
 
 const BeneficiarioPainel = ({
   cpf,
   isAdmin,
   onClose,
   onDeleted,
-  onUpdated, // <--- Adicionado
+  onUpdated,
 }: {
   cpf: string;
   isAdmin: boolean;
   onClose: () => void;
   onDeleted: () => void;
-  onUpdated: () => void; // <--- Adicionado
+  onUpdated: () => void;
 }) => {
-  // Desestruturado a função 'refetch' nativa do hook e renomeada para refetchSingle
   const { data, loading, error, refetch: refetchSingle } = useBeneficiario(cpf);
 
   return (
@@ -36,8 +37,8 @@ const BeneficiarioPainel = ({
         onClose={onClose}
         onDeleted={onDeleted}
         onUpdated={() => {
-          onUpdated(); // Recarrega a listagem de cards ao fundo
-          if (refetchSingle) refetchSingle(); // Atualiza a gaveta de visualização atual
+          onUpdated();
+          if (refetchSingle) refetchSingle();
         }}
       />
     </AsyncEstado>
@@ -62,6 +63,15 @@ export const Beneficiarios = () => {
         getId={(u) => u.id}
         filterConfig={beneficiarioFilterConfig}
         renderCreateForm={(close) => <CreateBeneficiario onSuccess={close} />}
+        extraActions={
+          isAdmin ? (
+            <ExportCsvButton
+              onExport={exportarBeneficiariosCsv}
+              fileName="beneficiarios.csv"
+              label="Exportar CSV"
+            />
+          ) : undefined
+        }
         renderCard={(u, selected, select) => (
           <UserCard
             className={`transition-all border-l-4 border-amber p-5 ${selected ? "shadow-md scale-[1.02] bg-gray-50" : "hover:shadow-sm"}`}
@@ -105,7 +115,7 @@ export const Beneficiarios = () => {
             isAdmin={isAdmin}
             onClose={close}
             onDeleted={refetch}
-            onUpdated={refetch} // <--- Passando o trigger de atualização aqui
+            onUpdated={refetch}
           />
         )}
       />

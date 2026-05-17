@@ -6,8 +6,10 @@ import { DentistaDetails } from "../../components/details/DentistaDetails";
 import { AsyncEstado } from "../../components/ui/AsyncEstado";
 import { useDentistas, useDentista } from "../../hooks/useDentistas";
 import type { DentistaCompleto } from "../../services/DentistaService";
+import { exportarDentistasCsv } from "../../services/DentistaService";
 import { getUser } from "../../hooks/useUser";
 import { dentistaFilterConfig } from "../../hooks/pageFilterConfigs";
+import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
 
 const DentistaPainel = ({
   cpf,
@@ -58,6 +60,15 @@ export const Dentistas = () => {
         getId={(u) => u.id}
         filterConfig={dentistaFilterConfig}
         renderCreateForm={(close) => <CreateDentista onSuccess={close} />}
+        extraActions={
+          isAdmin ? (
+            <ExportCsvButton
+              onExport={exportarDentistasCsv}
+              fileName="dentistas.csv"
+              label="Exportar CSV"
+            />
+          ) : undefined
+        }
         renderCard={(u, selected, select) => (
           <UserCard
             className={`transition-all border-l-4 border-lightgreen p-5 ${

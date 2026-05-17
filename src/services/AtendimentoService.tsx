@@ -17,7 +17,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
   if (res.status === 204) return undefined as T;
   const contentLength = res.headers.get("content-legth");
   if (contentLength === "0") return undefined as T;
-  
+
   try {
     const texto = await res.text();
     return texto ? JSON.parse(texto) : (undefined as T);
@@ -95,4 +95,27 @@ export async function encerrarAtendimento(
 export async function excluirAtendimento(id: number): Promise<void> {
   const res = await fetch(`${ENDPOINT}/${id}`, { method: "DELETE" });
   await handleResponse<void>(res);
+}
+
+
+
+/**
+ * Faz o download do relatório de atendimentos em formato CSV.
+ * Retorna um Blob que pode ser usado para disparar o download no navegador
+ * via URL.createObjectURL — use em conjunto com ExportCsvButton.
+ */
+export async function exportarAtendimentosCsv(): Promise<Blob> {
+  const res = await fetch(`${ENDPOINT}/exportarCsv`);
+
+  if (!res.ok) {
+    let mensagem = `Erro ${res.status}`;
+    try {
+      const body = await res.json();
+      mensagem = body?.mensagem ?? body?.message ?? mensagem;
+    } catch {
+      /* manter mensagem padrão */
+    }
+    throw new Error(mensagem);
+  }
+  return res.blob();
 }
