@@ -1,6 +1,5 @@
 import {
   excluirBeneficiario,
-  exportarBeneficiariosCsv,
   type BeneficiarioCompleto,
 } from "../../services/Beneficiarioservice";
 import UserInformation from "../userInformation/UserInformation";
@@ -8,7 +7,6 @@ import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
 import DeleteUserButton from "../ui/buttonFilters/DeleteUserButton";
 import EditBeneficiarioButton from "../ui/buttonFilters/EditBeneficiarioButton";
-import ExportCsvButton from "../ui/buttonFilters/ExportCsvButton";
 
 const SecaoPedido = ({ data }: { data: BeneficiarioCompleto }) => (
   <div className="bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-300">
@@ -162,15 +160,6 @@ export const BeneficiarioDetails = ({
 
       <UserActions>
         <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
-          {/* Botão de exportação CSV — visível apenas para administradores */}
-          {isAdmin && (
-            <ExportCsvButton
-              onExport={exportarBeneficiariosCsv}
-              fileName="beneficiarios.csv"
-              label="Exportar CSV"
-            />
-          )}
-
           {isAdmin && (
             <DeleteUserButton
               userName={data.nomeCompleto}

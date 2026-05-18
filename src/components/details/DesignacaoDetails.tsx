@@ -21,7 +21,7 @@ export const BeneficiarioDesignacaoDetails = ({
   return (
     <UserInformation>
       <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
-        <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 scrollbar-hide" >
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">
@@ -158,7 +158,7 @@ export const BeneficiarioDesignacaoDetails = ({
   );
 };
 
-/* 
+/*
  *  AtendimentoDetails — abas EM_ATENDIMENTO, CONCLUIDO e TODOS
  *  - EM_ATENDIMENTO → mostra form de encerramento (prontuario + idColaborador)
  *  - CONCLUIDO -> leitura, mas com botão "Atualizar atendimento" que abre o mesmo form e reenvia PUT /atendimento/{cpf}
@@ -175,7 +175,10 @@ type AtendimentoDetailsProps = {
   isAdmin?: boolean;
   modoLeitura?: boolean;
   permitirAtualizar?: boolean;
-  onEncerrar?: (atendimento: AtendimentoViewModel, payload: EncerramentoPayload) => void;
+  onEncerrar?: (
+    atendimento: AtendimentoViewModel,
+    payload: EncerramentoPayload,
+  ) => void;
   onClose: () => void;
 };
 
@@ -260,11 +263,64 @@ export const AtendimentoDetails = ({
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <p className="text-xs font-black uppercase text-gray-400 tracking-wider mb-1">
-                Dentista responsável
-              </p>
-              <p className="text-darkgray font-bold text-lg">{data.dentista}</p>
+            <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex items-start justify-between gap-4 pb-4 border-b border-gray-100">
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-gray-400 mb-2">
+                    Dentista Responsável
+                  </h4>
+
+                  <p className="text-lg font-bold text-darkgray leading-tight">
+                    {data.dentista}
+                  </p>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    Profissional vinculado ao atendimento
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                    E-mail
+                  </p>
+
+                  <p className="text-sm font-semibold text-darkgray break-all">
+                    {data.emailDentista}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                    Contato
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap justify-between">
+                    <p className="text-sm font-semibold text-darkgray">
+                      {data.contatoDentista}
+                    </p>
+
+                    <a
+                      href={`https://wa.me/55${data.contatoDentista.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-2.5 py-1 rounded-lg bg-lightgreen/10 text-darkgreen text-[11px] font-bold hover:bg-lightgreen/20 transition"
+                    >
+                      Chamar no WhatsApp
+                    </a>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
+                    Endereço Comercial
+                  </p>
+
+                  <p className="text-sm leading-relaxed text-darkgray">
+                    {data.enderecoDentista}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="bg-lightgreen/5 p-6 rounded-2xl border border-lightgreen/20">
@@ -327,7 +383,6 @@ export const AtendimentoDetails = ({
 
         <UserActions>
           <div className="flex flex-wrap md:flex-nowrap gap-3 justify-end w-full">
-
             <Button
               variant="secondary"
               onClick={onClose}

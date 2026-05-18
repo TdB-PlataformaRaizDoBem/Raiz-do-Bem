@@ -5,4 +5,7 @@ export interface AtendimentoAPI {
   dentista: string | null;
   dataInicial: string | null;
   dataFim: string | null;
+  contatoDentista: string;
+  emailDentista: string;
+  enderecoDentista: string;
 }

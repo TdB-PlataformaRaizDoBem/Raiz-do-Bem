@@ -44,9 +44,6 @@ const EMPTY_MESSAGES: Record<DesignacaoTab, string> = {
   TODOS: "Nenhum atendimento encontrado.",
 };
 
-/* ------------------------------------------------------------------
- *  Aba PENDENTE
- * ------------------------------------------------------------------ */
 const AbaPendentes = () => {
   const { pendentes, loading, error, refetch } = useDesignacaoPendentes();
   const { showNotification } = useNotification();
@@ -217,9 +214,6 @@ const AbaPendentes = () => {
   );
 };
 
-/* ------------------------------------------------------------------
- *  Abas EM_ATENDIMENTO, CONCLUIDO e TODOS
- * ------------------------------------------------------------------ */
 type AbaAtendimentosProps = {
   tab: "EM_ATENDIMENTO" | "CONCLUIDO" | "TODOS";
   isAdmin: boolean;
@@ -406,7 +400,7 @@ const AbaAtendimentos = ({ tab, isAdmin }: AbaAtendimentosProps) => {
                     variant={selected ? "primary" : "secondary"}
                     className="w-full text-xs font-bold shadow-sm active:scale-95 transition-transform"
                   >
-                    {a.encerrado ? "Ver detalhes" : "Encerrar atendimento"}
+                    Ver detalhes
                   </Button>
                 </div>
               </UserCard>
