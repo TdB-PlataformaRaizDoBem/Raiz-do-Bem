@@ -1,5 +1,5 @@
 import type { AtualizarBeneficiarioPayload } from "../domain/entities/AtualizarBeneficiario.ts";
-import type { BeneficiarioAPI } from "../domain/entities/BeneficiarioAPI";
+import type { BeneficiarioAPI } from "../domain/entities/BeneficiarioAPI.ts";
 import type { CriarBeneficiarioPayload } from "../domain/entities/CriarBeneficiario.ts";
 import {
   mapBeneficiario,
@@ -92,4 +92,4 @@ export async function exportarBeneficiariosCsv(): Promise<Blob> {
   return res.blob();
 }
 
-export type { BeneficiarioViewModel as BeneficiarioCompleto } from "../domain/mappers/Beneficiariomapper";
+export type { BeneficiarioViewModel as BeneficiarioCompleto } from "../domain/mappers/Beneficiariomapper.ts";

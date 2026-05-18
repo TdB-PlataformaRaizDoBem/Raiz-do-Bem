@@ -1,17 +1,19 @@
 // CreateDentistaForms.tsx
-import { useFormContext } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import Input from "../../formElements/Input";
 import { Button } from "../../ui/Button";
 import { type DentistaFormValues } from "./CreateDentista";
 import { useCep } from "../../../hooks/useCep";
+import { SelectEspecialidade } from "../../formElements/SelectEspecialidade";
+import { useEspecialidades } from "../../../hooks/useEspecialidades";
 
 const REGEX = {
   nome: /^[A-Za-zÀ-ÿ\s]{3,}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  telefone: /^[0-9\D]{10,15}$/, 
-  cpf: /^(?:\d[.-]?){11}$/,     
-  cro: /^[A-Za-z0-9\s/-]{4,15}$/, 
-  cep: /^(?:\d[-]?){8}$/,       
+  telefone: /^[0-9\D]{10,15}$/,
+  cpf: /^(?:\d[.-]?){11}$/,
+  cro: /^[A-Za-z0-9\s/-]{4,15}$/,
+  cep: /^(?:\d[-]?){8}$/,
 };
 
 interface Props {
@@ -21,6 +23,7 @@ interface Props {
 export const CreateDentistaForm = ({ onCancel }: Props) => {
   const {
     register,
+    control,
     setValue,
     setError,
     clearErrors,
@@ -29,6 +32,13 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
 
   const { buscarCep } = useCep(setValue, setError, clearErrors);
   const requiredMsg = "Campo obrigatório";
+
+  // Carrega especialidades do backend (GET /especialidades)
+  const {
+    data: especialidades,
+    loading: loadingEspecialidades,
+    error: errorEspecialidades,
+  } = useEspecialidades();
 
   return (
     <div className="flex flex-col max-h-[90vh] w-full">
@@ -100,13 +110,14 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
             </select>
           </div>
 
+          {/* CATEGORIA */}
           <div className="flex flex-col">
             <label className="text-sm font-bold">Categoria</label>
             <select
               {...register("categoria", { required: requiredMsg })}
               className="p-3 border rounded-md"
             >
-              <option value="CLINICO">Clinico</option>
+              <option value="CLINICO">Clínico</option>
               <option value="COORDENADOR">Coordenador</option>
             </select>
             {errors.categoria && (
@@ -116,7 +127,7 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
             )}
           </div>
 
-          {/* Disponibilidade */}
+          {/* DISPONIBILIDADE */}
           <div className="flex flex-col">
             <label className="text-sm font-bold">Disponibilidade</label>
             <select
@@ -127,6 +138,31 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
               <option value="N">Não</option>
             </select>
           </div>
+
+          <Controller
+            name="idEspecialidade"
+            control={control}
+            rules={{
+              required: requiredMsg,
+              validate: (val) =>
+                (val !== undefined && val > 0) ||
+                "Selecione uma especialidade",
+            }}
+            render={({ field, fieldState }) => (
+              <SelectEspecialidade
+                value={field.value || ""}
+                onChange={(id) => field.onChange(id)}
+                onBlur={field.onBlur}
+                especialidades={especialidades ?? []}
+                loading={loadingEspecialidades}
+                error={fieldState.error?.message}
+                fetchError={errorEspecialidades}
+                required
+                label="Especialidade"
+                name="idEspecialidade"
+              />
+            )}
+          />
         </div>
 
         {/* Endereço */}

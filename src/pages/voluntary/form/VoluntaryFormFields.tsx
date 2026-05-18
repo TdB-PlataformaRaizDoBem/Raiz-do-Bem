@@ -1,6 +1,8 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import { useCep } from "../../../hooks/useCep";
 import Input from "../../../components/formElements/Input";
+import { SelectEspecialidade } from "../../../components/formElements/SelectEspecialidade";
+import { useEspecialidades } from "../../../hooks/useEspecialidades";
 
 export interface VoluntaryFormValues {
   nomeCompleto: string;
@@ -11,6 +13,8 @@ export interface VoluntaryFormValues {
   sexo: "M" | "F" | "O";
   categoria: "CLINICO" | "COORDENADOR";
   disponivel: "S" | "N";
+  /** ID da especialidade — Long no backend (select simples) */
+  idEspecialidade: number;
   endereco: {
     cep: string;
     numero: string;
@@ -32,6 +36,7 @@ const selectClass =
 const VoluntaryFormFields = () => {
   const {
     register,
+    control,
     setValue,
     setError,
     clearErrors,
@@ -41,8 +46,16 @@ const VoluntaryFormFields = () => {
   const { buscarCep } = useCep<VoluntaryFormValues>(
     setValue,
     setError,
-    clearErrors,
+    clearErrors
   );
+
+  // Carrega especialidades do backend (GET /especialidades)
+  const {
+    data: especialidades,
+    loading: loadingEspecialidades,
+    error: errorEspecialidades,
+  } = useEspecialidades();
+
   const req = "Campo obrigatório";
 
   return (
@@ -127,6 +140,36 @@ const VoluntaryFormFields = () => {
             },
           })}
           error={errors.croDentista?.message}
+        />
+
+        {/*
+         * ESPECIALIDADE
+         * Backend: Long idEspecialidade em CriarDentistaDTO — select simples.
+         * Exibe descricao ao usuário; envia id para a API.
+         */}
+        <Controller
+          name="idEspecialidade"
+          control={control}
+          rules={{
+            required: req,
+            validate: (val) =>
+              (val !== undefined && val > 0) || "Selecione uma especialidade",
+          }}
+          render={({ field, fieldState }) => (
+            <SelectEspecialidade
+              value={field.value || ""}
+              onChange={(id) => field.onChange(id)}
+              onBlur={field.onBlur}
+              especialidades={especialidades ?? []}
+              loading={loadingEspecialidades}
+              error={fieldState.error?.message}
+              fetchError={errorEspecialidades}
+              required
+              label="Especialidade:"
+              name="idEspecialidade"
+              className="h-[48px]"
+            />
+          )}
         />
       </div>
 

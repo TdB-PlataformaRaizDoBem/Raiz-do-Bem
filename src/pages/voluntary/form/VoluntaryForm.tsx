@@ -18,6 +18,9 @@ const VoluntaryForm = () => {
       email: "",
       telefone: "",
       sexo: "F",
+      categoria: "CLINICO",
+      disponivel: "S",
+      idEspecialidade: 0,
       endereco: { cep: "", numero: "" },
     },
   });
@@ -34,6 +37,7 @@ const VoluntaryForm = () => {
         telefone: data.telefone.replace(/\D/g, ""),
         categoria: "CLINICO",
         disponivel: "S",
+        idEspecialidade: data.idEspecialidade,
         endereco: {
           cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,
@@ -42,7 +46,7 @@ const VoluntaryForm = () => {
 
       showNotification(
         "Cadastro de voluntário realizado com sucesso!",
-        "success",
+        "success"
       );
       methods.reset();
     } catch (err) {
