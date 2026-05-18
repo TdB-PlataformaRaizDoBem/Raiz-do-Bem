@@ -25,9 +25,9 @@ const DentistaPainel = ({
   onUpdated: () => void;
 }) => {
   const { data, loading, error, refetch: refetchSingle } = useDentista(cpf);
-
+  if (!loading && !error && !data) return null;
   return (
-    <AsyncEstado loading={loading} error={error} vazio={!data}>
+    <AsyncEstado loading={loading} error={error}>
       <DentistaDetails
         data={data!}
         isAdmin={isAdmin}
@@ -43,8 +43,8 @@ const DentistaPainel = ({
 };
 
 export const Dentistas = () => {
-  const loggerUser = getUser();
-  const isAdmin = loggerUser?.role === "admin";
+  const loggedUser = getUser(); 
+  const isAdmin = loggedUser?.role === "admin";
   const { data: dentistas, loading, error, refetch } = useDentistas();
 
   return (

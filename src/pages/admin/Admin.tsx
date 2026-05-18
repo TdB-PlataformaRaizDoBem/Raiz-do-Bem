@@ -14,7 +14,7 @@ const Admin = () => {
       <Route path='beneficiarios' element={<Beneficiarios />} />
       <Route path='dentistas' element={<Dentistas />} />
       <Route path='solicitacoes' element={<PedidosAjuda />} />
-      <Route path='designacao' element={<Designacao />} />
+      <Route path='atendimento' element={<Designacao />} />
     </Routes>
   )
 }

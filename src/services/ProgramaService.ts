@@ -18,9 +18,19 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * GET /programas-sociais
+ */
 export async function getProgramasSociais(): Promise<ProgramaSocialAPI[]> {
   const res = await fetch(ENDPOINT);
-  return handleResponse<ProgramaSocialAPI[]>(res);
+
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
+  const data = await handleResponse<ProgramaSocialAPI[]>(res);
+  
+  return data ?? [];
 }
 
 export type { ProgramaSocialAPI };

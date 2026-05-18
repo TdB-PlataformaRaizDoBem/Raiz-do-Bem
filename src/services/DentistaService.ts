@@ -29,10 +29,20 @@ function jsonHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
 }
 
+/**
+ * GET /dentista
+ */
 export async function getDentistasCompletos(): Promise<DentistaViewModel[]> {
   const res = await fetch(ENDPOINT);
+  
+  // Se o backend disser que não encontrou registros (404), tratamos como lista vazia amigavelmente
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
   const data = await handleResponse<DentistaAPI[]>(res);
-  return mapDentistas(data);
+  
+  return mapDentistas(data ?? []);
 }
 
 export async function getDentistaCompleto(

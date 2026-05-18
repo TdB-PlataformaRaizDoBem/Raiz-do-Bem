@@ -17,9 +17,20 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * GET /especialidades
+ */
 export async function getEspecialidades(): Promise<EspecialidadeAPI[]> {
   const res = await fetch(ENDPOINT);
-  return handleResponse<EspecialidadeAPI[]>(res);
+
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
+  const data = await handleResponse<EspecialidadeAPI[]>(res);
+  
+  // Garante o retorno de um array vazio seguro para o front se o dado vier nulo
+  return data ?? [];
 }
 
 /**

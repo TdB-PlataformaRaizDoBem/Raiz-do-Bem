@@ -18,13 +18,13 @@ export const Menu_Data: Record<"admin" | "coordenador", MenuItem[]> = {
     { label: "Dentistas", icon: dentista, path: "/admin/dentistas" },
     { label: "Beneficiários", icon: beneficiario, path: "/admin/beneficiarios" },
     { label: "Pedidos de Ajuda", icon: solicitacoes, path: "/admin/solicitacoes" },
-    { label: "Designação", icon: forward, path: "/admin/designacao" }
+    { label: "Atendimento", icon: forward, path: "/admin/atendimento" }
   ],
   coordenador: [
     { label: "Painel Geral", icon: painelGeral, path: "/coord/dashboard" },
     { label: "Pedidos de Ajuda", icon: solicitacoes, path: "/coord/solicitacoes" },
     { label: "Beneficiários", icon: beneficiario, path: "/coord/beneficiarios" },
     { label: "Dentistas", icon: dentista, path: "/coord/dentistas" },
-    { label: "Designação", icon: forward, path: "/coord/designacao" }
+    { label: "Atendimento", icon: forward, path: "/coord/atendimento" }
   ],
 };
