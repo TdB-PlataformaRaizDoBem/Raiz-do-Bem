@@ -29,12 +29,21 @@ function jsonHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
 }
 
+/**
+ * GET /beneficiario
+ */
 export async function getBeneficiariosCompletos(): Promise<
   BeneficiarioViewModel[]
 > {
   const res = await fetch(ENDPOINT);
+
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
   const data = await handleResponse<BeneficiarioAPI[]>(res);
-  return mapBeneficiarios(data);
+  
+  return mapBeneficiarios(data ?? []);
 }
 
 export async function getBeneficiarioCompleto(
