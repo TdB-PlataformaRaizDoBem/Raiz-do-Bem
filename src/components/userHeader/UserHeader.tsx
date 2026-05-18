@@ -11,8 +11,8 @@ const titles: Record<string, string> = {
   "/coord/beneficiarios": "Gerenciar Beneficiários",
   "/admin/solicitacoes": "Pedidos de Ajuda",
   "/coord/solicitacoes": "Pedidos de Ajuda",
-  "/admin/designacao": "Designação",
-  "/coord/designacao": "Designação",
+  "/admin/atendimento": "Gerenciar Atendimentos",
+  "/coord/atendimento": "Gerenciar Atendimentos",
 };
 
 const UserHeader = () => {

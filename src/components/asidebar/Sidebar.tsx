@@ -5,7 +5,6 @@
   import Collapsed from "../../assets/svgs/icon-park_to-left.svg";
   import Logout from "../../assets/svgs/logout.svg";
   import menuHamburguer from "../../assets/svgs/menu_hamburguer_interno.svg";
-  import Search from "../ui/Search";
 
   interface SidebarProps {
     isCollapsed: boolean;
@@ -80,10 +79,6 @@
                 />
               </button>
             </div>
-                    
-            {(!isCollapsed || isMobileOpen) && (
-                <Search placeholder="Pesquisar" />
-            )}
 
             <nav className="flex-1 overflow-y-auto flex flex-col">
               <ul
