@@ -20,8 +20,9 @@ const ColaboradorPainel = ({
   onUpdated: () => void;
 }) => {
   const { data, loading, error, refetch: refetchSingle } = useColaborador(id);
+  if (!loading && !error && !data) return null;
   return (
-    <AsyncEstado loading={loading} error={error} vazio={!data}>
+    <AsyncEstado loading={loading} error={error}>
       <ColaboradorDetails
         data={data!}
         onClose={onClose}
@@ -42,8 +43,6 @@ export default function Colaborador() {
     <AsyncEstado
       loading={loading}
       error={error}
-      vazio={!colaboradores?.length}
-      mensagemVazio="Nenhum colaborador cadastrado."
     >
       <UserManagementPage<ColaboradorCompleto>
         title="Gerenciamento de Colaboradores"

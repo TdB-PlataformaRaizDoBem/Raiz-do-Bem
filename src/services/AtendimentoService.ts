@@ -15,7 +15,8 @@ async function handleResponse<T>(res: Response): Promise<T> {
     throw new Error(mensagem);
   }
   if (res.status === 204) return undefined as T;
-  const contentLength = res.headers.get("content-legth");
+  
+  const contentLength = res.headers.get("content-length");
   if (contentLength === "0") return undefined as T;
 
   try {
@@ -54,7 +55,15 @@ export async function criarAtendimento(
  */
 export async function getAtendimentos(): Promise<AtendimentoAPI[]> {
   const res = await fetch(ENDPOINT);
-  return handleResponse<AtendimentoAPI[]>(res);
+
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
+  const data = await handleResponse<AtendimentoAPI[]>(res);
+  
+  // Garante o retorno de um array vazio seguro para o front se o dado vier nulo
+  return data ?? [];
 }
 
 /**
@@ -96,8 +105,6 @@ export async function excluirAtendimento(id: number): Promise<void> {
   const res = await fetch(`${ENDPOINT}/${id}`, { method: "DELETE" });
   await handleResponse<void>(res);
 }
-
-
 
 /**
  * Retorna um Blob que pode ser usado para disparar o download no navegador

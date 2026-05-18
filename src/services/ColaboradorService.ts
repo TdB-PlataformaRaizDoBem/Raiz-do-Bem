@@ -27,12 +27,21 @@ function jsonHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
 }
 
+/**
+ * GET /colaborador
+ */
 export async function getColaboradoresCompletos(): Promise<
   ColaboradorViewModel[]
 > {
   const res = await fetch(ENDPOINT);
+
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
   const data = await handleResponse<ColaboradorAPI[]>(res);
-  return mapColaboradores(data);
+  
+  return mapColaboradores(data ?? []);
 }
 
 export async function getColaboradorCompleto(
@@ -53,7 +62,6 @@ export async function atualizarColaborador(
   });
 
   if (res.status === 204 || res.headers.get("content-length") === "0") {
-    // Retorna algo genérico ou mapeia apenas o que você enviou, já que não veio corpo
     return null; 
   }
 

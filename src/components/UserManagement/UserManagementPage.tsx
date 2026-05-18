@@ -4,7 +4,6 @@ import { Button } from "../ui/Button";
 import Search from "../ui/Search";
 import { useScrollLock } from "../../hooks/useScrollLock";
 import { Modal } from "../ui/Modal";
-import { getUser } from "../../hooks/useUser";
 import { useSearchParams } from "react-router-dom";
 import { useSmartFilter } from "../../hooks/useSmartFilter";
 import type { PageFilterConfig, FilterGroup } from "./FilterConfig";
@@ -21,12 +20,8 @@ type UserManagementPageProps<T> = {
   renderDetails: (user: T, close: () => void) => React.ReactNode;
   renderCreateForm?: (close: () => void) => React.ReactNode;
   filterConfig?: PageFilterConfig<T>;
-  /**
-   * Ações extras exibidas na Toolbar ao lado do botão "Criar Conta".
-   * Use para injetar botões de exportação, relatórios, etc.
-   * A visibilidade/acesso de cada ação deve ser controlada pelo chamador.
-   */
   extraActions?: React.ReactNode;
+  mensagemVazio?: string;
 };
 
 function FilterGroupSelect({
@@ -50,19 +45,13 @@ function FilterGroupSelect({
             w-full
             h-10
             px-3 pr-10
-
             bg-white
-
             border border-gray-300
             rounded-md
-
             text-sm text-gray-700
-
             appearance-none
             outline-none
-
             transition-all duration-200
-
             hover:border-gray-400
             focus:border-gray-500
           "
@@ -76,18 +65,8 @@ function FilterGroupSelect({
           ))}
         </select>
 
-        {/* Arrow */}
-        <div
-          className="
-            absolute
-            right-3
-            top-1/2
-            -translate-y-1/2
-
-            pointer-events-none
-            text-gray-400
-          "
-        >
+        {/* Chevron */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-4 h-4"
@@ -119,15 +98,7 @@ function Toolbar({
 }) {
   return (
     <div className="w-full mb-6">
-      <div
-        className="
-          flex flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
-          gap-4
-        "
-      >
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         {/* Filtros */}
         <div className="shrink-0">
           {React.Children.count(children) > 0 && (
@@ -135,28 +106,107 @@ function Toolbar({
           )}
         </div>
 
-        {/* Direita */}
-        <div
-          className="
-            flex items-center
-            gap-3
-            w-full
-            lg:w-auto
-          "
-        >
-          {/* CTAs */}
+        {/* Direita: ações + busca */}
+        <div className="flex items-center gap-3 w-full lg:w-auto">
           {actions && (
-            <div className="shrink-0 flex items-center gap-2">
-              {actions}
-            </div>
+            <div className="shrink-0 flex items-center gap-2">{actions}</div>
           )}
 
-          {/* Search */}
-          <div className="flex-1 lg:w-[340px]">
-            {search}
-          </div>
+          <div className="flex-1 lg:w-[340px]">{search}</div>
         </div>
       </div>
+    </div>
+  );
+}
+
+type EmptyStateVariant = "lista-vazia" | "filtro-sem-resultado";
+
+function EmptyState({
+  variant,
+  mensagemVazio,
+  onClearFilters,
+  showCreateButton,
+  onCreate,
+}: {
+  variant: EmptyStateVariant;
+  mensagemVazio: string;
+  onClearFilters: () => void;
+  showCreateButton: boolean;
+  onCreate: () => void;
+}) {
+  if (variant === "filtro-sem-resultado") {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-8 h-8 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z"
+            />
+          </svg>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p className="text-gray-700 text-base font-semibold">
+            Nenhum resultado encontrado
+          </p>
+          <p className="text-gray-400 text-sm">
+            Nenhum registro corresponde aos filtros ou busca ativos.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClearFilters}
+          className="text-sm font-bold text-darkgreen hover:underline transition-colors"
+        >
+          Limpar filtros e busca
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-8 h-8 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={1.5}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+          />
+        </svg>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <p className="text-gray-700 text-base font-semibold">{mensagemVazio}</p>
+        {showCreateButton && (
+          <p className="text-gray-400 text-sm">
+            Use o botão acima para adicionar o primeiro registro.
+          </p>
+        )}
+      </div>
+
+      {showCreateButton && (
+        <Button variant="primary" onClick={onCreate}>
+          Criar agora
+        </Button>
+      )}
     </div>
   );
 }
@@ -170,6 +220,7 @@ export function UserManagementPage<T>({
   renderCreateForm,
   filterConfig,
   extraActions,
+  mensagemVazio = "Nenhum registro encontrado.",
 }: UserManagementPageProps<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = React.useState(false);
@@ -204,25 +255,18 @@ export function UserManagementPage<T>({
     setSearchParams(searchParams);
   };
 
-  // Permissões
-  const loggedUser = getUser();
-  const isAdmin = loggedUser?.role === "admin";
-  const isCoord = loggedUser?.role === "coordenador";
-  const isBeneficiarioPage = title
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .includes("beneficiario");
-  const showCreateButton = isAdmin || (isCoord && isBeneficiarioPage);
+  // O botão de criar agora depende apenas da existência da prop que renderiza o formulário
+  const showCreateButton = !!renderCreateForm;
 
   useScrollLock(!!selectedUser);
 
-  const emptyAfterFilter =
-    filteredItems.length === 0 && users.length > 0 && hasActiveFilters;
+  const listaOriginalVazia = users.length === 0;
+  const filtroSemResultado =
+    filteredItems.length === 0 && !listaOriginalVazia && hasActiveFilters;
+  const temConteudo = filteredItems.length > 0;
 
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
-      {/* ── Toolbar: layout da barra de ação ── */}
       <Toolbar
         search={
           <Search
@@ -232,21 +276,19 @@ export function UserManagementPage<T>({
           />
         }
         actions={
-          (showCreateButton && renderCreateForm) || extraActions ? (
+          showCreateButton || extraActions ? (
             <>
-              {/* Botão de criar — respeita a regra de permissão original */}
-              {showCreateButton && renderCreateForm && (
+              {showCreateButton && (
                 <Button variant="primary" onClick={() => setOpen(true)}>
                   Criar Conta
                 </Button>
               )}
-
               {extraActions}
             </>
           ) : undefined
         }
       >
-        {/* Grupos de filtro — passados como children para FilterBar via Toolbar */}
+        {/* Grupos de filtro */}
         {config.groups.map((group) => (
           <FilterGroupSelect
             key={group.key}
@@ -256,19 +298,12 @@ export function UserManagementPage<T>({
           />
         ))}
 
-        {/* Limpar filtros — só aparece quando há filtro ativo */}
         {hasActiveFilters && (
           <div className="flex flex-col justify-end pb-0.5">
             <button
               type="button"
               onClick={clearAll}
-              className="
-                text-sm
-                text-gray-500
-                hover:text-black
-                transition-colors
-                whitespace-nowrap
-              "
+              className="text-sm text-gray-500 hover:text-black transition-colors whitespace-nowrap"
             >
               Limpar filtros
             </button>
@@ -276,14 +311,12 @@ export function UserManagementPage<T>({
         )}
       </Toolbar>
 
-      {/* Modal de criar */}
       {open && showCreateButton && renderCreateForm && (
         <Modal open={open} onClose={() => setOpen(false)}>
           {renderCreateForm(() => setOpen(false))}
         </Modal>
       )}
 
-      {/* Contador de resultados */}
       {hasActiveFilters && (
         <p className="text-sm text-gray-500 -mt-4">
           {filteredItems.length === 0
@@ -292,21 +325,27 @@ export function UserManagementPage<T>({
         </p>
       )}
 
-      {/* ── Conteúdo principal ── */}
-      {emptyAfterFilter ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-          <p className="text-gray-400 text-lg font-medium">
-            Nenhum resultado para os filtros selecionados.
-          </p>
-          <button
-            type="button"
-            onClick={clearAll}
-            className="text-sm font-bold text-darkgreen hover:underline"
-          >
-            Limpar filtros
-          </button>
-        </div>
-      ) : (
+      {listaOriginalVazia && (
+        <EmptyState
+          variant="lista-vazia"
+          mensagemVazio={mensagemVazio}
+          onClearFilters={clearAll}
+          showCreateButton={showCreateButton}
+          onCreate={() => setOpen(true)}
+        />
+      )}
+
+      {filtroSemResultado && (
+        <EmptyState
+          variant="filtro-sem-resultado"
+          mensagemVazio={mensagemVazio}
+          onClearFilters={clearAll}
+          showCreateButton={showCreateButton}
+          onCreate={() => setOpen(true)}
+        />
+      )}
+
+      {temConteudo && (
         <div
           className={`grid gap-8 items-start w-full transition-all duration-300 ${
             selectedUser ? "xl:grid-cols-[1fr_450px]" : "grid-cols-1"

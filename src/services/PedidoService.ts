@@ -33,11 +33,20 @@ function jsonHeaders(): HeadersInit {
 /**
  * GET /pedido-ajuda
  * Retorna todos os pedidos mapeados para ViewModel.
+ * Alterado para retornar um array vazio caso o backend responda com 404 ou 204 (Lista sem registros)
  */
 export async function getPedidosCompletos(): Promise<PedidoViewModel[]> {
   const res = await fetch(ENDPOINT);
+
+  // Se o backend disser que não encontrou registros (404 ou 204), tratamos como lista vazia amigavelmente
+  if (res.status === 404 || res.status === 204) {
+    return [];
+  }
+
   const data = await handleResponse<PedidoAjudaAPI[]>(res);
-  return mapPedidos(data);
+  
+  // Garante que se o data vier nulo ou indefinido, não quebre o mapPedidos
+  return mapPedidos(data ?? []);
 }
 
 /**

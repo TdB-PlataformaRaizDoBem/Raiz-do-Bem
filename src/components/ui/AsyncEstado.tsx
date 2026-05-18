@@ -1,7 +1,9 @@
 type AsyncEstadoProps = {
   loading: boolean;
   error: string | null;
+  /** @deprecated */
   vazio?: boolean;
+  /** @deprecated */
   mensagemVazio?: string;
   children: React.ReactNode;
 };
@@ -9,8 +11,6 @@ type AsyncEstadoProps = {
 export const AsyncEstado = ({
   loading,
   error,
-  vazio = false,
-  mensagemVazio = "Nenhum registro encontrado.",
   children,
 }: AsyncEstadoProps) => {
   if (loading) {
@@ -31,14 +31,6 @@ export const AsyncEstado = ({
           <p className="font-bold text-red-700 mb-1">Erro ao carregar dados</p>
           <p className="text-sm text-red-500">{error}</p>
         </div>
-      </div>
-    );
-  }
-
-  if (vazio) {
-    return (
-      <div className="flex items-center justify-center py-24 w-full">
-        <p className="text-sm text-gray-400 italic">{mensagemVazio}</p>
       </div>
     );
   }
