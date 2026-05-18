@@ -18,13 +18,14 @@ type DentistaEditavel = {
   telefone: string;
   categoriaDentista: string;
   disponivel: "S" | "N";
-  /** ID da especialidade — Long no backend */
   idEspecialidade: number;
-  "endereco.cep": string;
-  "endereco.numero": string;
-  "endereco.logradouro": string;
-  "endereco.cidade": string;
-  "endereco.estado": string;
+  endereco: {
+    cep: string;
+    numero: string;
+    logradouro: string;
+    cidade: string;
+    estado: string;
+  };
 };
 
 const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
@@ -57,15 +58,16 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
     defaultValues: {
       email: initialData.email === "—" ? "" : initialData.email,
       telefone: initialData.telefone === "—" ? "" : initialData.telefone,
-      categoriaDentista:
-        initialData.categoria === "—" ? "" : initialData.categoria,
+      categoriaDentista: initialData.categoria === "—" ? "" : initialData.categoria,
       disponivel: initialData.disponivel ? "S" : "N",
       idEspecialidade: resolverIdInicial(),
-      "endereco.cep": "",
-      "endereco.numero": initialData.numero ?? "",
-      "endereco.logradouro": initialData.logradouro ?? "",
-      "endereco.cidade": initialData.cidade ?? "",
-      "endereco.estado": initialData.estado ?? "",
+      endereco: {
+        cep: initialData.cep ?? "",
+        numero: initialData.numero ?? "",
+        logradouro: initialData.logradouro ?? "",
+        cidade: initialData.cidade ?? "",
+        estado: initialData.estado ?? "",
+      },
     },
   });
 
@@ -81,8 +83,8 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
         disponivel: data.disponivel,
         idEspecialidade: data.idEspecialidade,
         endereco: {
-          cep: data["endereco.cep"].replace(/\D/g, ""),
-          numero: data["endereco.numero"],
+          cep: data.endereco.cep.replace(/\D/g, ""),
+          numero: data.endereco.numero,
         },
       });
 
@@ -102,42 +104,44 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col h-[85vh] md:h-auto max-w-3xl w-full text-left"
+      className="flex flex-col max-w-3xl w-full text-left bg-white rounded-2xl p-1"
     >
-      <h2 className="text-2xl font-bold font-fredoka mb-6 text-darkgray">
+      <h2 className="text-2xl font-bold font-fredoka mb-6 text-darkgray px-1">
         Editar Dentista
       </h2>
 
-      <div className="flex-1 overflow-y-auto pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex-1 max-h-[58vh] overflow-y-auto pr-1 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col gap-5">
+        
         {/* DADOS IMUTÁVEIS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
           <Input
             label="Nome Completo"
             defaultValue={initialData.nomeCompleto}
             readOnly
-            className="bg-gray-200 cursor-not-allowed"
+            className="bg-gray-200 cursor-not-allowed text-gray-500"
           />
           <Input
             label="CPF"
             defaultValue={initialData.cpf}
             readOnly
-            className="bg-gray-200 cursor-not-allowed"
+            className="bg-gray-200 cursor-not-allowed text-gray-500"
           />
           <Input
             label="CRO"
             defaultValue={initialData.croDentista}
             readOnly
-            className="bg-gray-200 cursor-not-allowed"
+            className="bg-gray-200 cursor-not-allowed text-gray-500"
           />
           <Input
             label="Sexo"
             defaultValue={initialData.sexoLabel}
             readOnly
-            className="bg-gray-200 cursor-not-allowed"
+            className="bg-gray-200 cursor-not-allowed text-gray-500"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* DADOS EDITÁVEIS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Email"
             {...register("email", {
@@ -181,8 +185,7 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
             rules={{
               required: "Obrigatório",
               validate: (val) =>
-                (val !== undefined && val > 0) ||
-                "Selecione uma especialidade",
+                (val !== undefined && val > 0) || "Selecione uma especialidade",
             }}
             render={({ field, fieldState }) => {
               const valorResolvido =
@@ -192,9 +195,7 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
                       const nomeAtual = initialData.especialidades?.[0];
                       if (!nomeAtual || !especialidades) return field.value;
                       const encontrada = especialidades.find(
-                        (e) =>
-                          e.descricao.toLowerCase() ===
-                          nomeAtual.toLowerCase()
+                        (e) => e.descricao.toLowerCase() === nomeAtual.toLowerCase()
                       );
                       if (encontrada && encontrada.id !== field.value) {
                         field.onChange(encontrada.id);
@@ -221,8 +222,8 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
         </div>
 
         {/* ENDEREÇO */}
-        <div className="border-t pt-4">
-          <h3 className="font-bold text-darkgray mb-4 font-fredoka">
+        <div className="border-t border-gray-100 pt-4 mt-2">
+          <h3 className="font-bold text-darkgray mb-4 font-fredoka text-lg">
             Endereço do Consultório
           </h3>
 
@@ -238,37 +239,37 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
                   },
                   onBlur: (e) => buscarCep(e.target.value),
                 })}
-                error={errors["endereco.cep"]?.message}
+                error={errors.endereco?.cep?.message}
               />
               <Input
                 label="Número"
                 {...register("endereco.numero", { required: "Obrigatório" })}
-                error={errors["endereco.numero"]?.message}
+                error={errors.endereco?.numero?.message}
               />
             </div>
             <Input
               label="Logradouro"
               {...register("endereco.logradouro")}
               readOnly
-              className="bg-gray-100 cursor-not-allowed"
+              className="bg-gray-100 cursor-not-allowed text-gray-500"
             />
             <Input
               label="Cidade"
               {...register("endereco.cidade")}
               readOnly
-              className="bg-gray-100 cursor-not-allowed"
+              className="bg-gray-100 cursor-not-allowed text-gray-500"
             />
             <Input
               label="Estado"
               {...register("endereco.estado")}
               readOnly
-              className="bg-gray-100 cursor-not-allowed"
+              className="bg-gray-100 cursor-not-allowed text-gray-500"
             />
           </div>
         </div>
       </div>
 
-      <div className="flex gap-3 justify-end mt-6 pt-4 border-t">
+      <div className="flex gap-3 justify-end mt-6 pt-4 border-t border-gray-100 px-1">
         <Button
           variant="secondary"
           type="button"

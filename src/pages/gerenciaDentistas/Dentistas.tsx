@@ -59,7 +59,14 @@ export const Dentistas = () => {
         users={dentistas ?? []}
         getId={(u) => u.id}
         filterConfig={dentistaFilterConfig}
-        renderCreateForm={(close) => <CreateDentista onSuccess={close} />}
+        renderCreateForm={(close) => (
+          <CreateDentista
+            onSuccess={() => {
+              refetch();
+              close();
+            }}
+          />
+        )}
         extraActions={
           isAdmin ? (
             <ExportCsvButton

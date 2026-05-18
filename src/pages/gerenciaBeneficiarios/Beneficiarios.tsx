@@ -13,7 +13,7 @@ import { exportarBeneficiariosCsv } from "../../services/Beneficiarioservice";
 import { getUser } from "../../hooks/useUser";
 import { beneficiarioFilterConfig } from "../../hooks/pageFilterConfigs";
 import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
-
+ 
 const BeneficiarioPainel = ({
   cpf,
   isAdmin,
@@ -28,7 +28,7 @@ const BeneficiarioPainel = ({
   onUpdated: () => void;
 }) => {
   const { data, loading, error, refetch: refetchSingle } = useBeneficiario(cpf);
-
+ 
   return (
     <AsyncEstado loading={loading} error={error} vazio={!data} mensagemVazio="Não foi possível carregar os detalhes deste beneficiário (Registro não encontrado).">
       {data && (
@@ -46,12 +46,12 @@ const BeneficiarioPainel = ({
     </AsyncEstado>
   );
 };
-
+ 
 export const Beneficiarios = () => {
   const loggedUser = getUser();
   const isAdmin = loggedUser?.role === "admin";
   const { data: beneficiarios, loading, error, refetch } = useBeneficiarios();
-
+ 
   return (
     <AsyncEstado
       loading={loading}
@@ -64,7 +64,14 @@ export const Beneficiarios = () => {
         users={beneficiarios ?? []}
         getId={(u) => u.id}
         filterConfig={beneficiarioFilterConfig}
-        renderCreateForm={(close) => <CreateBeneficiario onSuccess={close} />}
+        renderCreateForm={(close) => (
+          <CreateBeneficiario
+            onSuccess={() => {
+              refetch();
+              close();
+            }}
+          />
+        )}
         extraActions={
           isAdmin ? (
             <ExportCsvButton
