@@ -7,12 +7,11 @@ export interface AtendimentoViewModel {
   prontuario: string;
   beneficiario: string;
   dentista: string;
+  contatoDentista: string;
+  emailDentista: string;
+  enderecoDentista: string;
   dataInicial: string;
   dataInicialISO: string | null;
-  /**
-   * Data de finalização formatada (DD/MM/YYYY) ou string vazia se ainda
-   * estiver em aberto. Use `encerrado` para verificar o estado.
-   */
   dataFim: string;
   dataFimISO: string | null;
   encerrado: boolean;
@@ -32,6 +31,9 @@ export function mapAtendimento(api: AtendimentoAPI): AtendimentoViewModel {
     prontuario: api.prontuario ?? "—",
     beneficiario: api.beneficiario ?? "—",
     dentista: api.dentista ?? "—",
+    contatoDentista: api.contatoDentista,
+    emailDentista: api.emailDentista,
+    enderecoDentista: api.enderecoDentista,
     dataInicial: api.dataInicial ? formatDate(api.dataInicial) : "—",
     dataInicialISO: api.dataInicial ?? null,
     dataFim: encerrado ? formatDate(api.dataFim) : "",
