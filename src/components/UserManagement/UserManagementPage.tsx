@@ -99,20 +99,25 @@ function Toolbar({
   return (
     <div className="w-full mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        {/* Filtros */}
-        <div className="shrink-0">
+        
+        <div className="w-full lg:w-auto shrink-0">
           {React.Children.count(children) > 0 && (
             <FilterBar>{children}</FilterBar>
           )}
         </div>
 
-        {/* Direita: ações + busca */}
-        <div className="flex items-center gap-3 w-full lg:w-auto">
-          {actions && (
-            <div className="shrink-0 flex items-center gap-2">{actions}</div>
-          )}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
 
-          <div className="flex-1 lg:w-[340px]">{search}</div>
+          {actions && (
+            <div className="shrink-0 flex items-center gap-2 sm:justify-end justify-start">
+              {actions}
+            </div>
+          )}
+          
+          <div className="flex-1 w-full lg:w-[340px] order-first sm:order-none">
+            {search}
+          </div>
+
         </div>
       </div>
     </div>

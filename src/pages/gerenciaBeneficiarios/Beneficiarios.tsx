@@ -30,17 +30,19 @@ const BeneficiarioPainel = ({
   const { data, loading, error, refetch: refetchSingle } = useBeneficiario(cpf);
 
   return (
-    <AsyncEstado loading={loading} error={error} vazio={!data}>
-      <BeneficiarioDetails
-        data={data!}
-        isAdmin={isAdmin}
-        onClose={onClose}
-        onDeleted={onDeleted}
-        onUpdated={() => {
-          onUpdated();
-          if (refetchSingle) refetchSingle();
-        }}
-      />
+    <AsyncEstado loading={loading} error={error} vazio={!data} mensagemVazio="Não foi possível carregar os detalhes deste beneficiário (Registro não encontrado).">
+      {data && (
+        <BeneficiarioDetails
+          data={data} // Agora o TypeScript aceita, pois aqui 'data' nunca será null
+          isAdmin={isAdmin}
+          onClose={onClose}
+          onDeleted={onDeleted}
+          onUpdated={() => {
+            onUpdated();
+            if (refetchSingle) refetchSingle();
+          }}
+        />
+      )}
     </AsyncEstado>
   );
 };
