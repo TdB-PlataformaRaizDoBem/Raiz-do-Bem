@@ -100,7 +100,6 @@ export async function excluirAtendimento(id: number): Promise<void> {
 
 
 /**
- * Faz o download do relatório de atendimentos em formato CSV.
  * Retorna um Blob que pode ser usado para disparar o download no navegador
  * via URL.createObjectURL — use em conjunto com ExportCsvButton.
  */

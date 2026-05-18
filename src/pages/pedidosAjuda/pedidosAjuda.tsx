@@ -184,7 +184,7 @@ export const PedidosAjuda = () => {
                   {p.statusLabel}
                 </span>
 
-                <p className="text-md text-gray-500 line-clamp-3 mt-1 italic">
+                <p className="text-md text-gray-500 line-clamp-2 mt-1 italic">
                   <span className="font-semibold text-gray">
                     Descrição do Problema:
                   </span>
@@ -193,7 +193,7 @@ export const PedidosAjuda = () => {
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 flex border-t border-gray/10 lg:border-t-0 flex-col gap-3">
+              <div className="mt-6 pt-4 flex border-t border-gray/10 lg:border-t-0 flex-col gap-3 lg:items-end">
                 <div>
                   <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
                     Data do Envio

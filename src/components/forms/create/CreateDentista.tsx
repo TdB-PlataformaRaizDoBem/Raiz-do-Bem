@@ -2,6 +2,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useNotification } from "../../../hooks/useNotification";
 import { CreateDentistaForm } from "./CreateDentistaForms";
 import { criarDentista } from "../../../services/DentistaService";
+
 interface CreateDentistaProps {
   onSuccess: () => void;
 }
@@ -14,9 +15,8 @@ export type DentistaFormValues = {
   telefone: string;
   sexo: "M" | "F" | "O";
   disponivel: "S" | "N";
-
   categoria: "COORDENADOR" | "CLINICO";
-
+  idEspecialidade: number;
   endereco: {
     cep: string;
     numero: string;
@@ -37,7 +37,7 @@ export const CreateDentista = ({ onSuccess }: CreateDentistaProps) => {
       sexo: "F",
       disponivel: "S",
       categoria: "CLINICO",
-
+      idEspecialidade: 0,
       endereco: {
         cep: "",
         numero: "",
@@ -61,6 +61,8 @@ export const CreateDentista = ({ onSuccess }: CreateDentistaProps) => {
         telefone: data.telefone.replace(/\D/g, ""),
         disponivel: data.disponivel,
         categoria: data.categoria,
+        // Enviado como número — Long no backend
+        idEspecialidade: data.idEspecialidade,
         endereco: {
           cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,

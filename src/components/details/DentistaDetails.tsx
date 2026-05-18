@@ -9,8 +9,8 @@ import EditDentistaButton from "../ui/buttonFilters/EditDentistaButton";
 const SecaoStatus = ({ data }: { data: DentistaViewModel }) => (
   <div className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl">
     <div>
-      <p className="text-xs font-black uppercase text-gray-400">Programa</p>
-      <p className="font-bold text-darkgreen">{data.programa}</p>
+      <p className="text-xs font-black uppercase text-gray-400">Categoria</p>
+      <p className="font-bold text-darkgreen">{data.categoria}</p>
     </div>
     <div className="w-px h-8 bg-gray-200" />
     <div>
@@ -30,9 +30,7 @@ const SecaoDadosProfissionais = ({ data }: { data: DentistaViewModel }) => (
       </h4>
 
       <p className="text-darkgray font-medium text-lg">
-        {data.especialidades.length > 0
-          ? data.especialidades.join(", ")
-          : data.categoria}
+        {data.especialidades}
       </p>
     </div>
 
@@ -50,14 +48,6 @@ const SecaoDadosProfissionais = ({ data }: { data: DentistaViewModel }) => (
     <div>
       <h4 className="text-xs font-black uppercase text-gray-400 mb-1">Sexo</h4>
       <p className="text-darkgray font-medium text-lg">{data.sexoLabel}</p>
-    </div>
-
-    <div>
-      <h4 className="text-xs font-black uppercase text-gray-400 mb-1">
-        Categoria
-      </h4>
-
-      <p className="text-darkgray font-medium text-lg">{data.categoria}</p>
     </div>
   </div>
 );

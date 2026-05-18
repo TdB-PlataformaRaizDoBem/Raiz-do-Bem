@@ -93,15 +93,6 @@ export const Dentistas = () => {
                   ? u.especialidades.join(", ")
                   : "Não informado"}
               </p>
-              <span
-                className={`text-xs font-bold px-2 py-0.5 rounded-full w-fit ${
-                  u.disponivel
-                    ? "bg-green-50 text-green-700"
-                    : "bg-gray-100 text-gray-500"
-                }`}
-              >
-                {u.disponivel ? "Disponível" : "Indisponível"}
-              </span>
             </div>
             <div className="flex flex-col gap-4">
               <span className="text-xs lg:text-end font-black uppercase text-gray-400 tracking-widest">
