@@ -1,4 +1,5 @@
 import { formatDate } from "../../utils/dateUtils";
+import { formatCPF, formatPhone } from "../../utils/formatUtils";
 import type { PedidoAjudaAPI } from "../entities/PedidoAjudaAPI";
 import type { StatusPedidoAPI, SexoAPI } from "../types/api-schema";
 
@@ -44,29 +45,19 @@ export function mapPedido(api: PedidoAjudaAPI): PedidoViewModel {
   return {
     id: api.id,
     nomeCompleto: api.nomeCompleto ?? "—",
-    cpf: api.cpf ?? "—",
+    cpf: formatCPF(api.cpf),
     email: api.email ?? "—",
-    telefone: api.telefone ?? "—",
-    dataNascimento: api.dataNascimento
-      ? formatDate(api.dataNascimento)
-      : "—",
-    sexoLabel: api.sexo
-      ? (SEXO_LABEL[api.sexo] ?? "—")
-      : "—",
-    descricaoProblema:
-      api.descricaoProblema ?? "Sem descrição informada.",
+    telefone: formatPhone(api.telefone),
+    dataNascimento: api.dataNascimento ? formatDate(api.dataNascimento) : "—",
+    sexoLabel: api.sexo ? (SEXO_LABEL[api.sexo] ?? "—") : "—",
+    descricaoProblema: api.descricaoProblema ?? "Sem descrição informada.",
     statusAPI,
-    statusLabel:
-      STATUS_LABEL[statusAPI] ?? "Desconhecido",
-    statusClass:
-      STATUS_CLASS[statusAPI] ?? "",
-    dataPedido: api.dataPedido
-      ? formatDate(api.dataPedido)
-      : "—",
+    statusLabel: STATUS_LABEL[statusAPI] ?? "Desconhecido",
+    statusClass: STATUS_CLASS[statusAPI] ?? "",
+    dataPedido: api.dataPedido ? formatDate(api.dataPedido) : "—",
     dataPedidoISO: api.dataPedido ?? "",
     endereco: api.endereco ?? null,
-    dentistaResponsavel:
-      api.dentistaResponsavel ?? null,
+    dentistaResponsavel: api.dentistaResponsavel ?? null,
   };
 }
 

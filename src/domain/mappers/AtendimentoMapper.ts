@@ -1,5 +1,6 @@
 import type { AtendimentoAPI } from "../entities/AtendimentoAPI";
 import { formatDate } from "../../utils/dateUtils";
+import { formatPhone } from "../../utils/formatUtils";
 export const ATENDIMENTO_EM_ABERTO = "NÃO FINALIZADO";
 
 export interface AtendimentoViewModel {
@@ -31,7 +32,7 @@ export function mapAtendimento(api: AtendimentoAPI): AtendimentoViewModel {
     prontuario: api.prontuario ?? "—",
     beneficiario: api.beneficiario ?? "—",
     dentista: api.dentista ?? "—",
-    contatoDentista: api.contatoDentista,
+    contatoDentista: formatPhone(api.contatoDentista),
     emailDentista: api.emailDentista,
     enderecoDentista: api.enderecoDentista,
     dataInicial: api.dataInicial ? formatDate(api.dataInicial) : "—",
