@@ -1,4 +1,5 @@
 import type { DentistaAPI } from "../entities/DentistaAPI";
+import { formatCPF, formatPhone, formatCEP } from "../../utils/formatUtils";
 
 function formatarPrograma(programa: string): string {
   return programa
@@ -58,7 +59,7 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
 
     croDentista: api.croDentista ?? "—",
 
-    cpf: api.cpf ?? "—",
+    cpf: formatCPF(api.cpf),
 
     nomeCompleto: api.nomeCompleto ?? "—",
 
@@ -70,7 +71,7 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
     // Contato
     email: api.email ?? "—",
 
-    telefone: api.telefone ?? "—",
+    telefone: formatPhone(api.telefone),
 
     // Profissional
     categoria: api.categoria ?? "—",
@@ -88,7 +89,7 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
     especialidades: api.especialidades ?? [],
 
     // Endereço flat
-    cep: api.cep ?? null,
+    cep: api.cep ? formatCEP(api.cep) : null,
 
     logradouro: api.logradouro ?? null,
 

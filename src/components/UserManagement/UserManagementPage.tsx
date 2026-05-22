@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { FilterBar } from "../ui/FilterBar";
 import { Button } from "../ui/Button";
 import Search from "../ui/Search";
@@ -255,12 +256,31 @@ export function UserManagementPage<T>({
   const handleSelect = (user: T) =>
     setSearchParams({ id: String(getId(user)) });
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     searchParams.delete("id");
     setSearchParams(searchParams);
-  };
+  }, [searchParams, setSearchParams]);
 
-  // O botão de criar agora depende apenas da existência da prop que renderiza o formulário
+  React.useEffect(() => {
+    if (!selectedUser) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [selectedUser, handleClose]);
+
+  const modalRef = React.useRef<HTMLDivElement>(null);
+  const previousFocusRef = React.useRef<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (selectedUser) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      modalRef.current?.focus();
+    } else {
+      previousFocusRef.current?.focus();
+      previousFocusRef.current = null;
+    }
+  }, [selectedUser]);
+
   const showCreateButton = !!renderCreateForm;
 
   useScrollLock(!!selectedUser);
@@ -351,50 +371,36 @@ export function UserManagementPage<T>({
       )}
 
       {temConteudo && (
-        <div
-          className={`grid gap-8 items-start w-full transition-all duration-300 ${
-            selectedUser ? "xl:grid-cols-[1fr_450px]" : "grid-cols-1"
-          }`}
-        >
-          {/* Cards */}
-          <div
-            className={`grid gap-6 w-full transition-all duration-300 ${
-              selectedUser
-                ? "grid-cols-1"
-                : "grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2"
-            }`}
-          >
-            {filteredItems.map((user) => {
-              const id = getId(user);
-              const selected = !!(selectedUser && getId(selectedUser) === id);
-              return (
-                <div key={id}>
-                  {renderCard(user, selected, () => handleSelect(user))}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Detalhe — desktop sticky */}
-          {selectedUser && (
-            <div className="hidden xl:flex flex-col gap-4 xl:sticky xl:top-24 h-fit w-full">
-              {renderDetails(selectedUser, handleClose)}
-            </div>
-          )}
-
-          {/* Detalhe — mobile modal */}
-          {selectedUser && (
-            <div className="xl:hidden">
-              <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-                onClick={handleClose}
-              />
-              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[92%] max-w-[500px] max-h-[85vh] overflow-hidden">
-                {renderDetails(selectedUser, handleClose)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 w-full">
+          {filteredItems.map((user) => {
+            const id = getId(user);
+            const selected = !!(selectedUser && getId(selectedUser) === id);
+            return (
+              <div key={id}>
+                {renderCard(user, selected, () => handleSelect(user))}
               </div>
-            </div>
-          )}
+            );
+          })}
         </div>
+      )}
+
+      {selectedUser && createPortal(
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-999 p-4 sm:p-6"
+          onClick={handleClose}
+        >
+          <div
+            ref={modalRef}
+            tabIndex={-1}
+            className="w-full max-w-4xl max-h-[90vh] overflow-hidden outline-none animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {renderDetails(selectedUser, handleClose)}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
