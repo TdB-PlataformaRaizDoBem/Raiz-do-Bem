@@ -330,6 +330,7 @@ npm install
 | 📁 Repositório Front-End | [https://github.com/TdB-PlataformaRaizDoBem/Front-End](https://github.com/TdB-PlataformaRaizDoBem/Front-End) |
 | 🏢 Organização no GitHub | [https://github.com/TdB-PlataformaRaizDoBem](https://github.com/TdB-PlataformaRaizDoBem) |
 | 🎥 Pitch Explicativo do Código e Telas | [https://youtu.be/3qlfh8A-jWM](https://youtu.be/3qlfh8A-jWM) |
+| 🎥 Como Usar a Plataforma | [https://youtu.be/fu-ahLvadqs](https://youtu.be/fu-ahLvadqs) |
 
 ---
 
