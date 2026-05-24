@@ -1,6 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import type { DentistaViewModel } from "../../../domain/mappers/DentistaMapper";
 import { atualizarDentista } from "../../../services/DentistaService";
+import { formatCPF } from "../../../utils/formatUtils";
 import { useNotification } from "../../../hooks/useNotification";
 import { useCep } from "../../../hooks/useCep";
 import { useEspecialidades } from "../../../hooks/useEspecialidades";
@@ -122,7 +123,7 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
           />
           <Input
             label="CPF"
-            defaultValue={initialData.cpf}
+            defaultValue={formatCPF(initialData.cpf)}
             readOnly
             className="bg-gray-200 cursor-not-allowed text-gray-500"
           />

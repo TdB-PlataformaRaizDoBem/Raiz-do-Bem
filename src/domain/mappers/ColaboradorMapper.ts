@@ -1,6 +1,5 @@
 import type { ColaboradorAPI } from "../entities/ColaboradorAPI";
 import { formatDate } from "../../utils/dateUtils";
-import { formatCPF } from "../../utils/formatUtils";
 
 export interface ColaboradorViewModel {
   id: number;
@@ -14,7 +13,7 @@ export interface ColaboradorViewModel {
 export function mapColaborador(api: ColaboradorAPI): ColaboradorViewModel {
   return {
     id: api.id,
-    cpf: formatCPF(api.cpf),
+    cpf: api.cpf,
     nomeCompleto: api.nomeCompleto ?? "—",
     dataNascimento: formatDate(api.dataNascimento),
     dataContratacao: formatDate(api.dataContratacao),

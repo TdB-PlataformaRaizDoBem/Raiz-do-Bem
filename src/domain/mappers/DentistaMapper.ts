@@ -59,7 +59,7 @@ export function mapDentista(api: DentistaAPI): DentistaViewModel {
 
     croDentista: api.croDentista ?? "—",
 
-    cpf: formatCPF(api.cpf),
+    cpf: api.cpf,
 
     nomeCompleto: api.nomeCompleto ?? "—",
 
