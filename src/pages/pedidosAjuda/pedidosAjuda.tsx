@@ -169,7 +169,7 @@ export const PedidosAjuda = () => {
                 p-6`}
             >
               <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start  w-full">
                   <p className="text-2xl font-bold text-darkgray leading-tight">
                     {p.nomeCompleto}
                     <span className="pl-3 text-sm text-gray">
