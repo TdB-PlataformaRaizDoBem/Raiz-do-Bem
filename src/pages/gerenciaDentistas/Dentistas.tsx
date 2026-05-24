@@ -4,43 +4,12 @@ import { Button } from "../../components/ui/Button";
 import { CreateDentista } from "../../components/forms/create/CreateDentista";
 import { DentistaDetails } from "../../components/details/DentistaDetails";
 import { AsyncEstado } from "../../components/ui/AsyncEstado";
-import { useDentistas, useDentista } from "../../hooks/useDentistas";
+import { useDentistas } from "../../hooks/useDentistas";
 import type { DentistaCompleto } from "../../services/DentistaService";
 import { exportarDentistasCsv } from "../../services/DentistaService";
 import { getUser } from "../../hooks/useUser";
 import { dentistaFilterConfig } from "../../hooks/pageFilterConfigs";
 import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
-
-const DentistaPainel = ({
-  cpf,
-  isAdmin,
-  onClose,
-  onDeleted,
-  onUpdated,
-}: {
-  cpf: string;
-  isAdmin: boolean;
-  onClose: () => void;
-  onDeleted: () => void;
-  onUpdated: () => void;
-}) => {
-  const { data, loading, error, refetch: refetchSingle } = useDentista(cpf);
-  if (!loading && !error && !data) return null;
-  return (
-    <AsyncEstado loading={loading} error={error}>
-      <DentistaDetails
-        data={data!}
-        isAdmin={isAdmin}
-        onClose={onClose}
-        onDeleted={onDeleted}
-        onUpdated={() => {
-          onUpdated();
-          if (refetchSingle) refetchSingle();
-        }}
-      />
-    </AsyncEstado>
-  );
-};
 
 export const Dentistas = () => {
   const loggedUser = getUser(); 
@@ -116,8 +85,8 @@ export const Dentistas = () => {
           </UserCard>
         )}
         renderDetails={(user, close) => (
-          <DentistaPainel
-            cpf={user.cpf}
+          <DentistaDetails
+            data={user}
             isAdmin={isAdmin}
             onClose={close}
             onDeleted={refetch}
