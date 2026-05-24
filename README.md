@@ -14,6 +14,7 @@
 [📁 Repositório](https://github.com/TdB-PlataformaRaizDoBem/Raiz-do-Bem) &nbsp;·&nbsp;
 [🎨 Organização](https://https://github.com/TdB-PlataformaRaizDoBem)
 [🎥 Pitch](https://youtu.be/3qlfh8A-jWMm)
+[🎥 Como Usar](https://1drv.ms/f/c/b0ad38be1ceef4ff/IgAlG98XUoZGQ61FEvMsyMTOAerK_bjnil6JWOr8vByswcg?e=rlFmSF)
 
 </div>
 
@@ -330,7 +331,7 @@ npm install
 | 📁 Repositório Front-End | [https://github.com/TdB-PlataformaRaizDoBem/Front-End](https://github.com/TdB-PlataformaRaizDoBem/Front-End) |
 | 🏢 Organização no GitHub | [https://github.com/TdB-PlataformaRaizDoBem](https://github.com/TdB-PlataformaRaizDoBem) |
 | 🎥 Pitch Explicativo do Código e Telas | [https://youtu.be/3qlfh8A-jWM](https://youtu.be/3qlfh8A-jWM) |
-| 🎥 Como Usar a Plataforma | [https://youtu.be/fu-ahLvadqs](https://youtu.be/fu-ahLvadqs) |
+| 🎥 Como Usar a Plataforma | [https://1drv.ms/f/c/b0ad38be1ceef4ff/IgAlG98XUoZGQ61FEvMsyMTOAerK_bjnil6JWOr8vByswcg?e=rlFmSF](https://1drv.ms/f/c/b0ad38be1ceef4ff/IgAlG98XUoZGQ61FEvMsyMTOAerK_bjnil6JWOr8vByswcg?e=rlFmSF) |
 
 ---
 

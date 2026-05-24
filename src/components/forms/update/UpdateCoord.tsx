@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import type { ColaboradorViewModel } from "../../../domain/mappers/ColaboradorMapper";
 import { atualizarColaborador } from "../../../services/ColaboradorService";
+import { formatCPF } from "../../../utils/formatUtils";
 import { useNotification } from "../../../hooks/useNotification";
 import Input from "../../formElements/Input";
 import { Button } from "../../ui/Button";
@@ -65,7 +66,7 @@ const UpdateCoord = ({ initialData, onSuccess }: UpdateCoordProps) => {
           />
           <Input
             label="CPF"
-            defaultValue={initialData.cpf}
+            defaultValue={formatCPF(initialData.cpf)}
             readOnly
             className="bg-gray-200/50 cursor-not-allowed text-gray-500"
           />
