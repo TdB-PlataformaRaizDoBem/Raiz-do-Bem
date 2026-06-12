@@ -1,10 +1,29 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
 import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
 import type { AtendimentoViewModel } from "../../domain/mappers/AtendimentoMapper";
 
+
+function buildChatUrl(tel: string): string {
+  const digits = tel.replace(/\D/g, "");
+  const normalized = digits.startsWith("55") ? `+${digits}` : `+55${digits}`;
+  
+  // Detecta se você está no painel /admin ou /coord
+  const prefix = window.location.pathname.includes('/admin') ? '/admin' : '/coord';
+  
+  // Retorna a URL absoluta perfeita casando com a rota acima
+  return `${prefix}/chat/${encodeURIComponent(normalized)}`;
+}
+
+export interface EncerramentoPayload {
+  prontuario: string;
+  idColaborador: number;
+}
+
+// ─── COMPONENTE 1: DESIGNAÇÃO ──────────────────────────────────────────────────
 type BeneficiarioDetailsProps = {
   data: BeneficiarioViewModel;
   onDesignar: (beneficiario: BeneficiarioViewModel, prontuario: string) => void;
@@ -21,7 +40,7 @@ export const BeneficiarioDesignacaoDetails = ({
   return (
     <UserInformation>
       <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
-        <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 scrollbar-none" >
+        <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 scrollbar-none">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">
@@ -158,18 +177,7 @@ export const BeneficiarioDesignacaoDetails = ({
   );
 };
 
-/*
- *  AtendimentoDetails — abas EM_ATENDIMENTO, CONCLUIDO e TODOS
- *  - EM_ATENDIMENTO → mostra form de encerramento (prontuario + idColaborador)
- *  - CONCLUIDO -> leitura, mas com botão "Atualizar atendimento" que abre o mesmo form e reenvia PUT /atendimento/{cpf}
- *  - TODOS → comportamento dependendo de `encerrado`
- */
-
-export interface EncerramentoPayload {
-  prontuario: string;
-  idColaborador: number;
-}
-
+// ─── COMPONENTE 2: DETAILS ─────────────────────────────────────────────────────
 type AtendimentoDetailsProps = {
   data: AtendimentoViewModel;
   isAdmin?: boolean;
@@ -189,6 +197,7 @@ export const AtendimentoDetails = ({
   onEncerrar,
   onClose,
 }: AtendimentoDetailsProps) => {
+  const navigate = useNavigate();
   const [editando, setEditando] = useState<boolean>(!modoLeitura);
   const [prontuario, setProntuario] = useState<string>(
     data.prontuario && data.prontuario !== "—" ? data.prontuario : "",
@@ -269,11 +278,9 @@ export const AtendimentoDetails = ({
                   <h4 className="text-xs font-black uppercase tracking-wider text-gray-400 mb-2">
                     Dentista Responsável
                   </h4>
-
                   <p className="text-lg font-bold text-darkgray leading-tight">
                     {data.dentista}
                   </p>
-
                   <p className="text-xs text-gray-500 mt-1">
                     Profissional vinculado ao atendimento
                   </p>
@@ -285,7 +292,6 @@ export const AtendimentoDetails = ({
                   <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
                     E-mail
                   </p>
-
                   <p className="text-sm font-semibold text-darkgray break-all">
                     {data.emailDentista}
                   </p>
@@ -300,14 +306,26 @@ export const AtendimentoDetails = ({
                       {data.contatoDentista}
                     </p>
 
-                    <a
-                      href={`https://wa.me/55${data.contatoDentista.replace(/\D/g, "")}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-2.5 py-1 rounded-lg bg-lightgreen/10 text-darkgreen text-[11px] font-bold hover:bg-lightgreen/20 transition"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(buildChatUrl(data.contatoDentista))
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-lightgreen/10 text-darkgreen text-[11px] font-bold hover:bg-lightgreen/20 transition inline-flex items-center gap-1"
                     >
-                      Chamar no WhatsApp
-                    </a>
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M20.52 3.48A11.84 11.84 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 5.99L0 24l6.18-1.57A11.93 11.93 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.21-3.48-8.52z"
+                          fill="#006a4e"
+                        />
+                      </svg>
+                      Chat de atendimento
+                    </button>
                   </div>
                 </div>
 
@@ -315,7 +333,6 @@ export const AtendimentoDetails = ({
                   <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">
                     Endereço Comercial
                   </p>
-
                   <p className="text-sm leading-relaxed text-darkgray">
                     {data.enderecoDentista}
                   </p>
@@ -391,7 +408,6 @@ export const AtendimentoDetails = ({
               Fechar
             </Button>
 
-            {/* Concluído + permitir atualizar: botão para reabrir o form */}
             {data.encerrado && permitirAtualizar && !editando && (
               <Button
                 variant="primary"
@@ -402,7 +418,6 @@ export const AtendimentoDetails = ({
               </Button>
             )}
 
-            {/* Form aberto: botão de salvar */}
             {editando && onEncerrar && (
               <Button
                 variant="primary"

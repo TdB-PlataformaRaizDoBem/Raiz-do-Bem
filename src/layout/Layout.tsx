@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { Header } from "../components/header/Header";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/footer/Footer";
@@ -27,19 +28,25 @@ export const AuthLayout = () => {
 
 export const AppLayout = () => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const location = useLocation();
+  const isChatRoute = location.pathname.includes("/chat/");
 
   return (
-    <div className="min-h-screen bg-white flex max-w-[1800px] mx-auto">
+    <div className={`bg-white flex max-w-[1800px] mx-auto ${isChatRoute ? "h-screen overflow-hidden" : "min-h-screen"}`}>
       <Sidebar isCollapsed={isCollapsed} setCollapsed={setIsCollapsed} />
       <main
         className={`
-          flex-1 transition-all duration-300 min-h-screen
-          ${isCollapsed ? "lg:ml-24" : "lg:ml-[300px]"} 
-          max-lg:ml-0 max-lg:pb-[100px] p-6 lg:p-10 lg:pt-20
+          flex-1 transition-all duration-300 relative
+          ${isCollapsed ? "lg:ml-24" : "lg:ml-[300px]"}
+          max-lg:ml-0
+          ${isChatRoute
+            ? "h-screen overflow-hidden flex flex-col pt-3 pb-[89px] lg:pb-3"
+            : "min-h-screen max-lg:pb-[100px] p-6 lg:p-10 lg:pt-20"
+          }
         `}
       >
-        <UserHeader />
-          <Outlet />
+        {!isChatRoute && <UserHeader />}
+        <Outlet />
       </main>
     </div>
   );
