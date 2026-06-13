@@ -1,57 +1,56 @@
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
+import type { FieldValues, Path, PathValue } from "react-hook-form";
 import useFetch from "../hooks/useFetch";
-import type {
-  FieldValues,
-  Path,
-  PathValue,
-  UseFormSetValue,
-  UseFormSetError,
-  UseFormClearErrors,
-} from "react-hook-form";
 
 type ViaCepResponse = {
   cep: string;
+  logradouro?: string;
+  bairro?: string;
   localidade: string;
   uf: string;
-  logradouro?: string;
   erro?: boolean;
 };
 
-export const useCep = <T extends FieldValues>(
-  setValue: UseFormSetValue<T>,
-  setError: UseFormSetError<T>,
-  clearErrors: UseFormClearErrors<T>,
-  prefix: string = ""
-) => {
+export function useCep<T extends FieldValues>(cep: string, prefix: string = "") {
+  const { setValue, setError, clearErrors } = useFormContext<T>();
   const { request, loading } = useFetch<ViaCepResponse>();
 
-  const field = (name: string): Path<T> => {
-    return (prefix ? `${prefix}.${name}` : name) as Path<T>;
+  const applyField = (campo: string, valor: string) => {
+    setValue(
+      (prefix ? `${prefix}.${campo}` : campo) as Path<T>,
+      valor as PathValue<T, Path<T>>,
+      { shouldValidate: true }
+    );
   };
 
-  const buscarCep = async (cep: string) => {
+  useEffect(() => {
     const cepLimpo = cep.replace(/\D/g, "");
     if (cepLimpo.length !== 8) return;
 
-    const { json } = await request(
-      `https://viacep.com.br/ws/${cepLimpo}/json/`
-    );
+    const cepField = (prefix ? `${prefix}.cep` : "cep") as Path<T>;
 
-    if (!json) return;
+    (async () => {
+      const { json } = await request(`https://viacep.com.br/ws/${cepLimpo}/json/`);
 
-    if (json.erro) {
-      setError(field("cep"), {
-        type: "manual",
-        message: "CEP não encontrado. Verifique ou preencha manualmente.",
-      });
-      return;
-    }
+      if (!json) return;
 
-    setValue(field("cidade"), json.localidade as PathValue<T, Path<T>>, { shouldValidate: true });
-    setValue(field("estado"), json.uf as PathValue<T, Path<T>>, { shouldValidate: true });
-    setValue(field("logradouro"), (json.logradouro || "") as PathValue<T, Path<T>>, { shouldValidate: true });
+      if (json.erro) {
+        setError(cepField, {
+          type: "manual",
+          message: "CEP não encontrado. Verifique ou preencha manualmente.",
+        });
+        return;
+      }
 
-    clearErrors(field("cep"));
-  };
+      applyField("rua", json.logradouro ?? "");
+      applyField("bairro", json.bairro ?? "");
+      applyField("cidade", json.localidade);
+      applyField("uf", json.uf);
+      clearErrors(cepField);
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cep]);
 
-  return { buscarCep, loading };
-};
+  return { loading };
+}
