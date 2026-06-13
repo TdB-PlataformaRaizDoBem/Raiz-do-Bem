@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import type { FieldValues, Path, PathValue } from "react-hook-form";
 import useFetch from "../hooks/useFetch";
@@ -15,6 +15,7 @@ type ViaCepResponse = {
 export function useCep<T extends FieldValues>(cep: string, prefix: string = "") {
   const { setValue, setError, clearErrors } = useFormContext<T>();
   const { request, loading } = useFetch<ViaCepResponse>();
+  const isFirstRender = useRef(true);
 
   const applyField = (campo: string, valor: string) => {
     setValue(
@@ -25,6 +26,11 @@ export function useCep<T extends FieldValues>(cep: string, prefix: string = "") 
   };
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const cepLimpo = cep.replace(/\D/g, "");
     if (cepLimpo.length !== 8) return;
 
