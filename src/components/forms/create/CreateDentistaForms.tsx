@@ -24,13 +24,11 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
   const {
     register,
     control,
-    setValue,
-    setError,
-    clearErrors,
+    watch,
     formState: { errors, isDirty },
   } = useFormContext<DentistaFormValues>();
 
-  const { buscarCep } = useCep(setValue, setError, clearErrors);
+  useCep<DentistaFormValues>(watch("endereco.cep"), "endereco");
   const requiredMsg = "Campo obrigatório";
 
   // Carrega especialidades do backend (GET /especialidades)
@@ -175,7 +173,6 @@ export const CreateDentistaForm = ({ onCancel }: Props) => {
               {...register("endereco.cep", {
                 required: requiredMsg,
                 pattern: { value: REGEX.cep, message: "CEP inválido" },
-                onBlur: (e) => buscarCep(e.target.value),
               })}
             />
 

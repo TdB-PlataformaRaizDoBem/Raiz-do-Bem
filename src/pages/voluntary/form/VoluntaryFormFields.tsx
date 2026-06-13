@@ -37,17 +37,11 @@ const VoluntaryFormFields = () => {
   const {
     register,
     control,
-    setValue,
-    setError,
-    clearErrors,
+    watch,
     formState: { errors },
   } = useFormContext<VoluntaryFormValues>();
 
-  const { buscarCep } = useCep<VoluntaryFormValues>(
-    setValue,
-    setError,
-    clearErrors
-  );
+  useCep<VoluntaryFormValues>(watch("endereco.cep"), "endereco");
 
   // Carrega especialidades do backend (GET /especialidades)
   const {
@@ -184,7 +178,6 @@ const VoluntaryFormFields = () => {
           {...register("endereco.cep", {
             required: req,
             pattern: { value: REGEX.cep, message: "CEP inválido" },
-            onBlur: (e) => buscarCep(e.target.value),
           })}
           error={errors.endereco?.cep?.message}
         />
