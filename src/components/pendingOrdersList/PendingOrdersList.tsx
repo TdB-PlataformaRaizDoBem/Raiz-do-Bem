@@ -38,7 +38,7 @@ export const CriticalOrdersList = () => {
 
             <div className="flex flex-col items-end gap-1">
               <span className="text-sm font-bold text-black bg-amber/5 border border-amber/20 px-2 py-1 rounded">
-                {pedido.dataPedidoISO}
+                {pedido.dataPedido}
               </span>
             </div>
 

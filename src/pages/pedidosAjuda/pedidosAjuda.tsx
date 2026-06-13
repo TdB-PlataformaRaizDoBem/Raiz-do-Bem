@@ -22,6 +22,7 @@ const usePedidoActions = (refetch: () => void) => {
   const [acaoPendente, setAcaoPendente] = useState<AcaoPendente>(null);
   const [pedidoEmFoco, setPedidoEmFoco] = useState<PedidoCompleto | null>(null);
   const [dentistaId, setDentistaId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const solicitarConfirmacao = (pedido: PedidoCompleto, acao: AcaoPendente) => {
     setPedidoEmFoco(pedido);
@@ -30,12 +31,14 @@ const usePedidoActions = (refetch: () => void) => {
   };
 
   const cancelarConfirmacao = () => {
+    if (isLoading) return;
     setAcaoPendente(null);
     setPedidoEmFoco(null);
   };
 
   const confirmarAcao = async () => {
-    if (!pedidoEmFoco) return;
+    if (!pedidoEmFoco || isLoading) return;
+    setIsLoading(true);
     try {
       if (acaoPendente === "aprovar") {
         const idDentista = Number(dentistaId || 0);
@@ -55,6 +58,7 @@ const usePedidoActions = (refetch: () => void) => {
     } catch {
       showNotification("Erro ao executar ação.", "error");
     } finally {
+      setIsLoading(false);
       cancelarConfirmacao();
     }
   };
@@ -64,6 +68,7 @@ const usePedidoActions = (refetch: () => void) => {
     pedidoEmFoco,
     dentistaId,
     setDentistaId,
+    isLoading,
     solicitarConfirmacao,
     cancelarConfirmacao,
     confirmarAcao,
@@ -79,6 +84,7 @@ export const PedidosAjuda = () => {
     pedidoEmFoco,
     dentistaId,
     setDentistaId,
+    isLoading,
     solicitarConfirmacao,
     cancelarConfirmacao,
     confirmarAcao,
@@ -132,6 +138,7 @@ export const PedidosAjuda = () => {
               <Button
                 variant="secondary"
                 onClick={cancelarConfirmacao}
+                disabled={isLoading}
                 className="flex-1 sm:flex-none"
               >
                 Cancelar
@@ -139,9 +146,10 @@ export const PedidosAjuda = () => {
               <Button
                 variant={configAtual.variantConfirmar}
                 onClick={confirmarAcao}
-                className="flex-1 sm:flex-none"
+                disabled={isLoading}
+                className={`flex-1 sm:flex-none ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
               >
-                {configAtual.labelConfirmar}
+                {isLoading ? "Salvando..." : configAtual.labelConfirmar}
               </Button>
             </div>
           </div>
