@@ -2,7 +2,7 @@ import type { ConversationPreview } from "../domain/entities/ConversationPreview
 import type { MessageCreateRequest } from "../domain/entities/MessageCreateRequest";
 import type { MessageResponse } from "../domain/entities/MessageResponse";
 
-const CHAT_URL = (import.meta.env.VITE_API_CHAT_URL ?? "http://localhost:8000").replace(/\/$/, "");
+const CHAT_API_URL = (import.meta.env.VITE_CHAT_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -30,7 +30,7 @@ export async function getChatHistory(
   limit = 20
 ): Promise<MessageResponse[]> {
   const tel = encodeURIComponent(telefone);
-  const res = await fetch(`${CHAT_URL}/chat/history/${tel}?skip=${skip}&limit=${limit}`);
+  const res = await fetch(`${CHAT_API_URL}/chat/history/${tel}?skip=${skip}&limit=${limit}`);
   if (res.status === 404) return [];
   const data = await handleResponse<MessageResponse[]>(res);
   return data ?? [];
@@ -43,7 +43,7 @@ export async function getChatHistory(
 export async function sendMessage(
   payload: MessageCreateRequest
 ): Promise<{ status: string; id_db: string; id_twilio: string }> {
-  const res = await fetch(`${CHAT_URL}/chat/send`, {
+  const res = await fetch(`${CHAT_API_URL}/chat/send`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -58,7 +58,7 @@ export async function sendMessage(
  */
 export async function getActiveConversations(): Promise<ConversationPreview[]> {
   try {
-    const res = await fetch(`${CHAT_URL}/chat/conversations`);
+    const res = await fetch(`${CHAT_API_URL}/chat/conversations`);
     if (!res.ok) return [];
     const data: ConversationPreview[] = await res.json();
     return Array.isArray(data) ? data : [];
@@ -76,6 +76,6 @@ export async function markAsRead(
   telefone: string
 ): Promise<{ status: string; messagens_updated: number }> {
   const tel = encodeURIComponent(telefone);
-  const res = await fetch(`${CHAT_URL}/chat/read/${tel}`, { method: "PUT" });
+  const res = await fetch(`${CHAT_API_URL}/chat/read/${tel}`, { method: "PUT" });
   return handleResponse(res);
 }
