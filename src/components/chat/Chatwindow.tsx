@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
+import type { ContactInfo } from "../../hooks/useContactLookup";
 import { MessageBubble } from "./Messagebubble";
 import { formatPhone } from "../../utils/formatUtils";
 import { avatarColor, avatarInitials } from "../../utils/Chatutils";
@@ -18,6 +19,8 @@ interface ChatWindowProps {
   onSend: (text: string) => Promise<void>;
   onClearError: () => void;
   onOpenSidebar: () => void;
+  /** Se fornecido, exibe nome e tag de perfil no cabeçalho em vez do número bruto */
+  contact?: ContactInfo | null;
 }
 
 /**
@@ -33,6 +36,7 @@ export function ChatWindow({
   onSend,
   onClearError,
   onOpenSidebar,
+  contact,
 }: ChatWindowProps) {
   const feedRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -105,10 +109,33 @@ export function ChatWindow({
 
         {/* Identificação */}
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-[#111b21] text-sm leading-tight truncate">
-            {formatPhone(telefone)}
-          </p>
-          <p className="text-[11px] text-[#8696a0] truncate">{telefone}</p>
+          {contact ? (
+            <>
+              <p className="font-semibold text-[#111b21] text-sm leading-tight truncate">
+                {contact.nome}
+              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className={`
+                  text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none shrink-0
+                  ${contact.tipo === "beneficiario"
+                    ? "bg-amber-100 text-amber-700"
+                    : "bg-teal-100 text-teal-700"}
+                `}>
+                  {contact.tipo === "beneficiario" ? "Beneficiário" : "Dentista"}
+                </span>
+                <span className="text-[10px] text-[#8696a0] truncate">
+                  {formatPhone(telefone)}
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="font-semibold text-[#111b21] text-sm leading-tight truncate">
+                {formatPhone(telefone)}
+              </p>
+              <p className="text-[11px] text-[#8696a0] truncate">{telefone}</p>
+            </>
+          )}
         </div>
 
         {/* Indicador de polling ativo */}
@@ -145,7 +172,7 @@ export function ChatWindow({
         {/* Feed vazio */}
         {!loading && messages.length === 0 && (
           <div className="flex justify-center py-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-5 text-center shadow-sm max-w-[260px]">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-5 text-center shadow-sm max-w-65">
               <div className="w-12 h-12 rounded-full bg-darkgreen/10 flex items-center justify-center mx-auto mb-3">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-darkgreen">
                   <path
@@ -206,8 +233,11 @@ export function ChatWindow({
         </div>
       )}
 
-      {/* Formulário de envio */}
-      <footer className="bg-[#f0f2f5] border-t border-[#e9edef] px-3 py-2 shrink-0">
+      {/* Formulário de envio — pb respeita safe-area em iPhones com notch */}
+      <footer
+        className="bg-[#f0f2f5] border-t border-[#e9edef] px-3 pt-2 shrink-0"
+        style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom, 8px))" }}
+      >
         <form onSubmit={handleSubmit(onSubmit)} className="flex items-end gap-2">
 
           {/* Campo de texto com auto-resize */}
@@ -228,7 +258,7 @@ export function ChatWindow({
               leading-relaxed shadow-sm transition
               focus:ring-2 focus:ring-darkgreen/20
               disabled:opacity-60
-              max-h-[124px] overflow-y-auto
+              max-h-31 overflow-y-auto
               ${errors.text ? "ring-2 ring-red-300" : ""}
             `}
           />

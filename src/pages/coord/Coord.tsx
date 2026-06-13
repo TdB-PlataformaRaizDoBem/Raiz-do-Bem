@@ -5,6 +5,7 @@ import { Dentistas } from "../gerenciaDentistas/Dentistas";
 import { PedidosAjuda } from "../pedidosAjuda/pedidosAjuda";
 import { Designacao } from "../designacao/Designacao";
 import ChatScreen from "../chat/ChatScreen";
+import ConversasScreen from "../conversas/ConversasScreen";
 
 const Coord = () => {
   return (
@@ -14,6 +15,7 @@ const Coord = () => {
       <Route path="dentistas" element={<Dentistas />} />
       <Route path="solicitacoes" element={<PedidosAjuda />} />
       <Route path="atendimento" element={<Designacao />} />
+      <Route path="chat" element={<ConversasScreen />} />
       <Route path="chat/:telefone" element={<ChatScreen />} />
     </Routes>
   );

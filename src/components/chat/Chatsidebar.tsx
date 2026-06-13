@@ -25,13 +25,16 @@ export function ChatSidebar({ conversations, activeTel, isOpen, onClose }: ChatS
     <>
       <aside
         className={`
-          shrink-0 flex flex-col
-          bg-white border-r border-[#e9edef]
-          transition-transform duration-300
+          flex flex-col bg-white border-r border-[#e9edef]
+          overflow-hidden transition-all duration-300
 
+          /* Mobile: overlay fixo deslizando da esquerda */
           fixed inset-y-0 left-0 z-20 w-full max-w-[340px]
-          md:absolute
           ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
+
+          /* Desktop: sidebar estática que empurra o chat — anima pela largura */
+          md:static md:inset-auto md:translate-x-0 md:shadow-none md:z-auto
+          ${isOpen ? "md:w-85 md:min-w-85" : "md:w-0 md:min-w-0 md:border-0"}
         `}
       >
         {/* Cabeçalho da sidebar */}
@@ -103,7 +106,7 @@ export function ChatSidebar({ conversations, activeTel, isOpen, onClose }: ChatS
 
       {isOpen && (
         <div
-          className="fixed inset-0 md:absolute md:inset-0 bg-black/40 z-10 backdrop-blur-[1px]"
+          className="md:hidden fixed inset-0 bg-black/40 z-10 backdrop-blur-[1px]"
           onClick={onClose}
           aria-hidden="true"
         />

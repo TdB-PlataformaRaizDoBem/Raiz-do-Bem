@@ -42,6 +42,19 @@ export function buildChatUrl(tel: string): string {
   return `${prefix}/chat/${encodeURIComponent(normalized)}`;
 }
 
+/** Constrói a URL da Central de Atendimentos passando o telefone como query param */
+export function buildGlobalChatUrl(tel: string): string {
+  const digits = tel.replace(/\D/g, "");
+  const normalized = digits.startsWith("55") ? `+${digits}` : `+55${digits}`;
+
+  const currentPath = window.location.pathname;
+  let prefix = "";
+  if (currentPath.includes("/admin")) prefix = "/admin";
+  else if (currentPath.includes("/coord")) prefix = "/coord";
+
+  return `${prefix}/chat?phone=${encodeURIComponent(normalized)}`;
+}
+
 
 const AVATAR_COLORS = [
   "bg-teal-600",

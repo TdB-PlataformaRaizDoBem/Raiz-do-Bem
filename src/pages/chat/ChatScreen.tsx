@@ -9,6 +9,7 @@ import {
 import { normalizeTel } from "../../utils/Chatutils";
 import { ChatSidebar } from "../../components/chat/Chatsidebar";
 import { ChatWindow } from "../../components/chat/Chatwindow";
+import { useContactLookup } from "../../hooks/useContactLookup";
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
 import type { ConversationPreview } from "../../domain/entities/ConversationPreview";
 
@@ -28,12 +29,17 @@ export default function ChatScreen() {
   const { telefone: rawTelefone } = useParams<{ telefone: string }>();
   const telefone = rawTelefone ? normalizeTel(rawTelefone) : "";
 
+  const { contact } = useContactLookup(telefone);
+
   const [messages, setMessages] = useState<MessageResponse[]>([]);
   const [conversations, setConversations] = useState<ConversationPreview[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Desktop: sidebar abre por padrão; mobile: fechada (o overlay é acionado pelo hamburger)
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => window.matchMedia("(min-width: 768px)").matches
+  );
 
   // Ref para rastrear qual telefone foi marcado como lido no ciclo atual,
   // evitando chamadas duplicadas ao mudar de rota rapidamente.
@@ -170,6 +176,7 @@ export default function ChatScreen() {
         loading={loadingHistory}
         sending={sending}
         error={error}
+        contact={contact}
         onSend={handleSend}
         onClearError={() => setError(null)}
         onOpenSidebar={() => setSidebarOpen(true)}
