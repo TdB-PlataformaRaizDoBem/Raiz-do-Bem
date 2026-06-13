@@ -1,6 +1,8 @@
 import { excluirDentista } from "../../services/DentistaService";
 import type { DentistaViewModel } from "../../domain/mappers/DentistaMapper";
 import { formatCPF, formatPhone } from "../../utils/formatUtils";
+import { Link } from "react-router-dom";
+import { buildGlobalChatUrl } from "../../utils/Chatutils";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
@@ -100,6 +102,19 @@ export const DentistaDetails = ({
               <div className="pt-3 border-t border-gray-100">
                 <p className="text-[10px] font-black text-gray-400 uppercase mb-0.5">Telefone</p>
                 <p className="text-darkgray font-medium">{formatPhone(data.telefone)}</p>
+                {data.telefone && (
+                  <Link
+                    to={buildGlobalChatUrl(data.telefone)}
+                    onClick={onClose}
+                    className="mt-1.5 text-xs text-darkgreen font-bold hover:underline inline-flex items-center gap-1"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                        stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Iniciar conversa
+                  </Link>
+                )}
               </div>
             </div>
 

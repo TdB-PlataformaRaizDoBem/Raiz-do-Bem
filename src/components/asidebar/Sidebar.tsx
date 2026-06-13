@@ -1,6 +1,7 @@
   import React from "react";
   import { NavLink, useNavigate } from "react-router-dom";
   import { Menu_Data } from "./MenuData";
+  import { useUnread } from "../../context/UnreadContext";
 
   import Collapsed from "../../assets/svgs/icon-park_to-left.svg";
   import Logout from "../../assets/svgs/logout.svg";
@@ -14,6 +15,7 @@
   const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
     const navigate = useNavigate();
     const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+    const { totalUnread } = useUnread();
 
     const userData = JSON.parse(localStorage.getItem("@RaizDoBem:user") || "{}");
     const role = (userData.role as "admin" | "coordenador") || "admin";
@@ -100,11 +102,18 @@
                         }
                       `}
                     >
-                      <img
-                        src={item.icon}
-                        className="min-h-7 min-w-7 shrink-0 object-contain"
-                        alt=""
-                      />
+                      <div className="relative shrink-0">
+                        <img
+                          src={item.icon}
+                          className="min-h-7 min-w-7 object-contain"
+                          alt=""
+                        />
+                        {item.hasBadge && totalUnread > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-darkgreen text-white text-[9px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-0.5 leading-none">
+                            {totalUnread > 99 ? "99+" : totalUnread}
+                          </span>
+                        )}
+                      </div>
                       {(!isCollapsed || isMobileOpen) && (
                         <span className="text-sm whitespace-nowrap overflow-hidden italic">
                           {item.label}
@@ -135,7 +144,14 @@
           {menuLinks.slice(0, 2).map((item) => (
             <li key={item.label}>
               <NavLink to={item.path} className={({ isActive }) => `p-2 block transition-transform active:scale-90 ${isActive ? 'brightness-75' : ''}`}>
-                <img src={item.icon} className="w-8 h-8 object-contain" alt={item.label} />
+                <div className="relative">
+                  <img src={item.icon} className="w-8 h-8 object-contain" alt={item.label} />
+                  {item.hasBadge && totalUnread > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-darkgreen text-white text-[9px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-0.5 leading-none">
+                      {totalUnread > 99 ? "99+" : totalUnread}
+                    </span>
+                  )}
+                </div>
               </NavLink>
             </li>
           ))}
@@ -152,7 +168,14 @@
           {menuLinks.slice(2, 4).map((item) => (
             <li key={item.label}>
               <NavLink to={item.path} className={({ isActive }) => `p-2 block transition-transform active:scale-90 ${isActive ? 'brightness-75' : ''}`}>
-                <img src={item.icon} className="w-8 h-8 object-contain" alt={item.label} />
+                <div className="relative">
+                  <img src={item.icon} className="w-8 h-8 object-contain" alt={item.label} />
+                  {item.hasBadge && totalUnread > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-darkgreen text-white text-[9px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-0.5 leading-none">
+                      {totalUnread > 99 ? "99+" : totalUnread}
+                    </span>
+                  )}
+                </div>
               </NavLink>
             </li>
           ))}
