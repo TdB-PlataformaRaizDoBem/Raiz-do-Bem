@@ -6,24 +6,10 @@ import {
   type DentistaViewModel,
 } from "../domain/mappers/DentistaMapper";
 import type { AtualizarDentistaPayload } from "../domain/entities/AtualizarDentista";
+import { handleResponse, assertOk, safeFetch } from "./httpClient";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/dentista`;
-
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    let mensagem = `Erro ${res.status}`;
-    try {
-      const body = await res.json();
-      mensagem = body?.mensagem ?? body?.message ?? mensagem;
-    } catch {
-      /* manter mensagem padrão baseada no status HTTP */
-    }
-    throw new Error(mensagem);
-  }
-  if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
-}
 
 function jsonHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
@@ -33,7 +19,7 @@ function jsonHeaders(): HeadersInit {
  * GET /dentista
  */
 export async function getDentistasCompletos(): Promise<DentistaViewModel[]> {
-  const res = await fetch(ENDPOINT);
+  const res = await safeFetch(ENDPOINT);
   
   // Se o backend disser que não encontrou registros (404), tratamos como lista vazia amigavelmente
   if (res.status === 404 || res.status === 204) {
@@ -48,7 +34,7 @@ export async function getDentistasCompletos(): Promise<DentistaViewModel[]> {
 export async function getDentistaCompleto(
   cpf: string,
 ): Promise<DentistaViewModel | null> {
-  const res = await fetch(`${ENDPOINT}/${cpf}`);
+  const res = await safeFetch(`${ENDPOINT}/${cpf}`);
   if (res.status === 404) return null;
   const data = await handleResponse<DentistaAPI>(res);
   return mapDentista(data);
@@ -60,7 +46,7 @@ export async function getDentistaCompleto(
 export async function criarDentista(
   payload: CriarDentistaPayload,
 ): Promise<DentistaViewModel> {
-  const res = await fetch(ENDPOINT, {
+  const res = await safeFetch(ENDPOINT, {
     method: "POST",
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
@@ -74,7 +60,7 @@ export async function atualizarDentista(
   cpf: string,
   payload: Partial<AtualizarDentistaPayload>,
 ): Promise<DentistaViewModel> {
-  const res = await fetch(`${ENDPOINT}/${cpf}`, {
+  const res = await safeFetch(`${ENDPOINT}/${cpf}`, {
     method: "PUT",
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
@@ -84,23 +70,13 @@ export async function atualizarDentista(
 }
 
 export async function excluirDentista(cpf: string): Promise<void> {
-  const res = await fetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
+  const res = await safeFetch(`${ENDPOINT}/${cpf}`, { method: "DELETE" });
   await handleResponse<void>(res);
 }
 
 export async function exportarDentistasCsv(): Promise<Blob> {
-  const res = await fetch(`${ENDPOINT}/exportarCsv`);
-
-  if (!res.ok) {
-    let mensagem = `Erro ${res.status}`;
-    try {
-      const body = await res.json();
-      mensagem = body?.mensagem ?? body?.message ?? mensagem;
-    } catch {
-      /* manter mensagem padrão */
-    }
-    throw new Error(mensagem);
-  }
+  const res = await safeFetch(`${ENDPOINT}/exportarCsv`);
+  await assertOk(res);
   return res.blob();
 }
 
