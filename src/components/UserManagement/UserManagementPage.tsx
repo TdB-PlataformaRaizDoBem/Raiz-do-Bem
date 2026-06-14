@@ -9,6 +9,32 @@ import { useSearchParams } from "react-router-dom";
 import { useSmartFilter } from "../../hooks/useSmartFilter";
 import type { PageFilterConfig, FilterGroup } from "./FilterConfig";
 
+// ---------------------------------------------------------------------------
+// CardSlot — isola o cálculo do callback `select` por item e permite ao
+// React.memo pular o re-render quando `user`, `selected` e `handleSelect`
+// não mudarem (ex.: digitação na busca que não altera o item em questão).
+// O renderCard precisa ser estável (useCallback no pai) para o efeito ser
+// máximo; sem isso, só a estabilidade do select já ajuda.
+// ---------------------------------------------------------------------------
+type CardSlotProps<T> = {
+  user: T;
+  selected: boolean;
+  handleSelect: (user: T) => void;
+  renderCard: (user: T, selected: boolean, select: () => void) => React.ReactNode;
+};
+
+function CardSlotInner<T>({ user, selected, handleSelect, renderCard }: CardSlotProps<T>) {
+  const select = React.useCallback(
+    () => handleSelect(user),
+    [user, handleSelect],
+  );
+  return <div>{renderCard(user, selected, select)}</div>;
+}
+
+const CardSlot = React.memo(CardSlotInner) as <T>(
+  props: CardSlotProps<T>,
+) => React.ReactElement | null;
+
 type UserManagementPageProps<T> = {
   title: string;
   users: T[];
@@ -253,8 +279,10 @@ export function UserManagementPage<T>({
     return users.find((u) => String(getId(u)) === selectedId) ?? null;
   }, [selectedId, users, getId]);
 
-  const handleSelect = (user: T) =>
-    setSearchParams({ id: String(getId(user)) });
+  const handleSelect = React.useCallback(
+    (user: T) => setSearchParams({ id: String(getId(user)) }),
+    [getId, setSearchParams],
+  );
 
   const handleClose = React.useCallback(() => {
     searchParams.delete("id");
@@ -376,9 +404,13 @@ export function UserManagementPage<T>({
             const id = getId(user);
             const selected = !!(selectedUser && getId(selectedUser) === id);
             return (
-              <div key={id}>
-                {renderCard(user, selected, () => handleSelect(user))}
-              </div>
+              <CardSlot
+                key={id}
+                user={user}
+                selected={selected}
+                handleSelect={handleSelect}
+                renderCard={renderCard}
+              />
             );
           })}
         </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -10,10 +10,12 @@ import { routes, type AppRoute } from "./Routes/Routes";
 import { AppLayout, AuthLayout, PublicLayout } from "./layout/Layout";
 import { ProtectedRoutes } from "./Routes/ProtectedRoutes";
 import ScrollToTop from "./layout/ScrollToTop";
-import Login from "./pages/login/Login";
-import Admin from "./pages/admin/Admin";
-import Coord from "./pages/coord/Coord";
 import { NotificationProvider } from "./components/context/NotificationProvider";
+import Spinner from "./components/ui/Spinner";
+
+const Login = lazy(() => import("./pages/login/Login"));
+const Admin = lazy(() => import("./pages/admin/Admin"));
+const Coord = lazy(() => import("./pages/coord/Coord"));
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -28,24 +30,26 @@ const AppRoutes = () => {
   }, [location]);
 
   return (
-    <Routes>
-      <Route element={<PublicLayout />}>
-        {routes.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-      </Route>
-
-      <Route path="/auth" element={<AuthLayout />}>
-        <Route path="login" element={<Login />} />
-      </Route>
-
-      <Route element={<ProtectedRoutes />}>
-        <Route element={<AppLayout />}>
-          <Route path="/admin/*" element={<Admin />} />
-          <Route path="/coord/*" element={<Coord />} />
+    <Suspense fallback={<Spinner />}>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          {routes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
         </Route>
-      </Route>
-    </Routes>
+
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route path="login" element={<Login />} />
+        </Route>
+
+        <Route element={<ProtectedRoutes />}>
+          <Route element={<AppLayout />}>
+            <Route path="/admin/*" element={<Admin />} />
+            <Route path="/coord/*" element={<Coord />} />
+          </Route>
+        </Route>
+      </Routes>
+    </Suspense>
   );
 };
 
