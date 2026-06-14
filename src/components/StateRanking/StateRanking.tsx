@@ -1,7 +1,10 @@
-import { useImpactStats } from "../../hooks/useImpactStats";
+type RankingItem = { uf: string; qtd: number; percent: number };
 
-export const StateRanking = () => {
-  const { rankingEstado } = useImpactStats();
+type StateRankingProps = {
+  rankingEstado: RankingItem[];
+};
+
+export const StateRanking = ({ rankingEstado }: StateRankingProps) => {
 
   return (
     <div className="bg-white p-5 sm:p-6 rounded-2xl w-full shadow-sm border border-gray-100">

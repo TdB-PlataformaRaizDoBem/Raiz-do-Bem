@@ -95,7 +95,6 @@ export async function criarPedidoAjuda(
     body: JSON.stringify(payload),
   });
 
-  console.log(payload)
   const data = await handleResponse<PedidoAjudaAPI>(res);
   return mapPedido(data);
 }
