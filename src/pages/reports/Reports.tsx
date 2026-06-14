@@ -52,7 +52,7 @@ const Reports = () => {
       {/* Gráficos de Pizza e Barras Horizontais */}
       <ImpactChart />
       <OrdersStatusBarChart />
-      <StateRanking />
+      <StateRanking rankingEstado={impact.rankingEstado} />
     </div>
   );
 };

@@ -51,7 +51,7 @@ const Dashboard = () => {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         <ImpactChart />
         <OrdersStatusBarChart />
-        <StateRanking />
+        <StateRanking rankingEstado={impact.rankingEstado} />
       </section>
 
       <section className="mb-6">
