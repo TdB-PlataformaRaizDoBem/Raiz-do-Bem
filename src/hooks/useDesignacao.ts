@@ -1,6 +1,7 @@
 import { useAsync } from "./useAsync";
 import { getBeneficiariosCompletos } from "../services/Beneficiarioservice";
 import { getAtendimentos } from "../services/AtendimentoService";
+import { normalizeStr } from "../utils/formatUtils";
 import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
 import {
   mapAtendimentos,
@@ -35,11 +36,11 @@ async function fetchBeneficiariosPendentes(): Promise<BeneficiarioViewModel[]> {
     atendimentosApi
       .map((a) => a.beneficiario)
       .filter((nome): nome is string => !!nome && nome !== "N/A")
-      .map((nome) => nome.trim().toLowerCase()),
+      .map(normalizeStr),
   );
 
   return beneficiarios.filter(
-    (b) => !nomesEmAtendimento.has(b.nomeCompleto.trim().toLowerCase()),
+    (b) => !nomesEmAtendimento.has(normalizeStr(b.nomeCompleto)),
   );
 }
 
