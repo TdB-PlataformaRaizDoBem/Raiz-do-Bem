@@ -19,6 +19,7 @@ import {
   encerrarAtendimento,
   exportarAtendimentosCsv,
 } from "../../services/AtendimentoService";
+import { normalizeStr } from "../../utils/formatUtils";
 import { getBeneficiariosCompletos } from "../../services/Beneficiarioservice";
 import { useNotification } from "../../hooks/useNotification";
 import {
@@ -250,9 +251,7 @@ const AbaAtendimentos = ({ tab, isAdmin }: AbaAtendimentosProps) => {
     try {
       const beneficiarios = await getBeneficiariosCompletos();
       const alvo = beneficiarios.find(
-        (b) =>
-          b.nomeCompleto.trim().toLowerCase() ===
-          emFoco.beneficiario.trim().toLowerCase(),
+        (b) => normalizeStr(b.nomeCompleto) === normalizeStr(emFoco.beneficiario),
       );
 
       if (!alvo) {

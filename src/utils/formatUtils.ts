@@ -1,3 +1,15 @@
+/**
+ * Normaliza uma string para comparações insensíveis a maiúsculas, espaços e acentos.
+ * Remove diacríticos (á→a, ç→c…), faz trim e toLowerCase.
+ */
+export function normalizeStr(str: string): string {
+  return str
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+}
+
 export function formatCPF(cpf: string | null | undefined): string {
   if (!cpf) return "—";
   const digits = cpf.replace(/\D/g, "");

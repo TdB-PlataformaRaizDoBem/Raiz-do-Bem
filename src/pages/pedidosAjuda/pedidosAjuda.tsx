@@ -14,6 +14,7 @@ import {
 } from "../../services/PedidoService";
 import { PedidoDetails } from "../../components/details/PedidosDetails";
 import { pedidoFilterConfig } from "../../hooks/pageFilterConfigs";
+import { SelectDentista } from "../../components/formElements/SelectDentista";
 
 type AcaoPendente = "aprovar" | "suspender" | null;
 
@@ -122,18 +123,10 @@ export const PedidosAjuda = () => {
             <p className="text-gray-600 leading-relaxed">
               {configAtual.descricao}
             </p>
-            <div>
-              <label className="block text-xs font-black uppercase text-gray-400 mb-2">
-                ID do dentista responsável
-              </label>
-              <input
-                value={dentistaId}
-                onChange={(e) => setDentistaId(e.target.value)}
-                type="number"
-                placeholder="Digite o id do dentista (ex: 123)"
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm"
-              />
-            </div>
+            <SelectDentista
+              value={dentistaId}
+              onChange={setDentistaId}
+            />
             <div className="flex gap-3 justify-end flex-wrap">
               <Button
                 variant="secondary"
