@@ -40,11 +40,6 @@ const ColaboradorPainel = ({
 export default function Colaborador() {
   const { data: colaboradores, loading, error, refetch } = useColaboradores();
 
-  // useCallback estabiliza a referência entre re-renders do componente pai.
-  // Como renderCard usa apenas os parâmetros recebidos (u, selected, select)
-  // e não captura estado externo, o array de deps é vazio.
-  // Isso permite que CardSlot dentro de UserManagementPage pule o re-render
-  // de itens que não mudaram (ex.: busca que reduz a lista mas mantém o item).
   const renderCard = React.useCallback(
     (u: ColaboradorCompleto, selected: boolean, select: () => void) => (
       <UserCard
