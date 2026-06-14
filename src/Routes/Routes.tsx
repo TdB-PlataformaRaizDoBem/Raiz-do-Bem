@@ -1,10 +1,11 @@
-import type { ReactNode } from "react";
-import Home from "../pages/home/Home";
-import About from "../pages/about/About";
-import Team from "../pages/Team/Team";
-import Faq from "../pages/faq/Faq";
-import Contact from "../pages/contact/Contact";
-import Voluntary from "../pages/voluntary/Voluntary";
+import { lazy, type ReactNode } from "react";
+
+const Home = lazy(() => import("../pages/home/Home"));
+const About = lazy(() => import("../pages/about/About"));
+const Team = lazy(() => import("../pages/Team/Team"));
+const Faq = lazy(() => import("../pages/faq/Faq"));
+const Contact = lazy(() => import("../pages/contact/Contact"));
+const Voluntary = lazy(() => import("../pages/voluntary/Voluntary"));
 
 export interface AppRoute {
   path: string;
@@ -12,7 +13,7 @@ export interface AppRoute {
   title: string;
 }
 
-export const routes : AppRoute[] = [
+export const routes: AppRoute[] = [
   {
     path: "/",
     element: <Home />,

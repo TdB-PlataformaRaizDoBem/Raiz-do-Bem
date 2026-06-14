@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 interface StaticCardProps {
   icon: string;
   label: string;
@@ -5,16 +7,16 @@ interface StaticCardProps {
   description: string;
 }
 
-export const StaticCard = ({
+export const StaticCard = memo(function StaticCard({
   icon,
   label,
   value,
   description,
-}: StaticCardProps) => {
+}: StaticCardProps) {
   return (
     <div
       className="
-        bg-white 
+        bg-white
         p-4 sm:p-5 md:p-6
         rounded-2xl
         w-full
@@ -35,9 +37,7 @@ export const StaticCard = ({
         {value}
       </strong>
 
-      <p className="text-xs sm:text-sm text-gray-400 mt-1">
-        {description}
-      </p>
+      <p className="text-xs sm:text-sm text-gray-400 mt-1">{description}</p>
     </div>
   );
-};
+});

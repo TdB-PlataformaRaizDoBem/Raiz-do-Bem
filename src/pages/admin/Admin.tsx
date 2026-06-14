@@ -1,12 +1,14 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import Dashboard from "../dashboard/Dashboard";
-import Colaborador from "./Colaborador";
-import { Beneficiarios } from "../gerenciaBeneficiarios/Beneficiarios";
-import { Dentistas } from "../gerenciaDentistas/Dentistas";
-import { PedidosAjuda } from "../pedidosAjuda/pedidosAjuda";
-import { Designacao } from "../designacao/Designacao";
-import ChatScreen from "../chat/ChatScreen";
-import ConversasScreen from "../conversas/ConversasScreen";
+
+const Dashboard = lazy(() => import("../dashboard/Dashboard"));
+const Colaborador = lazy(() => import("./Colaborador"));
+const Beneficiarios = lazy(() => import("../gerenciaBeneficiarios/Beneficiarios").then((m) => ({ default: m.Beneficiarios })));
+const Dentistas = lazy(() => import("../gerenciaDentistas/Dentistas").then((m) => ({ default: m.Dentistas })));
+const PedidosAjuda = lazy(() => import("../pedidosAjuda/pedidosAjuda").then((m) => ({ default: m.PedidosAjuda })));
+const Designacao = lazy(() => import("../designacao/Designacao").then((m) => ({ default: m.Designacao })));
+const ConversasScreen = lazy(() => import("../conversas/ConversasScreen"));
+const ChatScreen = lazy(() => import("../chat/ChatScreen"));
 
 const Admin = () => {
   return (
