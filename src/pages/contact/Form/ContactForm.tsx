@@ -7,6 +7,7 @@ import TextArea from "../../../components/formElements/TextArea";
 import { ToastNotificationContext } from "../../../components/context/NotificationContext";
 import { criarPedidoAjuda } from "../../../services/PedidoService";
 import type { SexoAPI } from "../../../domain/types/api-schema";
+import { loadFormDraft, useFormDraft } from "../../../hooks/useFormDraft";
 
 export interface ContactFormData {
   nome: string;
@@ -31,17 +32,34 @@ const SEXO_API_MAP: Record<string, SexoAPI> = {
   outros: "O",
 };
 
+const DRAFT_KEY = "raiz-do-bem:contact-form";
+const FORM_DEFAULTS: ContactFormData = {
+  nome: "",
+  cpf: "",
+  email: "",
+  telefone: "",
+  dataNascimento: "",
+  sexo: "",
+  violenciaDomestica: "",
+  descricaoProblema: "",
+  endereco: { cep: "", numero: "" },
+};
+
 const ContactForm = () => {
+  const draft = loadFormDraft<ContactFormData>(DRAFT_KEY);
+
   const methods = useForm<ContactFormData>({
     mode: "onBlur",
-    defaultValues: { sexo: "", violenciaDomestica: "" },
+    defaultValues: { ...FORM_DEFAULTS, ...(draft ?? {}) },
   });
 
   const {
     register,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = methods;
+
+  const { clearDraft } = useFormDraft(DRAFT_KEY, watch, isDirty);
 
   const dataNascimento = watch("dataNascimento");
   const sexo = watch("sexo");
@@ -77,7 +95,8 @@ const ContactForm = () => {
       });
 
       showNotification("Pedido enviado com sucesso!", "success");
-      methods.reset();
+      clearDraft();
+      methods.reset(FORM_DEFAULTS);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Erro ao enviar pedido";
       showNotification(msg, "error");

@@ -7,24 +7,36 @@ import VoluntaryFormFields, {
 import { Button } from "../../../components/ui/Button";
 import { ToastNotificationContext } from "../../../components/context/NotificationContext";
 import { criarDentista } from "../../../services/DentistaService";
+import { loadFormDraft, useFormDraft } from "../../../hooks/useFormDraft";
+
+const DRAFT_KEY = "raiz-do-bem:voluntary-form";
+const FORM_DEFAULTS: VoluntaryFormValues = {
+  nomeCompleto: "",
+  croDentista: "",
+  cpf: "",
+  email: "",
+  telefone: "",
+  sexo: "F",
+  categoria: "CLINICO",
+  disponivel: "S",
+  idEspecialidade: 0,
+  endereco: { cep: "", numero: "" },
+};
 
 const VoluntaryForm = () => {
+  const draft = loadFormDraft<VoluntaryFormValues>(DRAFT_KEY);
+
   const methods = useForm<VoluntaryFormValues>({
     mode: "onBlur",
-    defaultValues: {
-      nomeCompleto: "",
-      croDentista: "",
-      cpf: "",
-      email: "",
-      telefone: "",
-      sexo: "F",
-      categoria: "CLINICO",
-      disponivel: "S",
-      idEspecialidade: 0,
-      endereco: { cep: "", numero: "" },
-    },
+    defaultValues: { ...FORM_DEFAULTS, ...(draft ?? {}) },
   });
+
   const { showNotification } = React.useContext(ToastNotificationContext)!;
+  const { clearDraft } = useFormDraft(
+    DRAFT_KEY,
+    methods.watch,
+    methods.formState.isDirty,
+  );;
 
   const onSubmit = async (data: VoluntaryFormValues) => {
     try {
@@ -46,9 +58,10 @@ const VoluntaryForm = () => {
 
       showNotification(
         "Cadastro de voluntário realizado com sucesso!",
-        "success"
+        "success",
       );
-      methods.reset();
+      clearDraft();
+      methods.reset(FORM_DEFAULTS);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Erro ao cadastrar voluntário";
