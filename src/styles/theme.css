@@ -1,0 +1,13 @@
+@theme {
+  --font-sans: "Poppins", sans-serif;
+  --font-fredoka: "Fredoka", sans-serif;
+  --color-darkgreen: #006a4e;
+  --color-lightgreen: #98ca3c;
+  --color-gold: #e5bf6d;
+  --color-orange: #f78f24;
+  --color-cream: #fae9c6;
+  --color-amber: #fbae17;
+  --color-black: #333333;
+  --color-gray: #666666;
+  --color-lightgray: #eeeeee;
+}
