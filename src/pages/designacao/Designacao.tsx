@@ -424,7 +424,7 @@ export const Designacao = () => {
   const [tab, setTab] = useState<DesignacaoTab>("PENDENTE");
 
   const loggedUser = getUser();
-  const isAdmin = loggedUser?.role === "admin";
+  const isAdmin = loggedUser?.role === "ADMIN";
 
   return (
     <>
