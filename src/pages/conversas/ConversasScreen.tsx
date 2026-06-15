@@ -10,6 +10,7 @@ import { ChatWindow } from "../../components/chat/Chatwindow";
 import { ConversationItem } from "../../components/chat/Conversationitem";
 import { useUnread } from "../../hooks/useUnread";
 import { useContactLookup } from "../../hooks/useContactLookup";
+import { useCurrentColaboradorId } from "../../hooks/useCurrentColaboradorId";
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
 
 const POLLING_INTERVAL_MS = 5_000;
@@ -29,6 +30,7 @@ export default function ConversasScreen() {
     () => window.matchMedia("(min-width: 768px)").matches
   );
 
+  const colaboradorId = useCurrentColaboradorId();
   const prevMsgIdsRef = useRef<Set<string>>(new Set());
   const { contact } = useContactLookup(selectedTel ?? "");
 
@@ -90,7 +92,7 @@ export default function ConversasScreen() {
       if (!text || !selectedTel || sending) return;
       setSending(true);
       try {
-        await sendMessage({ tel_client: selectedTel, text, id_colaborador: 1 });
+        await sendMessage({ tel_client: selectedTel, text, id_colaborador: colaboradorId ?? 0 });
         await fetchHistory();
         setError(null);
       } catch (err) {
@@ -99,7 +101,7 @@ export default function ConversasScreen() {
         setSending(false);
       }
     },
-    [selectedTel, sending, fetchHistory]
+    [selectedTel, sending, fetchHistory, colaboradorId]
   );
 
   return (
