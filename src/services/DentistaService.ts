@@ -6,7 +6,7 @@ import {
   type DentistaViewModel,
 } from "../domain/mappers/DentistaMapper";
 import type { AtualizarDentistaPayload } from "../domain/entities/AtualizarDentista";
-import { handleResponse, assertOk, safeFetch } from "./httpClient";
+import { handleResponse, assertOk, safeFetch, publicFetch } from "./httpClient";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/dentista`;
@@ -47,6 +47,23 @@ export async function criarDentista(
   payload: CriarDentistaPayload,
 ): Promise<DentistaViewModel> {
   const res = await safeFetch(ENDPOINT, {
+    method: "POST",
+    headers: jsonHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await handleResponse<DentistaAPI>(res);
+  return mapDentista(data);
+}
+
+/**
+ * POST /dentista/voluntario (público — sem autenticação)
+ * Endpoint público para registro de dentistas voluntários
+ */
+export async function registrarDentistaVoluntario(
+  payload: CriarDentistaPayload,
+): Promise<DentistaViewModel> {
+  const res = await publicFetch(`${ENDPOINT}/voluntario`, {
     method: "POST",
     headers: jsonHeaders(),
     body: JSON.stringify(payload),

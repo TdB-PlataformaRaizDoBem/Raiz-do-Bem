@@ -101,3 +101,26 @@ export async function assertOk(res: Response): Promise<void> {
     throw new Error(await extractErrorMessage(res));
   }
 }
+
+/**
+ * Versão pública do safeFetch que não redireciona em 401.
+ * Usada para endpoints públicos como registro de voluntários.
+ */
+export async function publicFetch(
+  path: string,
+  init?: RequestInit,
+): Promise<Response> {
+  const url = path.startsWith('http') ? path : `${BASE_URL}${path}`;
+
+  try {
+    const res = await fetch(url, {
+      ...init,
+      headers: init?.headers as Record<string, string> ?? {},
+    });
+
+    return res;
+  } catch (err) {
+    // Falha de rede (servidor offline, sem internet)
+    throw new Error('Sem conexão com o servidor. Verifique sua rede.');
+  }
+}

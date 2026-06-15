@@ -6,7 +6,7 @@ import VoluntaryFormFields, {
 } from "./VoluntaryFormFields";
 import { Button } from "../../../components/ui/Button";
 import { ToastNotificationContext } from "../../../components/context/NotificationContext";
-import { criarDentista } from "../../../services/DentistaService";
+import { registrarDentistaVoluntario } from "../../../services/DentistaService";
 import { loadFormDraft, useFormDraft } from "../../../hooks/useFormDraft";
 
 const DRAFT_KEY = "raiz-do-bem:voluntary-form";
@@ -40,7 +40,7 @@ const VoluntaryForm = () => {
 
   const onSubmit = async (data: VoluntaryFormValues) => {
     try {
-      await criarDentista({
+      await registrarDentistaVoluntario({
         croDentista: data.croDentista,
         cpf: data.cpf.replace(/\D/g, ""),
         nomeCompleto: data.nomeCompleto,
