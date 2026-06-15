@@ -10,7 +10,7 @@ import {
 } from "../../hooks/useBeneficiarios";
 import type { BeneficiarioCompleto } from "../../services/Beneficiarioservice";
 import { exportarBeneficiariosCsv } from "../../services/Beneficiarioservice";
-import { getUser } from "../../hooks/useUser";
+import { useAuth } from "../../hooks/useAuth";
 import { beneficiarioFilterConfig } from "../../hooks/pageFilterConfigs";
 import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
  
@@ -48,8 +48,8 @@ const BeneficiarioPainel = ({
 };
  
 export const Beneficiarios = () => {
-  const loggedUser = getUser();
-  const isAdmin = loggedUser?.role === "ADMIN";
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const { data: beneficiarios, loading, error, refetch } = useBeneficiarios();
  
   return (

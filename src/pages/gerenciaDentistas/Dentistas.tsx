@@ -7,13 +7,13 @@ import { AsyncEstado } from "../../components/ui/AsyncEstado";
 import { useDentistas } from "../../hooks/useDentistas";
 import type { DentistaCompleto } from "../../services/DentistaService";
 import { exportarDentistasCsv } from "../../services/DentistaService";
-import { getUser } from "../../hooks/useUser";
+import { useAuth } from "../../hooks/useAuth";
 import { dentistaFilterConfig } from "../../hooks/pageFilterConfigs";
 import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
 
 export const Dentistas = () => {
-  const loggedUser = getUser(); 
-  const isAdmin = loggedUser?.role === "ADMIN";
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const { data: dentistas, loading, error, refetch } = useDentistas();
 
   return (

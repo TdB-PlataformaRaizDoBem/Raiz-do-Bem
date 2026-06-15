@@ -28,7 +28,7 @@ import {
 } from "../../hooks/pageFilterConfigs";
 import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
 import type { AtendimentoViewModel } from "../../domain/mappers/AtendimentoMapper";
-import { getUser } from "../../hooks/useUser";
+import { useAuth } from "../../hooks/useAuth";
 import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
 
 const TAB_LABELS: Record<DesignacaoTab, string> = {
@@ -423,8 +423,8 @@ const AbaAtendimentos = ({ tab, isAdmin }: AbaAtendimentosProps) => {
 export const Designacao = () => {
   const [tab, setTab] = useState<DesignacaoTab>("PENDENTE");
 
-  const loggedUser = getUser();
-  const isAdmin = loggedUser?.role === "ADMIN";
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <>
