@@ -78,7 +78,7 @@ const usePedidoActions = (refetch: () => void) => {
 
 export const PedidosAjuda = () => {
   const loggedUser = getUser();
-  const isCoord = loggedUser?.role === "coordenador";
+  const isCoord = loggedUser?.role === "COLABORADOR";
   const { data: pedidos, loading, error, refetch } = usePedidos();
   const {
     acaoPendente,

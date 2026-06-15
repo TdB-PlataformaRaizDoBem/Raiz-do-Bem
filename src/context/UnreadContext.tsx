@@ -1,26 +1,13 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
   type ReactNode,
-} from "react";
-import { getActiveConversations } from "../services/ChatService";
-import type { ConversationPreview } from "../domain/entities/ConversationPreview";
-
-interface UnreadContextValue {
-  totalUnread: number;
-  conversations: ConversationPreview[];
-  refresh: () => Promise<void>;
-}
-
-const UnreadContext = createContext<UnreadContextValue>({
-  totalUnread: 0,
-  conversations: [],
-  refresh: async () => {},
-});
+} from 'react';
+import { getActiveConversations } from '../services/ChatService';
+import { UnreadContext } from './unread';
+import type { ConversationPreview } from '../domain/entities/ConversationPreview';
 
 export function UnreadProvider({ children }: { children: ReactNode }) {
   const [conversations, setConversations] = useState<ConversationPreview[]>([]);
@@ -32,9 +19,10 @@ export function UnreadProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    const timeout = setTimeout(refresh, 0);
     intervalRef.current = setInterval(refresh, 5_000);
     return () => {
+      clearTimeout(timeout);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [refresh]);
@@ -46,8 +34,4 @@ export function UnreadProvider({ children }: { children: ReactNode }) {
       {children}
     </UnreadContext.Provider>
   );
-}
-
-export function useUnread(): UnreadContextValue {
-  return useContext(UnreadContext);
 }

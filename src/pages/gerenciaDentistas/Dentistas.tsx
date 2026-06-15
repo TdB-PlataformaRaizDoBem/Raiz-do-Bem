@@ -13,7 +13,7 @@ import ExportCsvButton from "../../components/ui/buttonFilters/ExportCsvButton";
 
 export const Dentistas = () => {
   const loggedUser = getUser(); 
-  const isAdmin = loggedUser?.role === "admin";
+  const isAdmin = loggedUser?.role === "ADMIN";
   const { data: dentistas, loading, error, refetch } = useDentistas();
 
   return (

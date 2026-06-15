@@ -8,7 +8,7 @@ import {
 import { normalizeTel } from "../../utils/Chatutils";
 import { ChatWindow } from "../../components/chat/Chatwindow";
 import { ConversationItem } from "../../components/chat/Conversationitem";
-import { useUnread } from "../../context/UnreadContext";
+import { useUnread } from "../../hooks/useUnread";
 import { useContactLookup } from "../../hooks/useContactLookup";
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
 

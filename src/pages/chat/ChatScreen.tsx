@@ -10,6 +10,7 @@ import { normalizeTel } from "../../utils/Chatutils";
 import { ChatSidebar } from "../../components/chat/Chatsidebar";
 import { ChatWindow } from "../../components/chat/Chatwindow";
 import { useContactLookup } from "../../hooks/useContactLookup";
+import { useCurrentColaboradorId } from "../../hooks/useCurrentColaboradorId";
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
 import type { ConversationPreview } from "../../domain/entities/ConversationPreview";
 
@@ -29,6 +30,7 @@ export default function ChatScreen() {
   const { telefone: rawTelefone } = useParams<{ telefone: string }>();
   const telefone = rawTelefone ? normalizeTel(rawTelefone) : "";
 
+  const colaboradorId = useCurrentColaboradorId();
   const { contact } = useContactLookup(telefone);
 
   const [messages, setMessages] = useState<MessageResponse[]>([]);
@@ -129,7 +131,7 @@ export default function ChatScreen() {
         await sendMessage({
           tel_client: telefone,
           text,
-          id_colaborador: 1,
+          id_colaborador: colaboradorId ?? 0,
         });
         // Refetch imediato após envio bem-sucedido
         await fetchHistory();
@@ -140,7 +142,7 @@ export default function ChatScreen() {
         setSending(false);
       }
     },
-    [telefone, sending, fetchHistory]
+    [telefone, sending, fetchHistory, colaboradorId]
   );
 
   // Guard: sem telefone na URL

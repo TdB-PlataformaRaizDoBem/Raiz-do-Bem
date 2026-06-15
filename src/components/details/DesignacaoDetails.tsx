@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import UserInformation from "../userInformation/UserInformation";
 import UserActions from "../userActions/UserActions";
 import { Button } from "../ui/Button";
+import { useCurrentColaboradorId } from "../../hooks/useCurrentColaboradorId";
 import type { BeneficiarioViewModel } from "../../domain/mappers/Beneficiariomapper";
 import type { AtendimentoViewModel } from "../../domain/mappers/AtendimentoMapper";
 
@@ -198,19 +199,14 @@ export const AtendimentoDetails = ({
   onClose,
 }: AtendimentoDetailsProps) => {
   const navigate = useNavigate();
+  const colaboradorId = useCurrentColaboradorId();
   const [editando, setEditando] = useState<boolean>(!modoLeitura);
   const [prontuario, setProntuario] = useState<string>(
     data.prontuario && data.prontuario !== "—" ? data.prontuario : "",
   );
-  const [idColaboradorTxt, setIdColaboradorTxt] = useState<string>("");
 
-  const idColaborador = Number(idColaboradorTxt);
-  const idColaboradorValido =
-    idColaboradorTxt.trim().length > 0 &&
-    Number.isFinite(idColaborador) &&
-    idColaborador > 0;
-
-  const podeSalvar = prontuario.trim().length > 0 && idColaboradorValido;
+  const idColaborador = colaboradorId ?? 0;
+  const podeSalvar = prontuario.trim().length > 0 && idColaborador > 0;
 
   const handleSubmit = () => {
     if (!podeSalvar || !onEncerrar) return;
@@ -377,20 +373,18 @@ export const AtendimentoDetails = ({
                     htmlFor="id-colaborador"
                     className="block text-xs font-black uppercase text-gray-400 tracking-widest mb-2"
                   >
-                    ID do colaborador responsável
+                    Colaborador responsável
                   </label>
                   <input
                     id="id-colaborador"
                     type="number"
-                    min={1}
-                    value={idColaboradorTxt}
-                    onChange={(e) => setIdColaboradorTxt(e.target.value)}
-                    placeholder="Ex.: 12"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-darkgray placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-lightgreen/50 focus:border-lightgreen transition"
+                    value={idColaborador}
+                    readOnly
+                    disabled
+                    className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-darkgray opacity-70 cursor-not-allowed"
                   />
                   <p className="mt-1 text-xs text-gray-400 italic">
-                    Identificador do colaborador que está registrando o
-                    encerramento.
+                    Registrado automaticamente com base no seu login (ID #{idColaborador}).
                   </p>
                 </div>
               </div>

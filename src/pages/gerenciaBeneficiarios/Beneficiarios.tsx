@@ -49,7 +49,7 @@ const BeneficiarioPainel = ({
  
 export const Beneficiarios = () => {
   const loggedUser = getUser();
-  const isAdmin = loggedUser?.role === "admin";
+  const isAdmin = loggedUser?.role === "ADMIN";
   const { data: beneficiarios, loading, error, refetch } = useBeneficiarios();
  
   return (
