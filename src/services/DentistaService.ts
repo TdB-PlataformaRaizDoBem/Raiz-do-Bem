@@ -63,7 +63,7 @@ export async function criarDentista(
 export async function registrarDentistaVoluntario(
   payload: CriarDentistaPayload,
 ): Promise<DentistaViewModel> {
-  const res = await publicFetch(`${ENDPOINT}/voluntario`, {
+  const res = await publicFetch(`${ENDPOINT}`, {
     method: "POST",
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
