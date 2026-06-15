@@ -3,18 +3,10 @@ import { useFormContext } from "react-hook-form";
 import Input from "../../formElements/Input";
 import { Button } from "../../ui/Button";
 import { criarColaborador } from "../../../services/ColaboradorService";
+import type { CreateCoordFormData } from "./CreateCoord";
 
 type CreateCoordProps = {
   onSuccess: () => void;
-};
-
-export type CreateCoordFormData = {
-  nomeCompleto: string;
-  email: string;
-  cpf: string;
-  dataNascimento: string;
-
-  dataContratacao: string;
 };
 
 const CreateCoordForm = ({ onSuccess }: CreateCoordProps) => {
@@ -30,24 +22,21 @@ const CreateCoordForm = ({ onSuccess }: CreateCoordProps) => {
     if (!isDirty) return;
 
     try {
-      const payload = {
+      await criarColaborador({
         nomeCompleto: data.nomeCompleto,
         cpf: data.cpf.replace(/\D/g, ""),
         dataNascimento: data.dataNascimento,
         email: data.email,
         dataContratacao: data.dataContratacao,
-      };
-
-      await criarColaborador(payload);
+        role: data.role,
+        senha: data.senha,
+      });
 
       showNotification("Colaborador criado com sucesso!");
-
       onSuccess();
     } catch (error) {
-      console.error(error);
-
       showNotification(
-        error instanceof Error ? error.message : "Erro ao criar coordenador",
+        error instanceof Error ? error.message : "Erro ao criar colaborador",
       );
     }
   };
@@ -58,10 +47,9 @@ const CreateCoordForm = ({ onSuccess }: CreateCoordProps) => {
       className="flex flex-col gap-5 p-2 max-h-[80vh] overflow-y-auto pr-2"
     >
       <h2 className="text-xl font-bold text-darkgray border-b pb-2">
-        Novo Coordenador
+        Novo Colaborador
       </h2>
 
-      {/* DADOS PESSOAIS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Nome Completo"
@@ -69,8 +57,7 @@ const CreateCoordForm = ({ onSuccess }: CreateCoordProps) => {
             required: "Obrigatório",
             pattern: {
               value: /^[A-Za-zÀ-ÿ\s]{3,}$/,
-              message:
-                "Nome deve conter apenas letras e no mínimo 3 caracteres",
+              message: "Nome deve conter apenas letras e no mínimo 3 caracteres",
             },
           })}
           error={errors.nomeCompleto?.message}
@@ -111,6 +98,37 @@ const CreateCoordForm = ({ onSuccess }: CreateCoordProps) => {
           label="Data de Contratação"
           type="date"
           {...register("dataContratacao")}
+        />
+
+        {/* Nível de acesso */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-darkgray">
+            Nível de Acesso <span className="text-red-500">*</span>
+          </label>
+          <select
+            {...register("role", { required: "Obrigatório" })}
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-darkgray focus:outline-none focus:ring-2 focus:ring-lightgreen/50 focus:border-lightgreen transition"
+          >
+            <option value="COLABORADOR">Colaborador</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+          {errors.role && (
+            <p className="text-xs text-red-500">{errors.role.message}</p>
+          )}
+        </div>
+
+        {/* Senha inicial */}
+        <Input
+          label="Senha Inicial"
+          type="password"
+          {...register("senha", {
+            required: "Obrigatório",
+            minLength: {
+              value: 8,
+              message: "A senha deve ter no mínimo 8 caracteres",
+            },
+          })}
+          error={errors.senha?.message}
         />
       </div>
 

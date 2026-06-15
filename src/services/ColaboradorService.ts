@@ -64,8 +64,18 @@ export async function excluirColaborador(cpf: string): Promise<void> {
 
 export type ColaboradorCompleto = ColaboradorViewModel;
 
+export interface ColaboradorCreatePayload {
+  nomeCompleto: string;
+  email: string;
+  cpf: string;
+  dataNascimento: string;
+  dataContratacao: string;
+  role: 'ADMIN' | 'COLABORADOR';
+  senha: string;
+}
+
 export async function criarColaborador(
-  payload: Omit<ColaboradorAPI, "id">,
+  payload: ColaboradorCreatePayload,
 ): Promise<ColaboradorViewModel> {
   const res = await safeFetch(ENDPOINT, {
     method: "POST",
