@@ -84,8 +84,6 @@ const SecaoDescricao = ({
   </div>
 );
 
-// ─── IT-01: SecaoContato — botão substituído por navigate interno ─────────────
-
 const SecaoContato = ({
   data,
 }: {
@@ -201,7 +199,6 @@ const SecaoDentista = ({
 
 export const PedidoDetails = ({
   data,
-  isCoord,
   onAprovar,
   onSuspender,
   onClose,
@@ -258,7 +255,7 @@ export const PedidoDetails = ({
 
       <UserActions>
         <div className="flex flex-wrap gap-3 justify-end">
-          {isCoord && data.statusAPI === "PENDENTE" && (
+          {data.statusAPI === "PENDENTE" && (
             <>
               <Button
                 variant="secondary"
