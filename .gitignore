@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Configuração local. O .env.template é versionado; o .env, não — ele é o
+# arquivo que recebe URL de homologação, chave e token quando o projeto sai do
+# localhost, e a hora de excluí-lo é ANTES de existir algo sensível nele.
+.env
+.env.local
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

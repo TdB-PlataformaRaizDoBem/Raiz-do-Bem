@@ -10,4 +10,45 @@
   --color-black: #333333;
   --color-gray: #666666;
   --color-lightgray: #eeeeee;
+
+  /* =====================================================================
+     ESCALA DE VULNERABILIDADE — ardósia clara -> carmim profundo
+
+     Rampa sequencial de 5 degraus, deliberadamente longe do "verde/amarelo/
+     vermelho de semáforo". Saturação contida: cor muito saturada num
+     coroplético faz o olho superestimar as áreas grandes (Amazonas, Pará) e
+     subestimar as pequenas e densas (Distrito Federal, Sergipe).
+
+     A LUMINÂNCIA CAI DE FORMA MONOTÔNICA do degrau 1 ao 5:
+
+       #b8c7d9  0.560   ↓
+       #88aac5  0.380   ↓
+       #b3803f  0.254   ↓   menor salto entre vizinhos: 0.095
+       #ac5226  0.149   ↓
+       #8b0000  0.055   ↓
+
+     Isso não é detalhe estético. É o que garante que a ordem das faixas
+     continue legível quando o painel é impresso em preto e branco, exibido
+     num projetor ruim, ou lido por alguém com deficiência na percepção de
+     vermelho/verde — cerca de 8% dos homens. Uma paleta bonita e não
+     monotônica faria "atenção mínima" e "atenção crítica" terem o mesmo
+     brilho, e ninguém perceberia o erro até a decisão já ter sido tomada.
+
+     Se for mexer nestes valores, rode a verificação de luminância antes.
+  ===================================================================== */
+  --color-vuln-1: #b8c7d9; /* ardósia clara     — atenção mínima   */
+  --color-vuln-2: #88aac5; /* ardósia           — atenção baixa    */
+  --color-vuln-3: #b3803f; /* ocre              — atenção moderada */
+  --color-vuln-4: #ac5226; /* laranja queimado  — atenção alta     */
+  --color-vuln-5: #8b0000; /* carmim profundo   — atenção crítica  */
+
+  /* Superfície do mapa: cinza-azulado neutro, mais escuro que o branco dos
+     cards. Separa o mapa do resto da página sem virar uma ilha escura no
+     meio de um admin inteiramente claro. */
+  --color-canvas: #eef1f5;
+  --color-canvas-soft: #f7f9fb;
+  --color-canvas-line: #dde3ea;
+
+  /* Alerta usado fora do mapa (avisos, extrapolação). */
+  --color-alert: #c0392b;
 }

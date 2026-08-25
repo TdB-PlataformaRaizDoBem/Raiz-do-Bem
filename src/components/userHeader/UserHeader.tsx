@@ -13,6 +13,7 @@ const titles: Record<string, string> = {
   "/coord/solicitacoes": "Pedidos de Ajuda",
   "/admin/atendimento": "Gerenciar Atendimentos",
   "/coord/atendimento": "Gerenciar Atendimentos",
+  "/admin/mapa": "Mapa de Vulnerabilidade",
 };
 
 const UserHeader = () => {

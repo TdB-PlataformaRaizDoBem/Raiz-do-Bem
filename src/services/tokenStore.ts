@@ -1,13 +1,17 @@
 /**
- * tokenStore.ts — Armazenamento do Bearer token em memória pura.
+ * tokenStore.ts — Armazenamento do Bearer token em memória, espelhado em
+ * sessionStorage para sobreviver a um F5.
  *
  * OWASP A02 – Cryptographic Failures / XSS Mitigation:
- *   – Token NUNCA é gravado em localStorage, sessionStorage ou cookie JS-acessível.
- *   – Vive em um closure de módulo: inacessível fora deste arquivo exceto via API pública.
- *   – Ao fechar a aba ou dar F5, o token desaparece automaticamente.
- *     → Comportamento esperado para este MVP: usuário precisa fazer login novamente.
+ *   – Token nunca vai para localStorage nem cookie JS-acessível — só
+ *     sessionStorage, que não sobrevive ao fechar a aba/navegador (ao
+ *     contrário de localStorage, que persistiria indefinidamente).
+ *   – A leitura em runtime (get) usa a variável de módulo; sessionStorage é
+ *     só o backup lido uma vez, na inicialização do módulo, para restaurar a
+ *     sessão após o F5 apagar o estado do React.
  *   – Único vetor de ataque restante é JS malicioso no mesmo origin (XSS),
- *     mitigado pela Content Security Policy (CSP) configurada no servidor.
+ *     mitigado pela Content Security Policy (CSP) configurada no servidor —
+ *     mesma exposição que qualquer app SPA com sessionStorage.
  *
  * Acesso restrito:
  *   – Apenas httpClient (para injetar o Authorization header) e
@@ -15,12 +19,15 @@
  *   – Componentes e hooks de UI NUNCA devem ler o token diretamente.
  */
 
-let _accessToken: string | null = null;
+const STORAGE_KEY = 'auth_token';
+
+let _accessToken: string | null = sessionStorage.getItem(STORAGE_KEY);
 
 export const tokenStore = {
-  /** Persiste o JWT em memória após um login bem-sucedido. */
+  /** Persiste o JWT em memória e em sessionStorage após um login bem-sucedido. */
   set(token: string): void {
     _accessToken = token;
+    sessionStorage.setItem(STORAGE_KEY, token);
   },
 
   /** Retorna o token atual ou null se não há sessão ativa. */
@@ -31,6 +38,7 @@ export const tokenStore = {
   /** Apaga o token — chamado no logout ou quando o interceptor detecta 401. */
   clear(): void {
     _accessToken = null;
+    sessionStorage.removeItem(STORAGE_KEY);
   },
 
   /** Retorna true se há um token em memória (não verifica validade). */
