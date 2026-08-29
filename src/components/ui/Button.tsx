@@ -7,12 +7,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
 }
 
-type Variant = "primary" | "danger" | "secondary";
+type Variant = "primary" | "danger" | "secondary" | "outline";
 
 const variants: Record<Variant, string> = {
   primary: "bg-orange text-white hover:bg-[#e07c1c]",
   danger: "bg-red-500 text-white hover:bg-red-600",
   secondary: "bg-darkgreen hover:bg-green-800 text-white",
+  outline: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400",
 };
 
 export function Button({
@@ -23,8 +24,8 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const sizes: Record<Size, string> = {
-    sm: "px-5 py-2 text-sm",
-    md: "px-4 py-3 text-base",
+    sm: "px-4 py-1.5 text-xs",
+    md: "h-10 px-4 text-sm",
   };
 
   return (
