@@ -1,177 +1,167 @@
 import { Link } from "react-router-dom";
 
-import BrasilImg from "../../assets/img/brasil.png";
 import DentistaDoBemImg from "../../assets/img/dentistaDoBem2.png";
 import ApoloniaImg from "../../assets/img/Apolonia2.png";
-import Abstract1 from "../../assets/svgs/abstract1.svg";
+import CrowdImg from "../../assets/img/Component.png";
 import Abstract2 from "../../assets/svgs/abstract2.svg";
 import Abstract3 from "../../assets/svgs/abstract3.svg";
-import IconPeople from "../../assets/svgs/ic_round-people.svg";
-import IconWoman from "../../assets/svgs/picon_woman.svg";
-import IconDoctor from "../../assets/svgs/doctor.png";
-import HeroBg from "../../assets/img/Component.png";
 import TdbLogo from "../../assets/svgs/TDB_logo.svg";
 
-const BtnBase =
-  "transition-all duration-300 active:scale-95 shadow-lg flex items-center justify-center font-bold text-white rounded-lg";
-const BtnOrange = `${BtnBase} bg-orange hover:bg-[#e07c1c] hover:-translate-y-1`;
+const sectionLabel =
+  "text-[10px] uppercase tracking-[0.2em] text-darkgreen/60 font-bold mb-2 block text-center";
+const sectionTitle =
+  "text-center font-fredoka text-3xl md:text-5xl lg:text-[4rem] font-bold text-balance";
+const containerMax = "max-w-[1240px] mx-auto";
 
-const CardProgram =
-  "bg-black/40 rounded-lg p-4 max-w-[500px] flex flex-col shadow-md transition-transform hover:scale-[1.02]";
-const CardStats =
-  "bg-darkgreen rounded-lg p-8 flex flex-col items-center justify-center text-center gap-4 shadow-md transition-colors hover:bg-darkgreen/90";
-
-const stats_content = [
-  { icon: IconPeople, text: "+85 mil jovens atendidos" },
-  { icon: IconWoman, text: "1.2 mil mulheres atendidas" },
-  { icon: IconDoctor, text: "18 mil dentistas voluntários" },
-];
+const btnBase =
+  "inline-flex items-center justify-center font-bold rounded-xl transition-all duration-300 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+const btnPrimaryOnDark = `${btnBase} bg-orange text-white shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/70 focus-visible:ring-offset-darkgreen`;
+const btnPrimaryOnLight = `${btnBase} bg-orange text-white shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/60 focus-visible:ring-offset-white`;
 
 const programs_content = [
-  { img: DentistaDoBemImg, title: "Dentistas do Bem", abstract: Abstract2 },
-  { img: ApoloniaImg, title: "Apolônia do Bem", abstract: Abstract3 },
+  {
+    img: DentistaDoBemImg,
+    title: "Dentistas do Bem",
+    abstract: Abstract2,
+    text: "Cirurgiões-dentistas voluntários oferecem tratamento odontológico gratuito a crianças e jovens em situação de vulnerabilidade social.",
+  },
+  {
+    img: ApoloniaImg,
+    title: "Apolônia do Bem",
+    abstract: Abstract3,
+    text: "Tratamento odontológico integral e gratuito para mulheres cis e trans que tiveram a dentição afetada por situações de violência.",
+  },
 ];
 
 const Home = () => {
   return (
-    <>
-      <div className="w-full">
-        {/* TOP-HERO */}
-        <section
-          className="relative w-full h-[30vh] md:h-[50vh] lg:h-[70vh] xl:h-[80vh] bg-no-repeat bg-top"
-          style={{
-            backgroundImage: `url(${HeroBg})`,
-            backgroundSize: "100% auto",
-          }}
-        />
+    <div className="w-full overflow-x-hidden">
+      {/* ── TOP HERO — FOTO ──────────────────────────────────────────── */}
+      <section
+        role="img"
+        aria-label="Equipe de dentistas e voluntários da Turma do Bem reunidos"
+        className="relative w-full h-[30vh] md:h-[50vh] lg:h-[70vh] xl:h-[80vh] bg-no-repeat bg-top"
+        style={{ backgroundImage: `url(${CrowdImg})`, backgroundSize: "100% auto" }}
+      />
 
-        {/* DOAÇÃO */}
-        <section className="relative w-full pt-12 md:pt-24 pb-24 px-4">
-          <div className="container mx-auto flex flex-col items-center">
-            <h1 className="text-center text-4xl md:text-5xl font-bold max-w-2xl leading-tight">
-              Inclusão Social Através do{" "}
-              <span className="text-darkgreen">Sorriso</span>
-            </h1>
-
-            <div className="mt-24 w-full grid grid-cols-1 md:grid-cols-2 bg-gray-300/70 rounded-lg overflow-hidden shadow-xl">
-              <div className="bg-darkgreen p-12 flex flex-col items-center justify-center text-center">
-                <p className="text-white text-lg font-bold mb-4">
-                  Milhões de jovens sem acesso a cuidados básicos.
-                </p>
-                <p className="text-white mb-8 font-medium">
-                  Doe hoje para que eles possam sorrir.
-                </p>
-                <Link to="/sobre" className={`${BtnOrange} px-12 py-3`}>
-                  Saiba Mais
-                </Link>
-              </div>
-
-              <div className="p-8 flex flex-col items-center gap-8 text-center">
-                <h2 className="text-3xl font-bold text-darkgreen">
-                  Sua Ajuda Faz A Diferença
-                </h2>
-                <span className="max-w-[80%] text-[1.1rem]">
-                  Formulário de doação seguro abaixo.
-                </span>
-                <a
-                  href="#"
-                  className={`${BtnOrange} px-12 py-5 text-2xl rounded-xl`}
-                >
-                  Doar Agora!
-                </a>
-              </div>
-            </div>
+      {/* ── HERO — TEXTO ─────────────────────────────────────────────── */}
+      <section className="relative">
+        <div className="container mx-auto px-6 pt-16 pb-16 md:pt-20 md:pb-20 flex flex-col items-center text-center">
+          <p className="uppercase tracking-[0.2em] text-[11px] md:text-xs font-bold text-lightgreen mb-5">
+            Turma do Bem · Raiz do Bem
+          </p>
+          <h1 className="font-fredoka font-bold text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[0.95] text-balance max-w-4xl">
+            Inclusão social através do <span className="text-amber">sorriso</span>
+          </h1>
+          <p className="mt-6 font-fredoka text-amber text-xl md:text-2xl font-bold">
+            Milhares de mãos, uma só missão
+          </p>
+          <p className="mt-4 text-base md:text-xl max-w-xl text-pretty">
+            Uma rede de dentistas voluntários que doa tempo e talento para
+            devolver sorrisos e dignidade a quem mais precisa, em todo o
+            Brasil e em outros 11 países.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row gap-4">
+            <a href="#" className={`${btnPrimaryOnDark} px-10 py-4 text-lg`}>
+              Doar Agora
+            </a>
+            <Link to="/sobre" className={`${btnPrimaryOnDark} px-10 py-4 text-lg`}>
+              Saiba Mais
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* PROGRAMAS E STATS */}
-        <section className="bg-cream py-24 px-4">
-          <div className="container mx-auto flex flex-col items-center">
-            <h2 className="text-center text-4xl md:text-5xl font-bold max-w-4xl mb-20 leading-tight">
-              Acesso a um Sorriso Saudável pelo Mundo!
-            </h2>
+      {/* ── WRAPPER BRANCO ────────────────────────────────────────────── */}
+      <div className="bg-white rounded-t-[40px] md:rounded-t-[64px] relative z-10 pt-16 md:pt-20">
 
-            <div className="bg-orange w-full rounded-lg p-8 md:p-12 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-              <div className="flex flex-col items-center">
-                <article className="bg-black/40 rounded-lg p-4 w-full max-w-md">
-                  <img
-                    src={BrasilImg}
-                    alt="Brasil"
-                    className="w-full rounded"
-                  />
-                  <p className="text-white font-bold mt-4 uppercase">Brasil</p>
-                  <img src={Abstract1} className="w-full mt-4" alt="" />
-                </article>
-                <p className="mt-6 bg-darkgreen text-white font-bold px-6 py-3 rounded-lg">
-                  PRESENTE EM 12 PAÍSES
+        {/* PROGRAMAS (BENTO) */}
+        <section className="bg-cream py-20 md:py-28 px-6">
+          <span className={sectionLabel}>Iniciativas</span>
+          <h2 className={`${sectionTitle} mb-14 md:mb-16 max-w-2xl mx-auto`}>
+            Programas da Turma do Bem
+          </h2>
+
+          <div className={`flex flex-col lg:flex-row justify-center gap-8 lg:gap-10 ${containerMax}`}>
+            {programs_content.map((prog, idx) => (
+              <article
+                key={idx}
+                className="bg-orange rounded-3xl w-full flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden
+                           motion-safe:hover:-translate-y-1 motion-safe:transition-transform duration-300"
+              >
+                <img
+                  src={prog.img}
+                  alt={prog.title}
+                  className="w-full h-56 rounded-2xl object-cover"
+                />
+                <h3 className="text-white font-fredoka text-2xl md:text-[2rem] font-bold my-5">
+                  {prog.title}
+                </h3>
+                <p className="text-white text-sm md:text-base leading-relaxed max-w-[522px] relative z-10">
+                  {prog.text}
                 </p>
-              </div>
+                <img
+                  src={prog.abstract}
+                  className="absolute bottom-0 left-0 w-full pointer-events-none"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </article>
+            ))}
+          </div>
 
-              <div className="flex flex-col gap-6 w-full items-center">
-                {programs_content.map((prog, idx) => (
-                  <article key={idx} className={CardProgram}>
-                    <img src={prog.img} alt={prog.title} className="rounded" />
-                    <p className="text-white font-semibold mt-2 px-2">
-                      {prog.title}
-                    </p>
-                    <img src={prog.abstract} className="w-full mt-2" alt="" />
-                  </article>
-                ))}
-              </div>
-            </div>
-
-            {/* MAP DE STATS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-24 mb-12 w-full">
-              {stats_content.map((stat, idx) => (
-                <div key={idx} className={CardStats}>
-                  <img src={stat.icon} alt="" className="w-12" />
-                  <p className="text-white font-semibold text-lg">
-                    {stat.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <Link to="/contato" className={`${BtnOrange} px-12 py-4 text-lg`}>
+          <div className="flex justify-center mt-16">
+            <Link to="/contato" className={`${btnPrimaryOnLight} px-12 py-4 text-lg`}>
               Seja um Dentista Voluntário
             </Link>
           </div>
         </section>
 
         {/* DOCUMENTÁRIO */}
-        <article
-          id="documentary"
-          className="flex justify-center bg-white py-10 px-4"
-        >
-          <div className="w-full max-w-[1030px]">
-            <iframe
-              width="100%"
-              height="600"
-              src="https://www.youtube.com/embed/YtdglTuuOyI"
-              className="rounded-lg shadow-md"
-              allowFullScreen
-            />
+        <section className="py-20 md:py-28 px-6">
+          <span className={sectionLabel}>Veja de Perto</span>
+          <h2 className={`${sectionTitle} mb-12 md:mb-16 max-w-2xl mx-auto`}>
+            O Impacto em Movimento
+          </h2>
+
+          <div className={containerMax}>
+            <div className="w-full aspect-video rounded-3xl overflow-hidden shadow-lg border border-black/5">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/YtdglTuuOyI"
+                title="Documentário sobre o impacto social da Turma do Bem"
+                className="w-full h-full"
+                allowFullScreen
+              />
+            </div>
           </div>
-        </article>
+        </section>
 
         {/* CTA FINAL */}
-        <section id="cta" className="w-full bg-white pt-10 pb-[137px] px-4">
-          <div className="mx-auto w-full max-w-[1030px] min-h-[300px] md:h-[322px] bg-orange flex flex-col md:flex-row justify-center md:justify-between items-center rounded-lg p-10 shadow-xl">
+        <section id="cta" className="pb-24 px-6">
+          <div
+            className={`
+              ${containerMax} min-h-[300px] md:h-[322px] bg-orange flex flex-col md:flex-row
+              justify-center md:justify-between items-center rounded-3xl p-10 shadow-xl
+              motion-safe:hover:-translate-y-1 motion-safe:transition-transform duration-300
+            `}
+          >
             <div className="bg-white mb-8 md:mb-0 md:mr-10 h-[180px] w-[180px] md:h-[90%] md:w-[30%] rounded-full flex justify-center items-center order-first md:order-last">
               <img
                 src={TdbLogo}
-                alt="Logo"
+                alt="Logo Turma do Bem"
                 className="w-[130px] md:w-[250px] object-contain"
               />
             </div>
 
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="md:ml-10 text-[1.8rem] md:text-[2rem] font-bold text-white leading-tight">
+              <h2 className="md:ml-10 text-[1.8rem] md:text-[2rem] font-bold text-white leading-tight text-balance">
                 Seu sorriso importa. <br /> Peça ajuda agora.
-              </h4>
+              </h2>
               <Link
                 to="/contato"
-                className="md:ml-10 mt-8 py-[10px] px-10 lg:px-[118px] bg-darkgreen rounded-lg text-white font-bold w-full md:w-auto"
+                className={`${btnBase} md:ml-10 mt-8 py-[10px] px-10 lg:px-[118px] bg-darkgreen text-white w-full md:w-auto motion-safe:hover:-translate-y-1 hover:bg-darkgreen/90 focus-visible:ring-white/70 focus-visible:ring-offset-orange`}
               >
                 Pedir Ajuda
               </Link>
@@ -179,7 +169,7 @@ const Home = () => {
           </div>
         </section>
       </div>
-    </>
+    </div>
   );
 };
 

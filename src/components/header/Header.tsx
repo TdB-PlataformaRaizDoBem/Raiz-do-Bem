@@ -15,8 +15,24 @@ const navLinks = [
 
 export function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
+  const lastScrollY = React.useRef(0);
 
   const close = () => setIsOpen(false);
+
+  React.useEffect(() => {
+    lastScrollY.current = window.scrollY;
+
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      const scrollingDown = currentY > lastScrollY.current;
+      setHidden(scrollingDown && currentY > 120);
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navLinkStyle = `
     font-sans text-[1.125rem] relative transition-colors duration-200
@@ -44,7 +60,14 @@ export function Header() {
   `;
 
   return (
-    <header className="bg-cream h-[70px] sm:h-[100px] w-full flex items-center sticky top-0 z-50 border-b-2 border-lightgreen">
+    <header
+      className={`
+        bg-cream h-[70px] sm:h-[100px] w-full flex items-center sticky top-0 z-50 border-b-2 border-lightgreen
+        motion-safe:transition-transform motion-safe:duration-300
+        ${hidden && !isOpen ? "-translate-y-full" : "translate-y-0"}
+      `}
+    >
+
       <div className="container mx-auto px-6 md:px-4 flex items-center justify-between relative h-full">
 
         {/* Logos */}
