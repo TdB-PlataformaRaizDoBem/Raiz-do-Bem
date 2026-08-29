@@ -31,28 +31,24 @@ const Dashboard = () => {
         <SectionLabel id="heading-resumo">Resumo de Impacto</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StaticCard
-            color="green"
             icon={register}
             label="Total Beneficiários"
             value={impact.total}
             description="Sorrisos restaurados"
           />
           <StaticCard
-            color="orange"
             icon={reports}
             label="Pedidos de Ajuda"
             value={orders.pendentes}
             description="Esperando triagem"
           />
           <StaticCard
-            color="lightgreen"
             icon={voluntary}
             label="Voluntários"
             value={pros.dentistasDisponiveis}
             description="Dentistas disponíveis"
           />
           <StaticCard
-            color="amber"
             icon={time}
             label="Horas de Voluntariado"
             value={`${impact.totalHoras}h`}
