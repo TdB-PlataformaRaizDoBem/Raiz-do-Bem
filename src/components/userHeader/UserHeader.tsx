@@ -26,29 +26,23 @@ const UserHeader = () => {
 
   const context = location.pathname.split("/")[1] || "Plataforma";
 
-  const titleStyles = `
-    relative font-fredoka font-bold text-black uppercase tracking-tighter
-    text-3xl md:text-4xl lg:text-5xl xl:text-6xl
-    
-    after:content-[''] after:block after:rounded-full after:bg-orange
-    after:h-[6px] lg:after:h-[8px] 
-    after:w-14 lg:after:after:w-24 
-    after:mt-3 lg:after:mt-4
-  `
-
   return (
-    <header className="mb-8 lg:mb-12 animate-in fade-in slide-in-from-left-4 duration-500">
-      <span className="text-[10px] lg:text-[12px] uppercase tracking-[0.15em] text-gray-400 font-bold mb-2 block italic">
+    <header className="mb-8 lg:mb-10">
+      <span className="text-[10px] lg:text-[11px] uppercase tracking-[0.18em] text-gray-400 font-bold mb-1.5 block">
         Raiz do Bem / {context}
       </span>
 
-      <div className="flex flex-col gap-2">
-        <h1
-          className={titleStyles}
-        >
-          {title}
-        </h1>
-      </div>
+      <h1 className="
+        font-fredoka font-bold text-black uppercase tracking-tighter
+        text-3xl md:text-4xl lg:text-5xl xl:text-6xl
+        leading-none
+        relative
+      ">
+        {title}
+      </h1>
+
+      {/* Barra decorativa laranja abaixo do título */}
+      <div className="mt-3 lg:mt-4 h-[6px] lg:h-[8px] w-14 lg:w-24 bg-orange rounded-full" />
     </header>
   );
 };

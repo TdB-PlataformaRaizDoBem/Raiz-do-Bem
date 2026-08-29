@@ -43,7 +43,7 @@ export const AppLayout = () => {
             max-lg:ml-0
             ${isChatRoute
               ? "h-screen overflow-hidden flex flex-col pt-3 lg:pb-3!"
-              : "min-h-screen max-lg:pb-25 p-6 lg:p-10 lg:pt-20"
+              : "min-h-screen max-lg:pb-[100px] p-5 lg:p-8 xl:p-10 lg:pt-12"
             }
           `}
           style={isChatRoute ? {

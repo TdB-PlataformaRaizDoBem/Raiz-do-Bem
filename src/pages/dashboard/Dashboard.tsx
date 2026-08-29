@@ -10,54 +10,71 @@ import ImpactChart from "../../components/impactChart/ImpactChart";
 import { StateRanking } from "../../components/StateRanking/StateRanking";
 import { CriticalOrdersList } from "../../components/pendingOrdersList/PendingOrdersList";
 
+function SectionLabel({ id, children }: { id: string; children: string }) {
+  return (
+    <h2
+      id={id}
+      className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mb-4"
+    >
+      {children}
+    </h2>
+  );
+}
+
 const Dashboard = () => {
   const { orders, impact, pros } = useDashboardData();
 
   return (
-    <div>
-      <section
-        aria-labelledby="heading-resumo"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16"
-      >
-        <h2 id="heading-resumo" className="sr-only">Resumo de Impacto</h2>
+    <div className="flex flex-col gap-12">
 
-        <StaticCard
-          icon={register}
-          label="Total Beneficiários"
-          value={impact.total}
-          description="Sorrisos Restaurados"
-        />
-        <StaticCard
-          icon={reports}
-          label="Pedidos de Ajuda"
-          value={orders.pendentes}
-          description="Esperando Triagem"
-        />
-        <StaticCard
-          icon={voluntary}
-          label="Voluntários"
-          value={pros.dentistasDisponiveis}
-          description="Dentistas Disponíveis"
-        />
-        <StaticCard
-          icon={time}
-          label="Horas de Voluntariado"
-          value={`${impact.totalHoras}h`}
-          description="Horas estimadas de serviço."
-        />
+      <section aria-labelledby="heading-resumo">
+        <SectionLabel id="heading-resumo">Resumo de Impacto</SectionLabel>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StaticCard
+            color="green"
+            icon={register}
+            label="Total Beneficiários"
+            value={impact.total}
+            description="Sorrisos restaurados"
+          />
+          <StaticCard
+            color="orange"
+            icon={reports}
+            label="Pedidos de Ajuda"
+            value={orders.pendentes}
+            description="Esperando triagem"
+          />
+          <StaticCard
+            color="lightgreen"
+            icon={voluntary}
+            label="Voluntários"
+            value={pros.dentistasDisponiveis}
+            description="Dentistas disponíveis"
+          />
+          <StaticCard
+            color="amber"
+            icon={time}
+            label="Horas de Voluntariado"
+            value={`${impact.totalHoras}h`}
+            description="Horas estimadas de serviço"
+          />
+        </div>
       </section>
 
-      <section aria-labelledby="heading-graficos" className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <h2 id="heading-graficos" className="sr-only">Gráficos de Desempenho</h2>
-        <ImpactChart />
-        <OrdersStatusBarChart />
-        <StateRanking rankingEstado={impact.rankingEstado} />
+      <section aria-labelledby="heading-graficos">
+        <SectionLabel id="heading-graficos">Gráficos de Desempenho</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <ImpactChart />
+          <OrdersStatusBarChart />
+          <StateRanking rankingEstado={impact.rankingEstado} />
+        </div>
       </section>
 
-      <section aria-labelledby="heading-pedidos-criticos" className="mb-6">
-        <h2 id="heading-pedidos-criticos" className="sr-only">Pedidos Críticos</h2>
+      <section aria-labelledby="heading-pedidos-criticos">
+        <SectionLabel id="heading-pedidos-criticos">Pedidos Críticos</SectionLabel>
         <CriticalOrdersList />
       </section>
+
     </div>
   );
 };
