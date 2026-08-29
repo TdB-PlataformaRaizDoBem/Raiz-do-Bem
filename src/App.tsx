@@ -12,6 +12,7 @@ import { ProtectedRoutes } from './Routes/ProtectedRoutes';
 import ScrollToTop from './layout/ScrollToTop';
 import { NotificationProvider } from './components/context/NotificationProvider';
 import { AuthProvider } from './context/AuthContext';
+import { SpeechProvider } from './context/SpeechContext';
 import FullScreenLoader from './components/ui/FullScreenLoader';
 
 const Login     = lazy(() => import('./pages/login/Login'));
@@ -71,10 +72,12 @@ const AppRoutes = () => {
 const App = () => (
   <BrowserRouter>
     <AuthProvider>
-      <NotificationProvider>
-        <ScrollToTop />
-        <AppRoutes />
-      </NotificationProvider>
+      <SpeechProvider>
+        <NotificationProvider>
+          <ScrollToTop />
+          <AppRoutes />
+        </NotificationProvider>
+      </SpeechProvider>
     </AuthProvider>
   </BrowserRouter>
 );
