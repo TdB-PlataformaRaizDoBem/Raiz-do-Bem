@@ -9,6 +9,67 @@ import { useSearchParams } from "react-router-dom";
 import { useSmartFilter } from "../../hooks/useSmartFilter";
 import type { PageFilterConfig, FilterGroup } from "./FilterConfig";
 
+type ViewMode = "cards" | "table";
+
+const VIEW_MODE_KEY = "raiz-do-bem:view-mode";
+
+function getInitialViewMode(): ViewMode {
+  try {
+    const saved = localStorage.getItem(VIEW_MODE_KEY);
+    if (saved === "table" || saved === "cards") return saved;
+  } catch {}
+  return "cards";
+}
+
+function ViewToggle({
+  viewMode,
+  onChange,
+}: {
+  viewMode: ViewMode;
+  onChange: (mode: ViewMode) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Modo de visualização"
+      className="flex items-center border border-gray-200 rounded-lg overflow-hidden shrink-0 h-10"
+    >
+      <button
+        type="button"
+        aria-label="Visualização em cards"
+        aria-pressed={viewMode === "cards"}
+        onClick={() => onChange("cards")}
+        title="Cards"
+        className={`flex items-center justify-center w-10 h-10 transition-colors ${
+          viewMode === "cards"
+            ? "bg-darkgreen text-white"
+            : "bg-white text-gray-400 hover:bg-gray-50"
+        }`}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        aria-label="Visualização em tabela"
+        aria-pressed={viewMode === "table"}
+        onClick={() => onChange("table")}
+        title="Tabela"
+        className={`flex items-center justify-center w-10 h-10 transition-colors ${
+          viewMode === "table"
+            ? "bg-darkgreen text-white"
+            : "bg-white text-gray-400 hover:bg-gray-50"
+        }`}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // CardSlot — isola o cálculo do callback `select` por item e permite ao
 // React.memo pular o re-render quando `user`, `selected` e `handleSelect`
@@ -46,6 +107,8 @@ type UserManagementPageProps<T> = {
   ) => React.ReactNode;
   renderDetails: (user: T, close: () => void) => React.ReactNode;
   renderCreateForm?: (close: () => void) => React.ReactNode;
+  renderTableRow?: (user: T, selected: boolean, select: () => void) => React.ReactNode;
+  tableHeaders?: string[];
   filterConfig?: PageFilterConfig<T>;
   extraActions?: React.ReactNode;
   mensagemVazio?: string;
@@ -123,29 +186,31 @@ function Toolbar({
   search: React.ReactNode;
   actions?: React.ReactNode;
 }) {
+  const hasFilters = React.Children.count(children) > 0;
+
   return (
     <div className="w-full mb-6">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        
-        <div className="w-full lg:w-auto shrink-0">
-          {React.Children.count(children) > 0 && (
-            <FilterBar>{children}</FilterBar>
-          )}
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-
-          {actions && (
-            <div className="shrink-0 flex items-center gap-2 sm:justify-end justify-start">
-              {actions}
-            </div>
-          )}
-          
-          <div className="flex-1 w-full lg:w-[340px] order-first sm:order-none">
+        {/* Grupo Esquerdo: Busca + Filtros */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="w-full md:max-w-[300px]">
             {search}
           </div>
-
+          {hasFilters && (
+            <div className="shrink-0">
+              <FilterBar>{children}</FilterBar>
+            </div>
+          )}
         </div>
+
+        {/* Grupo Direito: Toggle + Ações */}
+        {actions && (
+          <div className="flex items-center gap-2 shrink-0 justify-end">
+            {actions}
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -250,12 +315,24 @@ export function UserManagementPage<T>({
   renderCard,
   renderDetails,
   renderCreateForm,
+  renderTableRow,
+  tableHeaders,
   filterConfig,
   extraActions,
   mensagemVazio = "Nenhum registro encontrado.",
 }: UserManagementPageProps<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = React.useState(false);
+
+  const showToggle = !!renderTableRow && !!tableHeaders;
+  const [viewMode, setViewMode] = React.useState<ViewMode>(
+    showToggle ? getInitialViewMode() : "cards",
+  );
+
+  const handleViewModeChange = React.useCallback((mode: ViewMode) => {
+    setViewMode(mode);
+    try { localStorage.setItem(VIEW_MODE_KEY, mode); } catch {}
+  }, []);
 
   const defaultConfig: PageFilterConfig<T> = React.useMemo(
     () => ({ groups: [], predicate: () => true }),
@@ -329,8 +406,11 @@ export function UserManagementPage<T>({
           />
         }
         actions={
-          showCreateButton || extraActions ? (
+          showToggle || showCreateButton || extraActions ? (
             <>
+              {showToggle && (
+                <ViewToggle viewMode={viewMode} onChange={handleViewModeChange} />
+              )}
               {showCreateButton && (
                 <Button variant="primary" onClick={() => setOpen(true)}>
                   Criar Conta
@@ -398,7 +478,7 @@ export function UserManagementPage<T>({
         />
       )}
 
-      {temConteudo && (
+      {temConteudo && viewMode === "cards" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 w-full">
           {filteredItems.map((user) => {
             const id = getId(user);
@@ -413,6 +493,38 @@ export function UserManagementPage<T>({
               />
             );
           })}
+        </div>
+      )}
+
+      {temConteudo && viewMode === "table" && renderTableRow && tableHeaders && (
+        <div className="overflow-x-auto rounded-xl border border-gray-100 bg-white shadow-sm">
+          <table className="w-full text-sm text-left">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50">
+                {tableHeaders.map((header) => (
+                  <th
+                    key={header}
+                    scope="col"
+                    className="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap"
+                  >
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filteredItems.map((user) => {
+                const id = getId(user);
+                const selected = !!(selectedUser && getId(selectedUser) === id);
+                const select = () => handleSelect(user);
+                return (
+                  <React.Fragment key={id}>
+                    {renderTableRow(user, selected, select)}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 

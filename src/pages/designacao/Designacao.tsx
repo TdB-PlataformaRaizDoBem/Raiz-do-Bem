@@ -209,6 +209,31 @@ const AbaPendentes = () => {
               onClose={close}
             />
           )}
+          tableHeaders={["Beneficiário", "CPF", "Localização", "ID", "Ação"]}
+          renderTableRow={(b, selected, select) => (
+            <tr
+              key={b.id}
+              onClick={select}
+              className={`cursor-pointer transition-colors hover:bg-gray-50 ${selected ? "bg-amber/5" : ""}`}
+            >
+              <td className="px-5 py-3 font-semibold text-black whitespace-nowrap">{b.nomeCompleto}</td>
+              <td className="px-5 py-3 text-gray-500 font-mono text-xs">{b.cpf}</td>
+              <td className="px-5 py-3 text-gray-600 text-sm">
+                {b.endereco ? `${b.endereco.cidade} · ${b.endereco.estado}` : <span className="text-gray-300">—</span>}
+              </td>
+              <td className="px-5 py-3 text-gray-400 text-xs font-mono">#{b.id}</td>
+              <td className="px-5 py-3">
+                <Button
+                  onClick={(e) => { e.stopPropagation(); select(); }}
+                  variant={selected ? "primary" : "secondary"}
+                  size="sm"
+                  className="py-1.5 px-4 text-xs font-bold whitespace-nowrap"
+                >
+                  Designar
+                </Button>
+              </td>
+            </tr>
+          )}
         />
       </AsyncEstado>
     </>
@@ -413,6 +438,37 @@ const AbaAtendimentos = ({ tab, isAdmin }: AbaAtendimentosProps) => {
               onEncerrar={solicitarEncerramento}
               onClose={close}
             />
+          )}
+          tableHeaders={["Beneficiário", "Dentista", "Prontuário", "Status", "Ação"]}
+          renderTableRow={(a, selected, select) => (
+            <tr
+              key={a.id}
+              onClick={select}
+              className={`cursor-pointer transition-colors hover:bg-gray-50 ${selected ? "bg-lightgreen/5" : ""}`}
+            >
+              <td className="px-5 py-3 font-semibold text-black whitespace-nowrap">{a.beneficiario}</td>
+              <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{a.dentista}</td>
+              <td className="px-5 py-3 text-gray-500 text-xs max-w-[200px] truncate" title={a.prontuario}>{a.prontuario}</td>
+              <td className="px-5 py-3">
+                <span className={`text-xs px-2.5 py-1 rounded-full font-bold whitespace-nowrap ${
+                  a.encerrado
+                    ? "text-darkgreen bg-darkgreen/10"
+                    : "text-amber bg-amber/10"
+                }`}>
+                  {a.encerrado ? `Concluído ${a.dataFim}` : "Em andamento"}
+                </span>
+              </td>
+              <td className="px-5 py-3">
+                <Button
+                  onClick={(e) => { e.stopPropagation(); select(); }}
+                  variant={selected ? "primary" : "secondary"}
+                  size="sm"
+                  className="py-1.5 px-4 text-xs font-bold whitespace-nowrap"
+                >
+                  Ver detalhes
+                </Button>
+              </td>
+            </tr>
           )}
         />
       </AsyncEstado>

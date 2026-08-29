@@ -28,12 +28,14 @@ export const FilterBar = ({
           border border-gray-300
           bg-white
 
-          rounded-md
+          rounded-lg
 
           text-sm font-medium text-gray-700
 
           hover:bg-gray-50
           hover:border-gray-400
+
+          focus-visible:ring-2 focus-visible:ring-orange/30 focus-visible:outline-none
 
           transition-colors
         "

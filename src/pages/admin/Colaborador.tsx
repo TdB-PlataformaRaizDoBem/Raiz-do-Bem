@@ -104,6 +104,29 @@ export default function Colaborador() {
         renderCard={renderCard}
         renderCreateForm={renderCreateForm}
         renderDetails={renderDetails}
+        tableHeaders={["Nome", "E-mail", "Data Contratação", "ID", "Ação"]}
+        renderTableRow={(u, selected, select) => (
+          <tr
+            key={u.id}
+            onClick={select}
+            className={`cursor-pointer transition-colors hover:bg-gray-50 ${selected ? "bg-lightgreen/5" : ""}`}
+          >
+            <td className="px-5 py-3 font-semibold text-black whitespace-nowrap">{u.nomeCompleto}</td>
+            <td className="px-5 py-3 text-gray-600">{u.email}</td>
+            <td className="px-5 py-3 text-gray-500 text-sm whitespace-nowrap">{u.dataContratacao}</td>
+            <td className="px-5 py-3 text-gray-400 text-xs font-mono">#{u.id}</td>
+            <td className="px-5 py-3">
+              <Button
+                onClick={(e) => { e.stopPropagation(); select(); }}
+                variant={selected ? "primary" : "secondary"}
+                size="sm"
+                className="py-1.5 px-4 text-xs font-bold whitespace-nowrap"
+              >
+                Ver Perfil
+              </Button>
+            </td>
+          </tr>
+        )}
       />
     </AsyncEstado>
   );

@@ -15,7 +15,7 @@ const Search = ({ placeholder , ...props} : InputProps) => {
         />
         <input
           {...props}
-          className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange transition-all"
+          className="w-full h-10 pl-10 pr-4 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange focus-visible:ring-2 focus-visible:ring-orange/30 transition-all"
           placeholder={placeholder}
         />
       </div>
