@@ -1,64 +1,119 @@
-import { teamMembers } from "./TeamMembers"; 
+import { teamMembers } from "./TeamMembers";
 import DentinhoIntegrantes from "../../assets/img/dentinhoIntegrantes.png";
 import LinkedinIcon from "../../assets/svgs/mdi_linkedin_2.svg";
 import GithubIcon from "../../assets/svgs/mdi_github.svg";
 
 const Team = () => {
-  const sectionTitle = "text-center font-title text-white font-bold";
-  const socialIcon = "h-[60px] w-[60px] md:h-[80px] md:w-[80px] transition-transform duration-200 hover:scale-105 mx-[10px]";
-
   return (
     <section aria-labelledby="integrantes" className="overflow-x-hidden bg-white">
-      
-      {/* HERO SECTION */}
-      <div className="relative w-full overflow-hidden h-[510px] sm:h-[700px] md:h-[820px] lg:h-[850px]">
-        <div 
-          className="bg-amber w-full h-[770px] max-[599px]:h-[510px] md:h-[820px] lg:h-[870px]"
-          style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 60%, 0 100%)" }} 
+
+      <div className="relative w-full overflow-hidden h-[460px] sm:h-[640px] md:h-[780px] lg:h-[820px]">
+        <div
+          className="bg-amber w-full h-full"
+          style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 60%, 0 100%)" }}
         >
-          <h1 id="integrantes" className={`${sectionTitle} pt-[100px] text-[4rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[6rem]`}>
-            Integrantes
-          </h1>
+          <div className="pt-[80px] md:pt-[100px] text-center px-6">
+            <h1
+              id="integrantes"
+              className="font-fredoka font-bold text-white text-5xl sm:text-6xl md:text-7xl lg:text-[6rem] leading-none"
+            >
+              Quem Faz Acontecer
+            </h1>
+            <p className="text-white/80 font-medium mt-4 text-base md:text-lg">
+              Conheça o time por trás da plataforma
+            </p>
+          </div>
         </div>
-        
-        <img 
-          src={DentinhoIntegrantes} 
-          alt="Mascote receptivo" 
-          className="absolute z-1 left-1/2 -translate-x-1/2 top-[60%] -translate-y-[40%] 
-                     w-[310px] sm:w-[500px] md:w-[650px] lg:w-[850px]"
+
+        <img
+          src={DentinhoIntegrantes}
+          alt=""
+          aria-hidden="true"
+          className="absolute z-10 left-1/2 -translate-x-1/2 top-[60%] -translate-y-[40%]
+                     w-[280px] sm:w-[460px] md:w-[600px] lg:w-[800px]"
         />
       </div>
 
-      {/* INTEGRANTES */}
-      <section className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-[40px] md:gap-[105px] my-[100px] md:my-[300px] px-6">
-        {teamMembers.map((member, index) => (
-          <div key={index} className="flex flex-col items-center text-center">
-            <img 
-              src={member.image} 
-              alt={member.alt} 
-              className="w-[210px] sm:w-[160px] md:w-[200px] lg:w-[300px] h-auto rounded-lg" 
-            />
-            
-            <div className="mt-4">
-              <div className="flex justify-center mb-4">
-                <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
-                  <img src={LinkedinIcon} alt="LinkedIn" className={socialIcon} />
-                </a>
-                <a href={member.github} target="_blank" rel="noopener noreferrer">
-                  <img src={GithubIcon} alt="Github" className={socialIcon} />
-                </a>
+      <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {teamMembers.map((member, index) => (
+            <article
+              key={index}
+              className="
+                bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden
+                flex flex-col
+                motion-safe:hover:-translate-y-1 motion-safe:transition-transform duration-200
+              "
+            >
+              {/* Foto */}
+              <div className="relative h-80 overflow-hidden">
+                <img
+                  src={member.image}
+                  alt={member.alt}
+                  className="w-full h-full object-cover object-top"
+                />
+                {/* Badge de papel sobreposto na foto */}
+                <span className="absolute bottom-3 left-3 bg-white/90 text-darkgreen text-xs font-bold px-3 py-1 rounded-full shadow-sm border border-gray-100">
+                  {member.role}
+                </span>
               </div>
-              
-              <span className="block font-bold text-[1.125rem] md:text-[2rem] py-[15px] leading-tight">
-                {member.name}
-              </span>
-              <p className="text-[1rem] md:text-[1.5rem] text-gray-800">
-                {member.rm}
-              </p>
-            </div>
-          </div>
-        ))}
-      </section>
+
+              {/* Conteúdo */}
+              <div className="p-6 flex flex-col flex-1">
+                <div className="mb-3">
+                  <h2 className="font-fredoka font-bold text-xl text-black leading-tight">
+                    {member.name}
+                  </h2>
+                  <p className="text-[11px] text-gray-400 font-mono mt-0.5">
+                    {member.turma} · {member.rm}
+                  </p>
+                </div>
+
+                <p className="text-sm text-gray-600 leading-relaxed mb-4 flex-1">
+                  {member.bio}
+                </p>
+
+                {/* Skills chips */}
+                <div className="flex flex-wrap gap-1.5 mb-5">
+                  {member.skills.map((skill, i) => (
+                    <span
+                      key={i}
+                      className="bg-lightgreen/10 text-darkgreen text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Links sociais */}
+                <div className="flex gap-4 pt-4 border-t border-gray-100">
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`LinkedIn de ${member.name}`}
+                    className="flex items-center gap-2 text-xs text-gray-500 hover:text-darkgreen motion-safe:transition-colors duration-150 font-medium"
+                  >
+                    <img src={LinkedinIcon} alt="" aria-hidden="true" className="w-5 h-5" />
+                    LinkedIn
+                  </a>
+                  <a
+                    href={member.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`GitHub de ${member.name}`}
+                    className="flex items-center gap-2 text-xs text-gray-500 hover:text-darkgreen motion-safe:transition-colors duration-150 font-medium"
+                  >
+                    <img src={GithubIcon} alt="" aria-hidden="true" className="w-5 h-5" />
+                    GitHub
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
     </section>
   );
 };
