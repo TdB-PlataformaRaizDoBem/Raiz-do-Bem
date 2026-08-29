@@ -1,21 +1,60 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// Chrome expõe a API com o prefixo webkit
-declare global {
-  interface Window {
-    webkitSpeechRecognition?: new () => SpeechRecognition;
-  }
+// Tipos mínimos da Web Speech API (SpeechRecognition ainda não está em todas
+// as versões de lib.dom.d.ts; declaramos localmente para compatibilidade total)
+interface SpeechRecognitionAlternative {
+  readonly transcript: string;
+  readonly confidence: number;
 }
 
-function getRecognitionClass(): (new () => SpeechRecognition) | null {
+interface SpeechRecognitionResult {
+  readonly [index: number]: SpeechRecognitionAlternative;
+  readonly length: number;
+  readonly isFinal: boolean;
+}
+
+interface SpeechRecognitionResultList {
+  readonly [index: number]: SpeechRecognitionResult;
+  readonly length: number;
+}
+
+interface SpeechRecognitionResultEvent {
+  readonly results: SpeechRecognitionResultList;
+  readonly resultIndex: number;
+}
+
+interface ISpeechRecognition {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+type SpeechRecognitionCtor = new () => ISpeechRecognition;
+
+type WindowWithSpeech = Window &
+  typeof globalThis & {
+    SpeechRecognition?: SpeechRecognitionCtor;
+    webkitSpeechRecognition?: SpeechRecognitionCtor;
+  };
+
+function getRecognitionClass(): SpeechRecognitionCtor | null {
   if (typeof window === "undefined") return null;
-  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
+  const w = window as WindowWithSpeech;
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
 export function useVoiceSearch(onResult: (text: string) => void) {
   const isSupported = !!getRecognitionClass();
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const onResultRef = useRef(onResult);
   onResultRef.current = onResult;
 
