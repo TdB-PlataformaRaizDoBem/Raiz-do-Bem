@@ -56,7 +56,9 @@ export function useVoiceSearch(onResult: (text: string) => void) {
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const onResultRef = useRef(onResult);
-  onResultRef.current = onResult;
+  useEffect(() => {
+    onResultRef.current = onResult;
+  }, [onResult]);
 
   const stop = useCallback(() => {
     recognitionRef.current?.stop();
