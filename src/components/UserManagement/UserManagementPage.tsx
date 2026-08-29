@@ -451,7 +451,7 @@ export function UserManagementPage<T>({
       )}
 
       {hasActiveFilters && (
-        <p className="text-sm text-gray-500 -mt-4">
+        <p role="status" aria-live="polite" className="text-sm text-gray-500 -mt-4">
           {filteredItems.length === 0
             ? "Nenhum resultado encontrado."
             : `${filteredItems.length} resultado${filteredItems.length !== 1 ? "s" : ""} encontrado${filteredItems.length !== 1 ? "s" : ""}.`}
@@ -532,7 +532,7 @@ export function UserManagementPage<T>({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-999 p-4 sm:p-6"
+          className="fixed inset-0 flex items-center justify-center bg-black/70 z-999 p-4 sm:p-6"
           onClick={handleClose}
         >
           <div

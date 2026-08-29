@@ -36,6 +36,10 @@ export function Button({
         transition-all
         duration-300
         min-w-0
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-orange/50
+        focus-visible:ring-offset-1
         ${variants[variant]}
         ${sizes[size]}
         ${className}
