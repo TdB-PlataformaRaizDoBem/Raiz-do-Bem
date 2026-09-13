@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, motionQuery } from "../lib/gsap";
+import { gsap, motionQuery } from "../../lib/gsap";
 
 interface CounterProps {
   /** Valor final exibido. */
@@ -9,18 +9,22 @@ interface CounterProps {
   prefix?: string;
   /** Texto fixo depois do número, ex.: " mil". */
   suffix?: string;
+  /** Casas decimais fixas, ex.: 1 para exibir "1,2". */
+  decimals?: number;
   className?: string;
 }
-
-const formatter = new Intl.NumberFormat("pt-BR");
 
 /**
  * Número que conta de 0 até `value` quando entra na tela — a mesma leitura
  * de "prova de impacto" da seção de estatísticas da referência, só que
  * calculada em tempo real em vez de texto estático.
  */
-export function Counter({ value, prefix = "", suffix = "", className = "" }: CounterProps) {
+export function Counter({ value, prefix = "", suffix = "", decimals = 0, className = "" }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
+  const formatter = useMemo(
+    () => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+    [decimals]
+  );
 
   useGSAP(
     () => {
@@ -41,7 +45,7 @@ export function Counter({ value, prefix = "", suffix = "", className = "" }: Cou
             toggleActions: "play none none none",
           },
           onUpdate: () => {
-            el.textContent = `${prefix}${formatter.format(Math.round(counter.n))}${suffix}`;
+            el.textContent = `${prefix}${formatter.format(counter.n)}${suffix}`;
           },
         });
       });
@@ -50,7 +54,7 @@ export function Counter({ value, prefix = "", suffix = "", className = "" }: Cou
         el.textContent = `${prefix}${formatter.format(value)}${suffix}`;
       });
     },
-    { scope: ref, dependencies: [value, prefix, suffix] }
+    { scope: ref, dependencies: [value, prefix, suffix, formatter] }
   );
 
   return (

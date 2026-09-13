@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger, motionQuery } from "../lib/gsap";
+import { gsap, ScrollTrigger, motionQuery } from "../../lib/gsap";
 import { Reveal } from "./Reveal";
 
 export interface StoryPanel {

@@ -2,10 +2,14 @@ import {
   stats,
   culture_values,
   proposal,
+  timeline,
   type StatItem,
   type CultureItem,
   type ProposalItem,
+  type TimelineItem,
 } from "./aboutData";
+
+import { Counter } from "../../components/animation/Counter";
 
 import DentinhoRegando from "../../assets/img/dentinhoRegando.png";
 import ImgAboutTdb     from "../../assets/img/img-about-tdb.png";
@@ -88,9 +92,11 @@ const About = () => {
             <ul className="grid grid-cols-2 lg:grid-cols-4 gap-10 text-center">
               {stats.map((item: StatItem, i: number) => (
                 <li key={i} className="flex flex-col items-center gap-2 animate-fade-slide-in">
-                  <span className="font-fredoka text-5xl md:text-7xl font-bold text-darkgreen block">
-                    {item.value}
-                  </span>
+                  <Counter
+                    value={item.numericValue}
+                    decimals={item.decimals}
+                    className="font-fredoka text-5xl md:text-7xl font-bold text-darkgreen block tabular-nums"
+                  />
                   <p className="text-sm md:text-base font-semibold text-gray-600 max-w-[180px] leading-snug">
                     {item.label}
                   </p>
@@ -99,6 +105,44 @@ const About = () => {
             </ul>
             <div className={`hidden lg:block mt-16 h-[4px] bg-gradient-to-r from-transparent via-darkgreen to-transparent rounded-full ${containerMax}`} />
           </section>
+        </article>
+
+        {/* ── LINHA DO TEMPO ────────────────────────────────────────── */}
+        <article className="py-16 md:py-[120px] px-6">
+          <span className={sectionLabel}>Nossa Jornada</span>
+          <h2 className={`${sectionTitle} mb-16 md:mb-24`}>Trinta Anos de Raízes Profundas</h2>
+
+          <div className={`relative ${containerMax}`}>
+            <div
+              aria-hidden="true"
+              className="absolute left-[7px] md:left-1/2 top-0 bottom-0 w-[2px] bg-darkgreen/20 md:-translate-x-1/2"
+            />
+            <ol className="space-y-10 md:space-y-0">
+              {timeline.map((item: TimelineItem, idx: number) => (
+                <li
+                  key={item.year}
+                  className={`relative md:flex md:items-center md:gap-10 ${
+                    idx % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                  } ${idx > 0 ? "md:mt-[-1.5rem]" : ""}`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-1 md:left-1/2 md:top-1/2 w-4 h-4 rounded-full bg-orange border-4 border-white shadow md:-translate-x-1/2 md:-translate-y-1/2 z-10"
+                  />
+                  <div className="md:w-1/2">
+                    <div className={`pl-10 md:pl-0 md:px-10 py-6 ${idx % 2 === 0 ? "md:text-right" : "md:text-left"}`}>
+                      <span className="font-fredoka text-2xl md:text-3xl font-bold text-darkgreen">
+                        {item.year}
+                      </span>
+                      <h3 className="font-fredoka font-bold text-lg mt-1 mb-2">{item.title}</h3>
+                      <p className="text-sm md:text-base text-gray-600 leading-relaxed">{item.text}</p>
+                    </div>
+                  </div>
+                  <div className="hidden md:block md:w-1/2" />
+                </li>
+              ))}
+            </ol>
+          </div>
         </article>
 
         {/* ── PROGRAMAS ──────────────────────────────────────────────── */}
@@ -190,7 +234,7 @@ const About = () => {
 
         {/* ── COMO NASCEU ────────────────────────────────────────────── */}
         <article className={`${containerMax} mt-20 md:mt-[120px] pb-[120px] px-6 lg:px-0`}>
-          <span className={`${sectionLabel} mb-6`}>Nossa Jornada</span>
+          <span className={`${sectionLabel} mb-6`}>A Plataforma</span>
           <div className="grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden shadow-sm border border-gray-100">
             <div className="bg-darkgreen p-10 md:p-14 flex flex-col justify-center">
               <h2 className="font-fredoka text-2xl md:text-[2rem] font-bold text-white mb-5">

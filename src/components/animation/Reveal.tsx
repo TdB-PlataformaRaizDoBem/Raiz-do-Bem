@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import type { ReactNode } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, motionQuery } from "../lib/gsap";
+import { gsap, motionQuery } from "../../lib/gsap";
 
 interface RevealProps {
   children: ReactNode;

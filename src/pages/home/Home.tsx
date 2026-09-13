@@ -14,11 +14,12 @@ import Abstract3 from "../../assets/svgs/abstract3.svg";
 import TdbLogo from "../../assets/svgs/TDB_logo.svg";
 
 import { useGSAP } from "@gsap/react";
-import { gsap, SplitText, motionQuery } from "./lib/gsap";
-import { useLenis } from "./hooks/useLenis";
-import { Reveal } from "./components/Reveal";
-import { Counter } from "./components/Counter";
-import { StoryScroller, type StoryPanel } from "./components/StoryScroller";
+import { gsap, motionQuery } from "../../lib/gsap";
+import { useLenis } from "../../hooks/useLenis";
+import { useHeroReveal } from "../../hooks/useHeroReveal";
+import { Reveal } from "../../components/animation/Reveal";
+import { Counter } from "../../components/animation/Counter";
+import { StoryScroller, type StoryPanel } from "../../components/animation/StoryScroller";
 
 const sectionLabel =
   "text-[10px] uppercase tracking-[0.2em] text-darkgreen/60 font-bold mb-2 block text-center";
@@ -153,51 +154,7 @@ const Home = () => {
   const mascotRef = useRef<HTMLImageElement>(null);
   const mascotSectionRef = useRef<HTMLDivElement>(null);
 
-  // Reveal do título em linhas (GSAP SplitText) + fade dos elementos de apoio ao carregar a Home.
-  useGSAP(
-    () => {
-      const heading = headingRef.current;
-      if (!heading) return;
-
-      let cancelled = false;
-      const mm = gsap.matchMedia();
-
-      mm.add(motionQuery, () => {
-        document.fonts.ready.then(() => {
-          if (cancelled) return;
-          const split = new SplitText(heading, {
-            type: "lines",
-            mask: "lines",
-          });
-          gsap.from(split.lines, {
-            yPercent: 110,
-            autoAlpha: 0,
-            duration: 0.9,
-            ease: "power4.out",
-            stagger: 0.12,
-          });
-        });
-
-        gsap.from(heroFadeRefs.current.filter(Boolean), {
-          autoAlpha: 0,
-          y: 24,
-          duration: 0.8,
-          ease: "power3.out",
-          stagger: 0.12,
-          delay: 0.5,
-        });
-
-        return () => {
-          cancelled = true;
-        };
-      });
-
-      mm.add(`(prefers-reduced-motion: reduce)`, () => {
-        gsap.set([heading, ...heroFadeRefs.current], { autoAlpha: 1 });
-      });
-    },
-    { scope: heroRef },
-  );
+  useHeroReveal({ scope: heroRef, heading: headingRef, fadeEls: heroFadeRefs });
 
   // Parallax sutil do mascote ao rolar a seção "Junte-se a nós".
   useGSAP(
