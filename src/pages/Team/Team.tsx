@@ -12,14 +12,14 @@ const Team = () => {
           className="bg-amber w-full h-full"
           style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 60%, 0 100%)" }}
         >
-          <div className="pt-[80px] md:pt-[100px] text-center px-6">
+          <div className="animate-rise-in pt-[80px] md:pt-[100px] text-center px-6">
             <h1
               id="integrantes"
-              className="font-fredoka font-bold text-white text-5xl sm:text-6xl md:text-7xl lg:text-[6rem] leading-none"
+              className="font-fredoka font-bold text-white text-shadow-contrast text-5xl sm:text-6xl md:text-7xl lg:text-[6rem] leading-none"
             >
               Quem Faz Acontecer
             </h1>
-            <p className="text-white/80 font-medium mt-4 text-base md:text-lg">
+            <p className="text-white/90 text-shadow-contrast font-medium mt-4 text-base md:text-lg">
               Conheça o time por trás da plataforma
             </p>
           </div>
@@ -29,7 +29,7 @@ const Team = () => {
           src={DentinhoIntegrantes}
           alt=""
           aria-hidden="true"
-          className="absolute z-10 left-1/2 -translate-x-1/2 top-[60%] -translate-y-[40%]
+          className="animate-scale-in absolute z-10 left-1/2 -translate-x-1/2 top-[60%] -translate-y-[40%]
                      w-[280px] sm:w-[460px] md:w-[600px] lg:w-[800px]"
         />
       </div>
@@ -40,11 +40,12 @@ const Team = () => {
           {teamMembers.map((member, index) => (
             <article
               key={index}
-              className="
+              className={`
                 bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden
                 flex flex-col
+                animate-rise-in animate-delay-${Math.min(index + 1, 6)}
                 motion-safe:hover:-translate-y-1 motion-safe:transition-transform duration-200
-              "
+              `}
             >
               {/* Foto */}
               <div className="relative h-80 overflow-hidden">
@@ -65,7 +66,7 @@ const Team = () => {
                   <h2 className="font-fredoka font-bold text-xl text-black leading-tight">
                     {member.name}
                   </h2>
-                  <p className="text-[11px] text-gray-400 font-mono mt-0.5">
+                  <p className="text-[11px] text-gray-600 font-mono mt-0.5">
                     {member.turma} · {member.rm}
                   </p>
                 </div>
@@ -93,7 +94,7 @@ const Team = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`LinkedIn de ${member.name}`}
-                    className="flex items-center gap-2 text-xs text-gray-500 hover:text-darkgreen motion-safe:transition-colors duration-150 font-medium"
+                    className="flex items-center gap-2 text-xs text-gray-700 hover:text-darkgreen motion-safe:transition-colors duration-150 font-medium rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/50 focus-visible:ring-offset-2"
                   >
                     <img src={LinkedinIcon} alt="" aria-hidden="true" className="w-5 h-5" />
                     LinkedIn
@@ -103,7 +104,7 @@ const Team = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`GitHub de ${member.name}`}
-                    className="flex items-center gap-2 text-xs text-gray-500 hover:text-darkgreen motion-safe:transition-colors duration-150 font-medium"
+                    className="flex items-center gap-2 text-xs text-gray-700 hover:text-darkgreen motion-safe:transition-colors duration-150 font-medium rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/50 focus-visible:ring-offset-2"
                   >
                     <img src={GithubIcon} alt="" aria-hidden="true" className="w-5 h-5" />
                     GitHub

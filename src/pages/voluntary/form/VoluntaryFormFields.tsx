@@ -55,7 +55,7 @@ const VoluntaryFormFields = () => {
   return (
     <div className="w-full mx-auto px-4">
       {/* Dados pessoais */}
-      <h2 className="text-2xl font-bold mt-[80px] mb-10 border-b pb-3">
+      <h2 className="animate-rise-in text-2xl font-bold mt-[80px] mb-10 border-b pb-3">
         INFORMAÇÕES PESSOAIS
       </h2>
 
@@ -99,9 +99,12 @@ const VoluntaryFormFields = () => {
         />
 
         <div className="flex flex-col">
-          <label className="mb-1 font-medium text-sm">Sexo:</label>
+          <label htmlFor="sexo" className="mb-1 font-medium text-sm">Sexo:</label>
           <select
+            id="sexo"
             {...register("sexo", { required: req })}
+            aria-invalid={!!errors.sexo}
+            aria-describedby={errors.sexo ? "sexo-error" : undefined}
             className={`${selectClass} ${errors.sexo ? "border-red-600" : ""}`}
           >
             <option value="">Selecione</option>
@@ -110,7 +113,7 @@ const VoluntaryFormFields = () => {
             <option value="O">Outro</option>
           </select>
           {errors.sexo && (
-            <span className="text-red-500 text-xs mt-1">
+            <span id="sexo-error" role="alert" className="text-red-800 text-xs mt-1">
               {errors.sexo.message}
             </span>
           )}
@@ -118,7 +121,7 @@ const VoluntaryFormFields = () => {
       </div>
 
       {/* Dados profissionais */}
-      <h2 className="text-2xl font-bold mt-[70px] mb-10 border-b pb-3">
+      <h2 className="animate-rise-in text-2xl font-bold mt-[70px] mb-10 border-b pb-3">
         INFORMAÇÕES PROFISSIONAIS
       </h2>
 
@@ -168,7 +171,7 @@ const VoluntaryFormFields = () => {
       </div>
 
       {/* Endereço do consultório */}
-      <h2 className="text-2xl font-bold mt-[70px] mb-10 border-b pb-3">
+      <h2 className="animate-rise-in text-2xl font-bold mt-[70px] mb-10 border-b pb-3">
         ENDEREÇO DO CONSULTÓRIO
       </h2>
 

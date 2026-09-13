@@ -164,10 +164,10 @@ const About = () => {
                 alt="Dentistas do Bem"
                 className="w-full rounded-2xl object-cover"
               />
-              <h4 className="text-white font-fredoka text-2xl md:text-[2rem] font-bold my-5">
+              <h4 className="text-white text-shadow-contrast font-fredoka text-2xl md:text-[2rem] font-bold my-5">
                 Dentistas do Bem
               </h4>
-              <p className="text-white text-sm md:text-base leading-relaxed max-w-[522px]">
+              <p className="text-white text-shadow-contrast text-sm md:text-base leading-relaxed max-w-[522px]">
                 O Dentista do Bem é o principal programa da TdB, contando com o trabalho
                 voluntário de cirurgiões-dentistas que atendem crianças e jovens em situação
                 de vulnerabilidade social entre 11 e 17 anos, proporcionando tratamento
@@ -183,10 +183,10 @@ const About = () => {
                 alt="Apolônias do Bem"
                 className="w-full rounded-2xl object-cover"
               />
-              <h4 className="text-white font-fredoka text-2xl md:text-[2rem] font-bold my-5">
+              <h4 className="text-white text-shadow-contrast font-fredoka text-2xl md:text-[2rem] font-bold my-5">
                 Apolônias do Bem
               </h4>
-              <p className="text-white text-sm md:text-base leading-relaxed max-w-[522px]">
+              <p className="text-white text-shadow-contrast text-sm md:text-base leading-relaxed max-w-[522px]">
                 O Apolônias do Bem oferece tratamento odontológico integral e gratuito às
                 mulheres cis e trans que vivenciaram situações de violência e tiveram a
                 dentição afetada durante as agressões.
