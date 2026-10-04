@@ -106,8 +106,14 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
     target.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
 
-  const prev = () => goTo(Math.max(0, active - 1));
-  const next = () => goTo(Math.min(panels.length - 1, active + 1));
+  const prev = () => {
+    const nextIndex = active === 0 ? panels.length - 1 : active - 1;
+    goTo(nextIndex);
+  };
+  const next = () => {
+    const nextIndex = active === panels.length - 1 ? 0 : active + 1;
+    goTo(nextIndex);
+  };
 
   return (
     <div className="relative">
@@ -128,7 +134,7 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
             }`}
             aria-hidden={i !== active}
           >
-            <div className="relative aspect-[4/5] sm:aspect-[16/10] rounded-3xl overflow-hidden shadow-xl">
+            <div className="relative aspect-[4/5] sm:aspect-[16/10] rounded-3xl overflow-hidden">
               <img
                 src={panel.image}
                 alt={panel.imageAlt}
@@ -154,9 +160,8 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
       <button
         type="button"
         onClick={prev}
-        disabled={active === 0}
         aria-label="Slide anterior"
-        className="hidden sm:flex items-center justify-center absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white shadow-lg text-darkgreen disabled:opacity-30 disabled:cursor-not-allowed motion-safe:hover:scale-105 motion-safe:transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/60"
+        className="hidden sm:flex items-center justify-center absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-darkgreen text-white motion-safe:hover:scale-105 motion-safe:transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -165,9 +170,8 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
       <button
         type="button"
         onClick={next}
-        disabled={active === panels.length - 1}
         aria-label="Próximo slide"
-        className="hidden sm:flex items-center justify-center absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white shadow-lg text-darkgreen disabled:opacity-30 disabled:cursor-not-allowed motion-safe:hover:scale-105 motion-safe:transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/60"
+        className="hidden sm:flex items-center justify-center absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-darkgreen text-white motion-safe:hover:scale-105 motion-safe:transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
