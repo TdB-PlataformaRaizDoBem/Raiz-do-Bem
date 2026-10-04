@@ -37,7 +37,19 @@ export function useCep<T extends FieldValues>(cep: string, prefix: string = "") 
     const cepField = (prefix ? `${prefix}.cep` : "cep") as Path<T>;
 
     (async () => {
-      const { json } = await request(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      let json: ViaCepResponse | null;
+      try {
+        ({ json } = await request(`https://viacep.com.br/ws/${cepLimpo}/json/`));
+      } catch (err) {
+        // Consulta substituída por outra (CEP digitado de novo): não é erro para o usuário.
+        if (err instanceof Error && err.name === "AbortError") return;
+        // ViaCEP fora do ar / sem internet: avisa em vez de deixar a promise rejeitada solta.
+        setError(cepField, {
+          type: "manual",
+          message: "Não foi possível consultar o CEP agora. Tente novamente.",
+        });
+        return;
+      }
 
       if (!json) return;
 

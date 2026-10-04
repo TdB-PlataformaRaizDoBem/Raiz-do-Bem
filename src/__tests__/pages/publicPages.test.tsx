@@ -204,7 +204,7 @@ describe('ContactForm (pedido de ajuda)', () => {
 
     await preencherBase({ sexo: 'masculino', idade: 30 });
 
-    // Hoje a tela só mostra os "Canais de Apoio"; o texto específico de `mensagemErro` não é exibido.
+    expect(screen.getByText('O atendimento para homens é restrito a menores de 18 anos.')).toBeInTheDocument();
     expect(screen.getByText('Canais de Apoio Recomendados')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Enviar para Triagem' })).toBeDisabled();
   });
@@ -217,10 +217,14 @@ describe('ContactForm (pedido de ajuda)', () => {
     await userEvent.selectOptions(pergunta, 'nao');
     expect(screen.getByRole('button', { name: 'Enviar para Triagem' })).toBeDisabled();
     expect(screen.getByText('Canais de Apoio Recomendados')).toBeInTheDocument();
+    expect(
+      screen.getByText('Para mulheres cis/trans acima de 18 anos, o projeto é exclusivo para vítimas de violência.'),
+    ).toBeInTheDocument();
 
     await userEvent.selectOptions(pergunta, 'sim');
     expect(screen.getByRole('button', { name: 'Enviar para Triagem' })).toBeEnabled();
     expect(screen.queryByText('Canais de Apoio Recomendados')).not.toBeInTheDocument();
+    expect(screen.queryByText(/o projeto é exclusivo para vítimas/)).not.toBeInTheDocument();
   });
 
   it('menina (menor) não vê a pergunta de violência', async () => {

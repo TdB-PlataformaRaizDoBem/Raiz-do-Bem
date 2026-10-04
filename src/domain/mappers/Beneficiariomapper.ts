@@ -63,7 +63,7 @@ export function mapBeneficiario(api: BeneficiarioAPI): BeneficiarioViewModel {
     dataNascimento: formatDate(api.dataNascimento),
     telefone: api.telefone ?? "—",
     email: api.email ?? "—",
-    programaSocial: formatarPrograma(api.programaSocial) ?? null,
+    programaSocial: api.programaSocial ? formatarPrograma(api.programaSocial) : null,
     endereco: mapEndereco(api.endereco),
     pedido: api.pedido
       ? {

@@ -154,15 +154,11 @@ const AbaPendentes = () => {
         )}
       </Modal>
 
-      <AsyncEstado
-        loading={loading}
-        error={error}
-        vazio={!pendentes.length}
-        mensagemVazio={EMPTY_MESSAGES.PENDENTE}
-      >
+      <AsyncEstado loading={loading} error={error}>
         <UserManagementPage<BeneficiarioViewModel>
           key="PENDENTE"
           title="Designação"
+          mensagemVazio={EMPTY_MESSAGES.PENDENTE}
           users={pendentes}
           getId={(b) => b.id}
           filterConfig={designacaoFilterConfig}
@@ -367,15 +363,11 @@ const AbaAtendimentos = ({ tab, isAdmin }: AbaAtendimentosProps) => {
         )}
       </Modal>
 
-      <AsyncEstado
-        loading={loading}
-        error={error}
-        vazio={!atendimentos.length}
-        mensagemVazio={EMPTY_MESSAGES[tab]}
-      >
+      <AsyncEstado loading={loading} error={error}>
         <UserManagementPage<AtendimentoViewModel>
           key={tab}
           title="Designação"
+          mensagemVazio={EMPTY_MESSAGES[tab]}
           users={atendimentos}
           getId={(a) => a.id}
           filterConfig={atendimentoFilterConfig}

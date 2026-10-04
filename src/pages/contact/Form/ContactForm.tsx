@@ -298,6 +298,9 @@ const ContactForm = () => {
             <h3 className="text-white font-bold text-sm mb-2 uppercase tracking-wider">
               Canais de Apoio Recomendados
             </h3>
+            <p className="text-white text-sm font-semibold leading-relaxed mb-3">
+              {mensagemErro}
+            </p>
             <p className="text-white text-sm leading-relaxed mb-4">
               Seu perfil não se enquadra nos projetos atuais da Turma do Bem,
               mas você pode encontrar atendimento gratuito nestes locais:

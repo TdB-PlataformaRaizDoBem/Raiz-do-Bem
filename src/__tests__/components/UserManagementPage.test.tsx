@@ -222,9 +222,30 @@ describe('UserManagementPage — busca e filtros', () => {
     expect(screen.queryByText(/resultados? encontrados?/)).not.toBeInTheDocument();
   });
 
-  // Hoje o botão "Filtros" aparece (com painel vazio) mesmo sem grupos de filtro, porque
-  // React.Children.count conta o `false` do "Limpar filtros". Ver UserManagementPage/Toolbar.
-  it.todo('sem grupos de filtro não mostra o botão "Filtros"');
+  it('sem filterConfig não há botão de filtros', () => {
+    renderPage();
+    expect(screen.queryByRole('button', { name: /Filtros/ })).not.toBeInTheDocument();
+  });
+
+  it('filterConfig sem grupos (ex.: Designação) também não mostra o botão "Filtros"', () => {
+    renderPage({ filterConfig: { groups: [], predicate: () => true } });
+    expect(screen.queryByRole('button', { name: /Filtros/ })).not.toBeInTheDocument();
+  });
+
+  it('com grupos de filtro o botão "Filtros" aparece', () => {
+    renderPage(comFiltro);
+    expect(screen.getByRole('button', { name: /Filtros/ })).toBeInTheDocument();
+  });
+
+  it('sem grupos a busca continua funcionando e a lista pode ser restaurada pelo estado vazio', async () => {
+    renderPage({ users: itens(6), filterConfig: { groups: [], predicate: (i, _f, b) => !b || i.nome.toLowerCase().includes(b) } });
+
+    await userEvent.type(screen.getByLabelText('Pesquisar pessoas...'), 'zzz');
+    expect(screen.getByText('Nenhum resultado encontrado')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Limpar filtros e busca' }));
+    expect(screen.getAllByRole('button', { name: /^card/ })).toHaveLength(6);
+  });
 });
 
 describe('UserManagementPage — criação', () => {

@@ -149,14 +149,10 @@ export const PedidosAjuda = () => {
         )}
       </Modal>
 
-      <AsyncEstado
-        loading={loading}
-        error={error}
-        vazio={!pedidos?.length}
-        mensagemVazio="Nenhum pedido encontrado."
-      >
+      <AsyncEstado loading={loading} error={error}>
         <UserManagementPage<PedidoCompleto>
           title="Pedidos de Ajuda"
+          mensagemVazio="Nenhum pedido encontrado."
           users={pedidos ?? []}
           getId={(p) => p.id}
           filterConfig={pedidoFilterConfig}

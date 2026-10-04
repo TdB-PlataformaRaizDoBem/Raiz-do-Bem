@@ -70,6 +70,30 @@ describe('página Beneficiários', () => {
     expect(screen.getByText('ID: #2')).toBeInTheDocument();
   });
 
+  it('lista vazia mostra a mensagem própria da página', async () => {
+    routeFetch(fetchMock, { '/beneficiario': [] });
+
+    renderPagina(<Beneficiarios />);
+
+    expect(await screen.findByText('Nenhum beneficiário cadastrado.')).toBeInTheDocument();
+  });
+
+  it('painel de detalhes sem registro (404) avisa e permite fechar', async () => {
+    routeFetch(fetchMock, {
+      '/beneficiario': lista,
+      '/beneficiario/11111111111': fakeResponse({ status: 404, body: { mensagem: 'não achou' } }),
+    });
+    renderPagina(<Beneficiarios />);
+    await screen.findByText('Maria Silva');
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'Visualizar Detalhes' })[0]);
+
+    const dialogo = await screen.findByRole('dialog');
+    expect(await within(dialogo).findByText(/registro não encontrado/)).toBeInTheDocument();
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Fechar' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('erro de carregamento mostra a mensagem', async () => {
     routeFetch(fetchMock, { '/beneficiario': fakeResponse({ status: 500, body: { mensagem: 'Banco fora do ar' } }) });
 
@@ -170,6 +194,14 @@ describe('página Dentistas', () => {
     expect(screen.getAllByText('Não informado').length).toBeGreaterThan(0); // Dr. Beto sem especialidade
   });
 
+  it('lista vazia mostra a mensagem própria da página', async () => {
+    routeFetch(fetchMock, { '/dentista': [] });
+
+    renderPagina(<Dentistas />);
+
+    expect(await screen.findByText('Nenhum dentista cadastrado.')).toBeInTheDocument();
+  });
+
   it('erro de carregamento', async () => {
     routeFetch(fetchMock, { '/dentista': fakeResponse({ status: 500, body: { mensagem: 'Sem banco' } }) });
 
@@ -239,6 +271,14 @@ describe('página Colaboradores', () => {
     expect(await screen.findByText('Ana Admin')).toBeInTheDocument();
     expect(screen.getByText('bia@x.com')).toBeInTheDocument();
     expect(screen.getByText('ID: #2')).toBeInTheDocument();
+  });
+
+  it('lista vazia mostra a mensagem própria da página', async () => {
+    routeFetch(fetchMock, { '/colaborador': [] });
+
+    renderPagina(<Colaborador />);
+
+    expect(await screen.findByText('Nenhum colaborador cadastrado.')).toBeInTheDocument();
   });
 
   it('erro de carregamento', async () => {
@@ -374,8 +414,8 @@ describe('rotas internas', () => {
   it.each([
     ['dashboard', 'Resumo de Impacto'],
     ['colaboradores', 'Ana Admin'],
-    ['beneficiarios', 'Nenhum registro encontrado.'],
-    ['dentistas', 'Nenhum registro encontrado.'],
+    ['beneficiarios', 'Nenhum beneficiário cadastrado.'],
+    ['dentistas', 'Nenhum dentista cadastrado.'],
   ])('admin/%s renderiza a página certa', async (caminho, texto) => {
     renderRotas('admin', caminho, 'ADMIN');
 
@@ -384,8 +424,8 @@ describe('rotas internas', () => {
 
   it.each([
     ['dashboard', 'Resumo de Impacto'],
-    ['beneficiarios', 'Nenhum registro encontrado.'],
-    ['dentistas', 'Nenhum registro encontrado.'],
+    ['beneficiarios', 'Nenhum beneficiário cadastrado.'],
+    ['dentistas', 'Nenhum dentista cadastrado.'],
   ])('coord/%s renderiza a página certa', async (caminho, texto) => {
     renderRotas('coord', caminho, 'COLABORADOR');
 

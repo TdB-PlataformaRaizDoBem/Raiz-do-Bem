@@ -30,10 +30,10 @@ const BeneficiarioPainel = ({
   const { data, loading, error, refetch: refetchSingle } = useBeneficiario(cpf);
  
   return (
-    <AsyncEstado loading={loading} error={error} vazio={!data} mensagemVazio="Não foi possível carregar os detalhes deste beneficiário (Registro não encontrado).">
-      {data && (
+    <AsyncEstado loading={loading} error={error}>
+      {data ? (
         <BeneficiarioDetails
-          data={data} // Agora o TypeScript aceita, pois aqui 'data' nunca será null
+          data={data}
           isAdmin={isAdmin}
           onClose={onClose}
           onDeleted={onDeleted}
@@ -42,6 +42,15 @@ const BeneficiarioPainel = ({
             if (refetchSingle) refetchSingle();
           }}
         />
+      ) : (
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 items-start">
+          <p className="text-gray-600">
+            Não foi possível carregar os detalhes deste beneficiário (registro não encontrado).
+          </p>
+          <Button variant="secondary" onClick={onClose}>
+            Fechar
+          </Button>
+        </div>
       )}
     </AsyncEstado>
   );
@@ -53,14 +62,10 @@ export const Beneficiarios = () => {
   const { data: beneficiarios, loading, error, refetch } = useBeneficiarios();
  
   return (
-    <AsyncEstado
-      loading={loading}
-      error={error}
-      vazio={!beneficiarios?.length}
-      mensagemVazio="Nenhum beneficiário cadastrado."
-    >
+    <AsyncEstado loading={loading} error={error}>
       <UserManagementPage<BeneficiarioCompleto>
         title="Gerenciamento de Beneficiários"
+        mensagemVazio="Nenhum beneficiário cadastrado."
         users={beneficiarios ?? []}
         getId={(u) => u.id}
         filterConfig={beneficiarioFilterConfig}

@@ -552,6 +552,46 @@ describe('UpdateDentista (editar dentista)', () => {
     await waitFor(() => expect(screen.getByLabelText(/Especialidade/)).toHaveValue('2'));
   });
 
+  it('resolver a especialidade atual não altera o formulário: segue "Sem mudanças" e sem aviso do React', async () => {
+    const erro = jest.spyOn(console, 'error').mockImplementation(() => {});
+    rotas();
+    comNotificacoes(<UpdateDentista initialData={dentista()} onSuccess={() => {}} />);
+
+    await waitFor(() => expect(screen.getByLabelText(/Especialidade/)).toHaveValue('2'));
+
+    expect(screen.getByRole('button', { name: 'Sem mudanças' })).toBeDisabled();
+    expect(erro.mock.calls.some(([msg]) => String(msg).includes('while rendering'))).toBe(false);
+    erro.mockRestore();
+  });
+
+  it('o nome da especialidade é comparado sem diferenciar maiúsculas', async () => {
+    rotas();
+    comNotificacoes(<UpdateDentista initialData={dentista({ especialidades: ['ENDODONTIA'] })} onSuccess={() => {}} />);
+
+    await waitFor(() => expect(screen.getByLabelText(/Especialidade/)).toHaveValue('2'));
+  });
+
+  it('especialidade que não existe na lista fica sem seleção e o formulário continua sem mudanças', async () => {
+    rotas();
+    comNotificacoes(<UpdateDentista initialData={dentista({ especialidades: ['Inexistente'] })} onSuccess={() => {}} />);
+    await screen.findByRole('option', { name: 'Ortodontia' });
+
+    expect(screen.getByLabelText(/Especialidade/)).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Sem mudanças' })).toBeDisabled();
+  });
+
+  it('o usuário pode trocar a especialidade resolvida e enviar a nova', async () => {
+    rotas();
+    comNotificacoes(<UpdateDentista initialData={dentista()} onSuccess={() => {}} />);
+    await waitFor(() => expect(screen.getByLabelText(/Especialidade/)).toHaveValue('2'));
+
+    await userEvent.selectOptions(screen.getByLabelText(/Especialidade/), '1');
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar Alterações' }));
+
+    await waitFor(() => expect(chamadasCom('PUT')).toHaveLength(1));
+    expect(JSON.parse(String(chamadasCom('PUT')[0][1]?.body)).idEspecialidade).toBe(1);
+  });
+
   it('dados fixos somente leitura; botão começa sem mudanças', async () => {
     rotas();
     comNotificacoes(<UpdateDentista initialData={dentista()} onSuccess={() => {}} />);

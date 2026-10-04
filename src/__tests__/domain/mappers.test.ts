@@ -134,8 +134,32 @@ describe('mapBeneficiario', () => {
     expect(vm.pedido?.dentistaResponsavel).toBeNull();
   });
 
-  // Hoje formatarPrograma(null) lança TypeError e derruba a lista inteira.
-  it.todo('não quebra quando o back devolve programaSocial nulo');
+  it('não quebra quando o back devolve programaSocial nulo ou vazio', () => {
+    expect(mapBeneficiario(beneficiarioApi({ programaSocial: null })).programaSocial).toBeNull();
+    expect(mapBeneficiario(beneficiarioApi({ programaSocial: '' })).programaSocial).toBeNull();
+  });
+
+  it('um beneficiário sem programa não derruba o mapeamento da lista inteira', () => {
+    const lista = mapBeneficiarios([
+      beneficiarioApi({ id: 1, programaSocial: null }),
+      beneficiarioApi({ id: 2, programaSocial: 'APOLONIA_DO_BEM' }),
+    ]);
+
+    expect(lista.map((b) => b.programaSocial)).toEqual([null, 'Apolonia Do Bem']);
+  });
+
+  it('campos de texto nulos viram "—"', () => {
+    const vm = mapBeneficiario(
+      beneficiarioApi({
+        cpf: null as unknown as string,
+        nomeCompleto: null as unknown as string,
+        telefone: null as unknown as string,
+        email: null as unknown as string,
+      }),
+    );
+
+    expect(vm).toMatchObject({ cpf: '—', nomeCompleto: '—', telefone: '—', email: '—' });
+  });
 
   it('mapBeneficiarios mapeia a lista', () => {
     expect(mapBeneficiarios([beneficiarioApi(), beneficiarioApi({ id: 2 })])).toHaveLength(2);
