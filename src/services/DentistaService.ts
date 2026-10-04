@@ -57,8 +57,9 @@ export async function criarDentista(
 }
 
 /**
- * POST /dentista/voluntario (público — sem autenticação)
- * Endpoint público para registro de dentistas voluntários
+ * POST /dentista (público — sem autenticação)
+ * Mesmo endpoint de criarDentista, liberado no back (@PermitAll); usado pelo
+ * formulário de voluntário, que roda antes do login.
  */
 export async function registrarDentistaVoluntario(
   payload: CriarDentistaPayload,

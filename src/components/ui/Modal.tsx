@@ -13,13 +13,13 @@ export const Modal = ({ open, onClose, children }: ModalProps) => {
   if (!open) return null;
 
   return createPortal(
-    <div 
-      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[999]" 
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black/70 z-[999]"
       onClick={onClose}
     >
-      <div 
-        className="bg-white rounded-2xl p-8 w-[90%] max-w-[450px] xl:max-w-4xl shadow-2xl animate-in fade-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()} 
+      <div
+        className="bg-white rounded-2xl p-8 w-[90%] max-w-[450px] xl:max-w-4xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
       >
         {children}
       </div>

@@ -149,14 +149,10 @@ export const PedidosAjuda = () => {
         )}
       </Modal>
 
-      <AsyncEstado
-        loading={loading}
-        error={error}
-        vazio={!pedidos?.length}
-        mensagemVazio="Nenhum pedido encontrado."
-      >
+      <AsyncEstado loading={loading} error={error}>
         <UserManagementPage<PedidoCompleto>
           title="Pedidos de Ajuda"
+          mensagemVazio="Nenhum pedido encontrado."
           users={pedidos ?? []}
           getId={(p) => p.id}
           filterConfig={pedidoFilterConfig}
@@ -221,6 +217,33 @@ export const PedidosAjuda = () => {
               onSuspender={() => solicitarConfirmacao(pedido, "suspender")}
               onClose={close}
             />
+          )}
+          tableHeaders={["Beneficiário", "Protocolo", "Status", "Data do Envio", "Ação"]}
+          renderTableRow={(p, selected, select) => (
+            <tr
+              key={p.id}
+              onClick={select}
+              className={`cursor-pointer transition-colors hover:bg-gray-50 ${selected ? "bg-amber/5" : ""}`}
+            >
+              <td className="px-5 py-3 font-semibold text-black whitespace-nowrap">{p.nomeCompleto}</td>
+              <td className="px-5 py-3 text-gray-500 font-mono text-xs">#{p.id}</td>
+              <td className="px-5 py-3">
+                <span className={`text-xs px-2.5 py-1 rounded-full font-bold whitespace-nowrap ${p.statusClass}`}>
+                  {p.statusLabel}
+                </span>
+              </td>
+              <td className="px-5 py-3 text-gray-500 text-sm whitespace-nowrap">{p.dataPedido}</td>
+              <td className="px-5 py-3">
+                <Button
+                  onClick={(e) => { e.stopPropagation(); select(); }}
+                  variant={selected ? "primary" : "secondary"}
+                  size="sm"
+                  className="py-1.5 px-4 text-xs font-bold whitespace-nowrap"
+                >
+                  Analisar
+                </Button>
+              </td>
+            </tr>
           )}
         />
       </AsyncEstado>

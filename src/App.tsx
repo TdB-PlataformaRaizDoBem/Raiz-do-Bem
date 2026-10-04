@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import {
   BrowserRouter,
   Routes,
@@ -12,7 +13,9 @@ import { ProtectedRoutes } from './Routes/ProtectedRoutes';
 import ScrollToTop from './layout/ScrollToTop';
 import { NotificationProvider } from './components/context/NotificationProvider';
 import { AuthProvider } from './context/AuthContext';
+import { SpeechProvider } from './context/SpeechContext';
 import FullScreenLoader from './components/ui/FullScreenLoader';
+import { queryClient } from './lib/queryClient';
 
 const Login     = lazy(() => import('./pages/login/Login'));
 const Admin     = lazy(() => import('./pages/admin/Admin'));
@@ -69,14 +72,18 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <BrowserRouter>
-    <AuthProvider>
-      <NotificationProvider>
-        <ScrollToTop />
-        <AppRoutes />
-      </NotificationProvider>
-    </AuthProvider>
-  </BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <AuthProvider>
+        <SpeechProvider>
+          <NotificationProvider>
+            <ScrollToTop />
+            <AppRoutes />
+          </NotificationProvider>
+        </SpeechProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 export default App;

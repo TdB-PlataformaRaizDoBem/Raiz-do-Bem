@@ -1,3 +1,25 @@
 @layer utilities {
-  /* Custom utility classes go here */
+  /* Reforça a leitura de texto branco sobre laranja/âmbar sem escurecer a
+     fonte — mantém a identidade (branco) e ainda ajuda a legibilidade. */
+  .text-shadow-contrast {
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.35),
+      0 1px 10px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Esconde a barra de rolagem do carrossel — a navegação já acontece via
+     setas, pontos, toque ou arraste, então a scrollbar só polui a leitura. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .no-scrollbar {
+    scroll-behavior: auto;
+  }
 }

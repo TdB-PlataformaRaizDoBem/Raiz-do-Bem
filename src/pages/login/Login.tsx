@@ -105,6 +105,7 @@ const Login = () => {
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
+              showPasswordToggle
               labelClassName="text-darkgreen text-xs uppercase tracking-widest font-bold"
               {...register('senha', {
                 required: 'Senha obrigatória',
@@ -116,7 +117,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-orange w-full hover:bg-amber text-white font-bold text-xl rounded-xl shadow-lg mt-6 p-3 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-orange w-full hover:bg-amber text-white font-bold text-xl rounded-xl shadow-lg mt-6 !h-auto py-3 flex items-center justify-center text-center leading-none disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Validando...' : 'Entrar no Sistema'}
             </Button>
@@ -124,7 +125,7 @@ const Login = () => {
             <Link
               to="/"
               className="rounded-lg font-semibold transition-all duration-300 min-w-0
-                         bg-red-500 text-white hover:bg-red-600 text-center p-3"
+                         bg-red-500 text-white hover:bg-red-600 flex items-center justify-center text-center p-3"
             >
               Voltar ao Início
             </Link>

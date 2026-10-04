@@ -35,37 +35,14 @@ export async function getPedidosCompletos(): Promise<PedidoViewModel[]> {
 }
 
 /**
- * GET /pedido-ajuda/:id
- * Retorna pedido específico ou null se não encontrado (404).
+ * O backend não expõe GET /pedido-ajuda/{id}; o pedido é localizado na listagem
+ * (GET /pedido-ajuda). Retorna null se não encontrado.
  */
 export async function getPedidoCompleto(
   id: number,
 ): Promise<PedidoViewModel | null> {
-  const res = await safeFetch(`${ENDPOINT}/${id}`);
-  if (res.status === 404) return null;
-  const data = await handleResponse<PedidoAjudaAPI>(res);
-  return mapPedido(data);
-}
-
-/**
- * GET /pedido-ajuda (filtrado no front)
- * Retorna pedidos com status APROVADO que ainda não possuem beneficiário vinculado.
- */
-export async function getPedidosAprovadosLivres(): Promise<PedidoViewModel[]> {
   const todos = await getPedidosCompletos();
-  // Excluir pedidos que já possuem beneficiário vinculado
-  try {
-    const { getBeneficiariosCompletos } = await import("./Beneficiarioservice");
-    const beneficiarios = await getBeneficiariosCompletos();
-    const vinculados = new Set(
-      beneficiarios.map((b) => b.pedido?.id).filter(Boolean) as number[],
-    );
-    return todos.filter(
-      (p) => p.statusAPI === "APROVADO" && !vinculados.has(p.id),
-    );
-  } catch {
-    return todos.filter((p) => p.statusAPI === "APROVADO");
-  }
+  return todos.find((p) => p.id === id) ?? null;
 }
 
 /**

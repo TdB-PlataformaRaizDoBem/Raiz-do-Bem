@@ -5,3 +5,81 @@ h1, h2, h3, h4, h5, h6 {
 p, a, li {
   font-family: var(--font-sans);
 }
+
+/* Animação de entrada suave — desativada quando prefers-reduced-motion */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-slide-in {
+    animation: fadeSlideIn 0.5s ease forwards;
+  }
+  .animate-fade-slide-in-delay {
+    animation: fadeSlideIn 0.5s ease 0.15s forwards;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-slide-in,
+  .animate-fade-slide-in-delay {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Reveal de entrada por keyframes puro (sem GSAP) — usado nas páginas
+   institucionais mais simples (FAQ, Contato, Voluntário, Integrantes).
+   Sempre desligado quando prefers-reduced-motion: reduce. */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-rise-in {
+    animation: riseIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-delay-1 { animation-delay: 0.08s; }
+  .animate-delay-2 { animation-delay: 0.16s; }
+  .animate-delay-3 { animation-delay: 0.24s; }
+  .animate-delay-4 { animation-delay: 0.32s; }
+  .animate-delay-5 { animation-delay: 0.4s; }
+  .animate-delay-6 { animation-delay: 0.48s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise-in,
+  .animate-scale-in {
+    animation: none;
+    opacity: 1;
+  }
+}

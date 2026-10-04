@@ -44,7 +44,7 @@ const ExportCsvButton = ({
 
   return (
     <Button
-      variant="secondary"
+      variant="outline"
       onClick={handleExport}
       disabled={loading}
       className="flex items-center gap-2"

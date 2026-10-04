@@ -1,20 +1,15 @@
-import { useAsync } from "./useAsync";
-
-import {
-  getDentistasCompletos,
-  getDentistaCompleto,
-  type DentistaCompleto,
-} from "../services/DentistaService";
+import { getDentistasCompletos, getDentistaCompleto, type DentistaCompleto } from "../services/DentistaService";
+import { queryKeys } from "./queryKeys";
+import { useDomainQuery } from "./useDomainQuery";
 
 export const useDentistas = () =>
-  useAsync<DentistaCompleto[]>(
-    getDentistasCompletos,
-  );
+  useDomainQuery<DentistaCompleto[]>({
+    queryKey: queryKeys.dentistas,
+    queryFn: getDentistasCompletos,
+  });
 
-export const useDentista = (
-  cpf: string,
-) =>
-  useAsync<DentistaCompleto | null>(
-    () => getDentistaCompleto(cpf),
-    [cpf],
-  );
+export const useDentista = (cpf: string) =>
+  useDomainQuery<DentistaCompleto | null>({
+    queryKey: queryKeys.dentista(cpf),
+    queryFn: () => getDentistaCompleto(cpf),
+  });

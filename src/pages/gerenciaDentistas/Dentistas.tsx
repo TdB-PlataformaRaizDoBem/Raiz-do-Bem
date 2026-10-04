@@ -17,14 +17,10 @@ export const Dentistas = () => {
   const { data: dentistas, loading, error, refetch } = useDentistas();
 
   return (
-    <AsyncEstado
-      loading={loading}
-      error={error}
-      vazio={!dentistas?.length}
-      mensagemVazio="Nenhum dentista cadastrado."
-    >
+    <AsyncEstado loading={loading} error={error}>
       <UserManagementPage<DentistaCompleto>
         title="Gerenciamento de Dentistas"
+        mensagemVazio="Nenhum dentista cadastrado."
         users={dentistas ?? []}
         getId={(u) => u.id}
         filterConfig={dentistaFilterConfig}
@@ -83,6 +79,39 @@ export const Dentistas = () => {
               </Button>
             </div>
           </UserCard>
+        )}
+        tableHeaders={["Nome", "CRO", "Especialidades", "Programa", "Ação"]}
+        renderTableRow={(u, selected, select) => (
+          <tr
+            key={u.id}
+            onClick={select}
+            className={`cursor-pointer transition-colors hover:bg-gray-50 ${selected ? "bg-lightgreen/5" : ""}`}
+          >
+            <td className="px-5 py-3 font-semibold text-black whitespace-nowrap">
+              {u.nomeCompleto}
+            </td>
+            <td className="px-5 py-3 text-gray-600 font-mono text-xs">
+              {u.croDentista}
+            </td>
+            <td className="px-5 py-3 text-gray-600">
+              {u.especialidades.length > 0
+                ? u.especialidades.join(", ")
+                : <span className="text-gray-300">—</span>}
+            </td>
+            <td className="px-5 py-3 text-gray-500 text-xs font-semibold uppercase tracking-wide whitespace-nowrap">
+              {u.programa ?? <span className="text-gray-300">—</span>}
+            </td>
+            <td className="px-5 py-3">
+              <Button
+                onClick={(e) => { e.stopPropagation(); select(); }}
+                variant={selected ? "primary" : "secondary"}
+                size="sm"
+                className="py-1.5 px-4 text-xs font-bold whitespace-nowrap"
+              >
+                Ver Perfil
+              </Button>
+            </td>
+          </tr>
         )}
         renderDetails={(user, close) => (
           <DentistaDetails

@@ -5,4 +5,5 @@ export interface ColaboradorAPI {
   dataNascimento: string;
   dataContratacao: string;
   email: string;
+  role?: string;
 }

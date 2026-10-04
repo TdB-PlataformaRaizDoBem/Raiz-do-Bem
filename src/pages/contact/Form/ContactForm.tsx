@@ -167,11 +167,14 @@ const ContactForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-white text-sm font-medium">Sexo: *</label>
+              <label htmlFor="sexo" className="text-white text-sm font-medium">Sexo: *</label>
               <select
+                id="sexo"
                 {...register("sexo", {
                   required: "Selecione o sexo",
                 })}
+                aria-invalid={!!errors.sexo}
+                aria-describedby={errors.sexo ? "sexo-error" : undefined}
                 className="p-3 rounded-md bg-white h-[52px] focus:ring-2 focus:ring-orange outline-none"
               >
                 <option value="">Selecione</option>
@@ -180,7 +183,7 @@ const ContactForm = () => {
                 <option value="outros">Outros</option>
               </select>
               {errors.sexo && (
-                <p className="text-white text-xs">{errors.sexo.message}</p>
+                <p id="sexo-error" role="alert" className="text-white text-xs">{errors.sexo.message}</p>
               )}
             </div>
 
@@ -188,16 +191,19 @@ const ContactForm = () => {
 
             {sexo === "feminino" && idade >= 18 && (
               <div className="col-span-full flex flex-col gap-3 animate-fadeIn bg-white/10 p-4 rounded-lg border border-white/20 mt-2">
-                <label className="text-white text-sm font-medium leading-relaxed">
+                <label htmlFor="violenciaDomestica" className="text-white text-sm font-medium leading-relaxed">
                   Nossos programas para mulheres adultas (cis e trans) são
                   focados em casos de vulnerabilidade por violência. Você se
                   enquadra neste perfil? *
                 </label>
 
                 <select
+                  id="violenciaDomestica"
                   {...register("violenciaDomestica", {
                     required: "Selecione uma opção",
                   })}
+                  aria-invalid={!!errors.violenciaDomestica}
+                  aria-describedby={errors.violenciaDomestica ? "violenciaDomestica-error" : undefined}
                   className="p-3 rounded-md bg-white h-[52px] text-black font-medium"
                 >
                   <option value="">Selecione</option>
@@ -206,7 +212,7 @@ const ContactForm = () => {
                 </select>
 
                 {errors.violenciaDomestica && (
-                  <p className="text-white text-xs">
+                  <p id="violenciaDomestica-error" role="alert" className="text-white text-xs">
                     {errors.violenciaDomestica.message}
                   </p>
                 )}
@@ -288,10 +294,13 @@ const ContactForm = () => {
         </div>
 
         {mensagemErro && (
-          <div className="mt-4 p-5 bg-white/5 border border-white/20 rounded-xl animate-fadeIn">
-            <h3 className="text-orange font-bold text-sm mb-2 uppercase tracking-wider">
+          <div role="alert" className="mt-4 p-5 bg-white/5 border border-white/20 rounded-xl animate-fadeIn">
+            <h3 className="text-white font-bold text-sm mb-2 uppercase tracking-wider">
               Canais de Apoio Recomendados
             </h3>
+            <p className="text-white text-sm font-semibold leading-relaxed mb-3">
+              {mensagemErro}
+            </p>
             <p className="text-white text-sm leading-relaxed mb-4">
               Seu perfil não se enquadra nos projetos atuais da Turma do Bem,
               mas você pode encontrar atendimento gratuito nestes locais:
@@ -339,7 +348,7 @@ const ContactForm = () => {
         <Button
           type="submit"
           disabled={!!mensagemErro || isSubmitting}
-          className={`bg-orange mt-2 ${
+          className={`bg-orange !text-white text-shadow-contrast mt-2 ${
             mensagemErro || isSubmitting
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-amber"

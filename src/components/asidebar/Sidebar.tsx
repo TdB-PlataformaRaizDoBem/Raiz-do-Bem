@@ -30,10 +30,11 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
   return (
     <>
       <aside
+        aria-label="Menu lateral"
         className={`
           fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-[1001] flex flex-col
           ${isCollapsed ? "w-24" : "w-[300px]"}
-          ${isMobileOpen ? "translate-x-0 w-full" : "-translate-x-full lg:translate-x-0"} 
+          ${isMobileOpen ? "translate-x-0 w-full" : "-translate-x-full lg:translate-x-0"}
         `}
       >
         <div className="flex flex-col h-full p-6 lg:p-8">
@@ -65,21 +66,24 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
                   setCollapsed(!isCollapsed);
                 }
               }}
-              className="p-1 hover:bg-gray-100 rounded shrink-0 z-[1002]"
+              aria-label={isCollapsed && !isMobileOpen ? "Expandir menu lateral" : "Recolher menu lateral"}
+              aria-expanded={!isCollapsed || isMobileOpen}
+              className="p-1 hover:bg-gray-100 rounded shrink-0 z-[1002] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50"
             >
               <img
                 src={Collapsed}
-                alt="Fechar"
-                className={`w-6 h-6 transition-transform 
-                  ${isCollapsed && !isMobileOpen ? "rotate-180" : ""} 
+                alt=""
+                aria-hidden="true"
+                className={`w-6 h-6 transition-transform
+                  ${isCollapsed && !isMobileOpen ? "rotate-180" : ""}
                   ${isMobileOpen ? "rotate-0" : ""}
                 `}
               />
             </button>
           </div>
 
-          {/* Navegação Principal Antiga com o estilo Laranja Ativo */}
-          <nav className="flex-1 overflow-y-auto flex flex-col">
+          {/* Navegação Principal */}
+          <nav aria-label="Navegação principal" className="flex-1 overflow-y-auto flex flex-col">
             <ul
               className={`${isMobileOpen ? "grid grid-cols-1 min-[404px]:grid-cols-2 gap-6 mt-10 pb-20" : "space-y-2 mt-8"}`}
             >
@@ -90,6 +94,7 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
                     onClick={() => setIsMobileOpen(false)}
                     className={({ isActive }) => `
                       flex items-center rounded-lg font-medium transition-all group
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50
                       ${isCollapsed && !isMobileOpen ? "justify-center p-3" : "gap-4 p-3"}
                       ${isMobileOpen ? "flex-col text-center justify-center bg-gray-50" : ""}
                       ${
@@ -104,6 +109,7 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
                         src={item.icon}
                         className="min-h-7 min-w-7 object-contain"
                         alt=""
+                        aria-hidden="true"
                       />
                       {item.hasBadge && totalUnread > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 bg-darkgreen text-white text-[9px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-0.5 leading-none">
@@ -122,13 +128,15 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
             </ul>
           </nav>
 
-          {/* Footer de Logout Antigo conectado à função logout do hook */}
-          <div className="mt-auto pt-4 border-t border-gray-100">
+          {/* Footer — Acessibilidade + Logout */}
+          <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col gap-1">
+
             <button
               onClick={logout}
-              className={`flex items-center ${isCollapsed && !isMobileOpen ? "justify-center" : "gap-4"} w-full p-3 text-black hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors font-medium`}
+              aria-label="Sair da conta"
+              className={`flex items-center ${isCollapsed && !isMobileOpen ? "justify-center" : "gap-4"} w-full p-3 text-black hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50`}
             >
-              <img src={Logout} className="min-h-7 min-w-7 shrink-0" alt="" />
+              <img src={Logout} className="min-h-7 min-w-7 shrink-0" alt="" aria-hidden="true" />
               {(!isCollapsed || isMobileOpen) && <span>Sair da Conta</span>}
             </button>
           </div>

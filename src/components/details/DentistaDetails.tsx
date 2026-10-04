@@ -60,7 +60,10 @@ export const DentistaDetails = ({
             <Section
               variant="muted"
               items={[
-                { label: "Especialidade", value: data.especialidades },
+                {
+                  label: "Especialidade",
+                  value: data.especialidades.length ? data.especialidades.join(", ") : "Não informado",
+                },
                 { label: "CRO", value: data.croDentista },
                 { label: "CPF", value: formatCPF(data.cpf) },
                 { label: "Sexo", value: data.sexoLabel },

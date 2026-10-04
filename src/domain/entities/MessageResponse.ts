@@ -5,6 +5,5 @@ export interface MessageResponse {
   text: string;
   direction: "entrada" | "saida";
   date_time: string;
-  url_midia?: string | null;
   id_colaborador?: number | null;
 }

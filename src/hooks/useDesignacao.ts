@@ -1,4 +1,5 @@
-import { useAsync } from "./useAsync";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getBeneficiariosCompletos } from "../services/Beneficiarioservice";
 import { getAtendimentos } from "../services/AtendimentoService";
 import { normalizeStr } from "../utils/formatUtils";
@@ -7,6 +8,8 @@ import {
   mapAtendimentos,
   type AtendimentoViewModel,
 } from "../domain/mappers/AtendimentoMapper";
+import type { AtendimentoAPI } from "../domain/entities/AtendimentoAPI";
+import { queryKeys } from "./queryKeys";
 
 export type DesignacaoTab =
   | "PENDENTE"
@@ -23,37 +26,39 @@ export type AtendimentoTab = Exclude<DesignacaoTab, "PENDENTE">;
  * aparece em nenhum registro de Atendimento (campo `beneficiario` do
  * AtendimentoDTO — que vem como string, justamente o nome completo).
  *
- * As buscas são feitas em paralelo e o cruzamento é feito no front,
- * comparando nomes normalizados (trim + lower).
+ * Usa as listas de beneficiários e de atendimentos que já estão em cache, e o cruzamento
+ * é feito no front comparando nomes normalizados (trim + lower). Se os atendimentos não
+ * puderem ser carregados, todos os beneficiários contam como pendentes.
  */
-async function fetchBeneficiariosPendentes(): Promise<BeneficiarioViewModel[]> {
-  const [beneficiarios, atendimentosApi] = await Promise.all([
-    getBeneficiariosCompletos(),
-    getAtendimentos().catch(() => []),
-  ]);
-
-  const nomesEmAtendimento = new Set(
-    atendimentosApi
-      .map((a) => a.beneficiario)
-      .filter((nome): nome is string => !!nome && nome !== "N/A")
-      .map(normalizeStr),
-  );
-
-  return beneficiarios.filter(
-    (b) => !nomesEmAtendimento.has(normalizeStr(b.nomeCompleto)),
-  );
-}
-
 export const useDesignacaoPendentes = () => {
-  const { data, loading, error, refetch } = useAsync(
-    fetchBeneficiariosPendentes,
-    [],
-  );
+  const beneficiarios = useQuery({ queryKey: queryKeys.beneficiarios, queryFn: getBeneficiariosCompletos });
+  const atendimentos = useQuery({ queryKey: queryKeys.atendimentos, queryFn: getAtendimentos });
+
+  const pendentes = useMemo<BeneficiarioViewModel[]>(() => {
+    const nomesEmAtendimento = new Set(
+      (atendimentos.data ?? [])
+        .map((a) => a.beneficiario)
+        .filter((nome): nome is string => !!nome && nome !== "N/A")
+        .map(normalizeStr),
+    );
+    return (beneficiarios.data ?? []).filter(
+      (b) => !nomesEmAtendimento.has(normalizeStr(b.nomeCompleto)),
+    );
+  }, [beneficiarios.data, atendimentos.data]);
+
+  const loading =
+    (beneficiarios.isPending && beneficiarios.fetchStatus !== "idle") ||
+    (atendimentos.isPending && atendimentos.fetchStatus !== "idle");
+
   return {
-    pendentes: data ?? ([] as BeneficiarioViewModel[]),
+    pendentes,
     loading,
-    error,
-    refetch,
+    error: beneficiarios.isError && beneficiarios.data === undefined ? beneficiarios.error.message : null,
+    refetch: () =>
+      Promise.all([
+        beneficiarios.refetch({ cancelRefetch: false }),
+        atendimentos.refetch({ cancelRefetch: false }),
+      ]),
   };
 };
 
@@ -63,11 +68,10 @@ export const useDesignacaoPendentes = () => {
  * - EM_ATENDIMENTO: dataFim === "NÃO FINALIZADO" (encerrado === false)
  * - CONCLUIDO: dataFim diferente de "NÃO FINALIZADO" e não-nulo
  * - TODOS: sem filtro
+ *
+ * As três abas leem a mesma lista em cache: trocar de aba não faz nova requisição.
  */
-async function fetchAtendimentos(
-  tab: AtendimentoTab,
-): Promise<AtendimentoViewModel[]> {
-  const api = await getAtendimentos();
+function filtrarPorAba(api: AtendimentoAPI[], tab: AtendimentoTab): AtendimentoViewModel[] {
   const lista = mapAtendimentos(api);
 
   switch (tab) {
@@ -82,14 +86,15 @@ async function fetchAtendimentos(
 }
 
 export const useAtendimentos = (tab: AtendimentoTab) => {
-  const { data, loading, error, refetch } = useAsync(
-    () => fetchAtendimentos(tab),
-    [tab],
-  );
+  const { data, isPending, fetchStatus, isError, error, refetch } = useQuery({
+    queryKey: queryKeys.atendimentos,
+    queryFn: getAtendimentos,
+    select: (api) => filtrarPorAba(api, tab),
+  });
   return {
     atendimentos: data ?? ([] as AtendimentoViewModel[]),
-    loading,
-    error,
-    refetch,
+    loading: isPending && fetchStatus !== "idle",
+    error: isError && data === undefined ? error.message : null,
+    refetch: () => refetch({ cancelRefetch: false }),
   };
 };

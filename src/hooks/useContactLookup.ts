@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getBeneficiariosCompletos } from "../services/Beneficiarioservice";
 import { getDentistasCompletos } from "../services/DentistaService";
+import { queryKeys } from "./queryKeys";
 
 export interface ContactInfo {
   nome: string;
@@ -14,52 +16,30 @@ function normalizeDigits(phone: string): string {
 }
 
 /**
- * Dado um número de telefone do chat (+5511...), busca em paralelo nas
- * listas de Beneficiários e Dentistas e retorna nome + perfil se encontrar.
+ * Dado um número de telefone do chat (+5511...), procura nas listas de Beneficiários
+ * e Dentistas (já em cache quando o usuário passou por essas telas) e retorna
+ * nome + perfil se encontrar.
  */
 export function useContactLookup(telefone: string): {
   contact: ContactInfo | null;
   loadingContact: boolean;
 } {
-  const [contact, setContact] = useState<ContactInfo | null>(null);
-  const [loadingContact, setLoadingContact] = useState(true);
+  const enabled = !!telefone;
+  const beneficiarios = useQuery({ queryKey: queryKeys.beneficiarios, queryFn: getBeneficiariosCompletos, enabled });
+  const dentistas = useQuery({ queryKey: queryKeys.dentistas, queryFn: getDentistasCompletos, enabled });
 
-  useEffect(() => {
-    if (!telefone) {
-      setLoadingContact(false);
-      return;
-    }
-
-    let cancelled = false;
+  const contact = useMemo<ContactInfo | null>(() => {
+    if (!enabled || !beneficiarios.data || !dentistas.data) return null;
     const needle = normalizeDigits(telefone);
 
-    async function lookup() {
-      try {
-        const [beneficiarios, dentistas] = await Promise.all([
-          getBeneficiariosCompletos(),
-          getDentistasCompletos(),
-        ]);
-        if (cancelled) return;
+    const b = beneficiarios.data.find((x) => normalizeDigits(x.telefone) === needle);
+    if (b) return { nome: b.nomeCompleto, tipo: "beneficiario" };
 
-        const b = beneficiarios.find(
-          (x) => normalizeDigits(x.telefone) === needle
-        );
-        if (b) { setContact({ nome: b.nomeCompleto, tipo: "beneficiario" }); return; }
+    const d = dentistas.data.find((x) => normalizeDigits(x.telefone) === needle);
+    return d ? { nome: d.nomeCompleto, tipo: "dentista" } : null;
+  }, [enabled, telefone, beneficiarios.data, dentistas.data]);
 
-        const d = dentistas.find(
-          (x) => normalizeDigits(x.telefone) === needle
-        );
-        setContact(d ? { nome: d.nomeCompleto, tipo: "dentista" } : null);
-      } catch {
-        if (!cancelled) setContact(null);
-      } finally {
-        if (!cancelled) setLoadingContact(false);
-      }
-    }
+  const carregando = (q: { isPending: boolean; fetchStatus: string }) => q.isPending && q.fetchStatus !== "idle";
 
-    lookup();
-    return () => { cancelled = true; };
-  }, [telefone]);
-
-  return { contact, loadingContact };
+  return { contact, loadingContact: enabled && (carregando(beneficiarios) || carregando(dentistas)) };
 }

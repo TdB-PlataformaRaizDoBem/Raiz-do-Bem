@@ -9,6 +9,7 @@ export interface AuthUser {
 
 export interface LoginResponseDTO {
   token: string;
+  refreshToken: string;
   tipo: string;
 }
 

@@ -60,6 +60,7 @@ A ONG Turma do Bem conecta dentistas a jovens em situação de vulnerabilidade s
 | **Vite** | 7.x | Bundler e servidor de desenvolvimento ultrarrápido |
 | **Tailwind CSS** | 4.x | Estilização utilitária e responsividade |
 | **React Router DOM** | 7.x | Gerenciamento de rotas e navegação entre páginas |
+| **TanStack Query** | 5.x | Cache de requisições: dados compartilhados entre telas, sem buscas repetidas |
 | **React Hook Form** | 7.x | Gerenciamento e validação de formulários |
 
 ---
@@ -259,6 +260,19 @@ Abra seu navegador e acesse: **[http://localhost:5173](http://localhost:5173)**
 | `npm run build` | Gera a versão otimizada para produção na pasta `dist/` |
 | `npm run preview` | Visualiza o build de produção localmente |
 | `npm run lint` | Analisa o código em busca de erros e más práticas |
+| `npm test` | Roda os testes unitários (Jest + Testing Library) |
+| `npm run test:watch` | Reexecuta os testes ao salvar um arquivo |
+| `npm run test:coverage` | Roda os testes e gera o relatório de cobertura em `coverage/` (falha abaixo de 92%) |
+
+---
+
+### 🧪 Testes
+
+Os testes ficam todos em `src/__tests__/`, organizados por camada (`services`, `hooks`, `context`, `domain`, `utils`, `routes`, `components` e `pages`). Os helpers (fábricas de dados da API, `fetch` e GSAP simulados) ficam em `src/test/`.
+
+- **Stack:** Jest 30, jsdom, React Testing Library e user-event.
+- **Cobertura mínima:** 92% (statements, branches, funções e linhas), validada por `npm run test:coverage`.
+- **Sem back-end:** nenhum teste chama a API real; as respostas são simuladas, então rodam offline e em poucos segundos.
 
 ---
 
