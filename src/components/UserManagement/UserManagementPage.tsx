@@ -7,6 +7,8 @@ import { useScrollLock } from "../../hooks/useScrollLock";
 import { Modal } from "../ui/Modal";
 import { useSearchParams } from "react-router-dom";
 import { useSmartFilter } from "../../hooks/useSmartFilter";
+import { usePagination } from "../../hooks/usePagination";
+import { Pagination } from "../ui/Pagination";
 import type { PageFilterConfig, FilterGroup } from "./FilterConfig";
 
 type ViewMode = "cards" | "table";
@@ -350,6 +352,33 @@ export function UserManagementPage<T>({
     hasActiveFilters,
   } = useSmartFilter(users, config);
 
+  // Volta para a página 1 quando a busca ou algum filtro muda.
+  const paginationResetKey = JSON.stringify([searchText, activeFilters]);
+  const {
+    page,
+    setPage,
+    totalItems,
+    totalPages,
+    pageItems,
+    from,
+    to,
+  } = usePagination(filteredItems, undefined, paginationResetKey);
+
+  const listTopRef = React.useRef<HTMLDivElement>(null);
+  const handlePageChange = React.useCallback(
+    (next: number) => {
+      setPage(next);
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      listTopRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    },
+    [setPage],
+  );
+
   const selectedId = searchParams.get("id");
   const selectedUser = React.useMemo(() => {
     if (!selectedId) return null;
@@ -478,9 +507,11 @@ export function UserManagementPage<T>({
         />
       )}
 
+      <div ref={listTopRef} className="scroll-mt-24" />
+
       {temConteudo && viewMode === "cards" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 w-full">
-          {filteredItems.map((user) => {
+          {pageItems.map((user) => {
             const id = getId(user);
             const selected = !!(selectedUser && getId(selectedUser) === id);
             return (
@@ -513,7 +544,7 @@ export function UserManagementPage<T>({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filteredItems.map((user) => {
+              {pageItems.map((user) => {
                 const id = getId(user);
                 const selected = !!(selectedUser && getId(selectedUser) === id);
                 const select = () => handleSelect(user);
@@ -526,6 +557,17 @@ export function UserManagementPage<T>({
             </tbody>
           </table>
         </div>
+      )}
+
+      {temConteudo && (
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          from={from}
+          to={to}
+          onPageChange={handlePageChange}
+        />
       )}
 
       {selectedUser && createPortal(
