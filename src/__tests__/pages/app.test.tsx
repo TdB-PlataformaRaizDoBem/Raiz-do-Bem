@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
+import { queryClient } from '../../lib/queryClient';
 import { tokenStore } from '../../services/tokenStore';
 import { beneficiarioApi, dentistaApi, pedidoApi } from '../../test/factories';
 import { resetGsapMock } from '../../test/gsapMock';
@@ -43,6 +44,7 @@ beforeEach(() => {
   Object.assign(document, { fonts: { ready: Promise.resolve() } });
   window.sessionStorage.clear();
   tokenStore.clear();
+  queryClient.clear(); // o App usa o cache único do módulo: limpa entre os testes
   localStorage.clear();
   fetchMock = installFetch();
   backFalso();
@@ -217,6 +219,43 @@ describe('App — autenticação e permissões', () => {
 
     await screen.findByText('Resumo de Impacto');
     expect(window.location.pathname).toBe('/coord/dashboard');
+  });
+
+  it('voltar a uma tela já visitada usa o cache: o dashboard não refaz as requisições', async () => {
+    tokenStore.set(tokenAdmin(), 'refresh');
+    irPara('/admin/dashboard');
+    render(<App />);
+    await screen.findByText('Resumo de Impacto');
+    await waitFor(() => expect(fetchMock.mock.calls.some(([u]) => u === '/beneficiario')).toBe(true));
+    const antes = fetchMock.mock.calls.filter(([u]) => u === '/beneficiario' || u === '/pedido-ajuda' || u === '/dentista').length;
+
+    await userEvent.click(within(menuLateral()).getByRole('link', { name: /Dentistas/ }));
+    await screen.findByText('Dr. João');
+    await userEvent.click(within(menuLateral()).getByRole('link', { name: /Painel Geral/ }));
+    await screen.findByText('Resumo de Impacto');
+
+    const depois = fetchMock.mock.calls.filter(([u]) => u === '/beneficiario' || u === '/pedido-ajuda' || u === '/dentista').length;
+    expect(depois).toBe(antes); // /dentista já estava em cache do dashboard; nada foi buscado de novo
+  });
+
+  it('outro usuário que entra depois do logout não vê dados do anterior (cache limpo)', async () => {
+    backFalso((url, init) =>
+      url === '/auth/tokenAcesso' && init?.method === 'POST'
+        ? ok({ token: tokenAdmin(), refreshToken: 'r', tipo: 'BearerToken' })
+        : undefined,
+    );
+    irPara('/auth/login');
+    render(<App />);
+    await userEvent.type(await screen.findByLabelText('E-mail'), 'admin@x.com');
+    await userEvent.type(screen.getByLabelText('Senha'), 'Senha@123');
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar no Sistema' }));
+    await screen.findByText('Resumo de Impacto');
+    await waitFor(() => expect(queryClient.getQueryCache().getAll().length).toBeGreaterThan(0));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Sair da conta' }));
+
+    await screen.findByRole('heading', { name: 'Login Administrativo' });
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
   });
 
   it('navegar pelo menu lateral muda de página (Dentistas)', async () => {

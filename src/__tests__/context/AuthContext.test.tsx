@@ -1,4 +1,7 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
+import type { QueryClient } from '@tanstack/react-query';
+import { render } from '../../test/rtl';
+import { createTestQueryClient } from '../../test/queryClient';
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
@@ -29,13 +32,14 @@ function Probe() {
   );
 }
 
-function renderProvider() {
+function renderProvider(queryClient?: QueryClient) {
   return render(
     <MemoryRouter initialEntries={['/inicio']}>
       <AuthProvider>
         <Probe />
       </AuthProvider>
     </MemoryRouter>,
+    { queryClient },
   );
 }
 
@@ -198,6 +202,46 @@ describe('AuthProvider', () => {
       expect(screen.getByTestId('path')).toHaveTextContent('/auth/login');
       expect(tokenStore.get()).toBeNull();
       expect(tokenStore.getRefresh()).toBeNull();
+    });
+
+    it('logout limpa o cache de requisições (dados de um usuário não vazam para o próximo)', async () => {
+      const cliente = createTestQueryClient();
+      cliente.setQueryData(['beneficiarios'], [{ id: 1 }]);
+      tokenStore.set(makeJwt(), 'refresh');
+      renderProvider(cliente);
+
+      await userEvent.click(screen.getByText('sair'));
+
+      expect(cliente.getQueryData(['beneficiarios'])).toBeUndefined();
+      expect(cliente.getQueryCache().getAll()).toHaveLength(0);
+    });
+
+    it('sessão expirada (401 sem renovação) também limpa o cache', async () => {
+      const cliente = createTestQueryClient();
+      cliente.setQueryData(['dentistas'], [{ id: 1 }]);
+      tokenStore.set(makeJwt());
+      fetchMock.mockResolvedValue(fakeResponse({ status: 401 }));
+      renderProvider(cliente);
+
+      await act(async () => {
+        await safeFetch('/dentista').catch(() => {});
+      });
+
+      expect(cliente.getQueryData(['dentistas'])).toBeUndefined();
+    });
+
+    it('um novo login começa com o cache vazio', async () => {
+      const cliente = createTestQueryClient();
+      cliente.setQueryData(['pedidos'], [{ id: 9 }]);
+      fetchMock.mockResolvedValue(
+        fakeResponse({ status: 200, body: { token: makeJwt({ groups: ['ADMIN'] }), refreshToken: 'r', tipo: 'BearerToken' } }),
+      );
+      renderProvider(cliente);
+
+      await userEvent.click(screen.getByText('entrar'));
+
+      await waitFor(() => expect(screen.getByTestId('auth')).toHaveTextContent('true'));
+      expect(cliente.getQueryData(['pedidos'])).toBeUndefined();
     });
 
     it('401 sem renovação possível em qualquer requisição desloga o usuário', async () => {

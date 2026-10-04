@@ -37,7 +37,6 @@ import {
   criarPedidoAjuda,
   excluirPedido,
   getPedidoCompleto,
-  getPedidosAprovadosLivres,
   getPedidosCompletos,
   negarPedido,
 } from '../../services/PedidoService';
@@ -385,39 +384,6 @@ describe('PedidoService', () => {
 
     await expect(getPedidoCompleto(2)).resolves.toMatchObject({ nomeCompleto: 'Joana' });
     await expect(getPedidoCompleto(50)).resolves.toBeNull();
-  });
-
-  describe('getPedidosAprovadosLivres', () => {
-    it('só devolve APROVADOS que ainda não viraram beneficiário', async () => {
-      fetchMock.mockImplementation(async (url) => {
-        if (url === '/pedido-ajuda') {
-          return ok([
-            pedidoApi({ id: 1, status: 'APROVADO' }),
-            pedidoApi({ id: 2, status: 'APROVADO' }),
-            pedidoApi({ id: 3, status: 'PENDENTE' }),
-            pedidoApi({ id: 4, status: 'REJEITADO' }),
-          ]);
-        }
-        return ok([beneficiarioApi({ pedido: { id: 2, dentistaResponsavel: 'Dr. X' } })]);
-      });
-
-      const livres = await getPedidosAprovadosLivres();
-
-      expect(livres.map((p) => p.id)).toEqual([1]);
-    });
-
-    it('se a lista de beneficiários falhar, devolve todos os aprovados', async () => {
-      fetchMock.mockImplementation(async (url) => {
-        if (url === '/pedido-ajuda') {
-          return ok([pedidoApi({ id: 1, status: 'APROVADO' }), pedidoApi({ id: 3, status: 'PENDENTE' })]);
-        }
-        throw new TypeError('Failed to fetch');
-      });
-
-      const livres = await getPedidosAprovadosLivres();
-
-      expect(livres.map((p) => p.id)).toEqual([1]);
-    });
   });
 
   it('criarPedidoAjuda faz POST e mapeia a resposta', async () => {

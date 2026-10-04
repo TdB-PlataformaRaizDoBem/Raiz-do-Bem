@@ -40,6 +40,16 @@ function handleUnauthorized(): void {
   }
 }
 
+let _onMutation: ((url: string) => void) | null = null;
+
+/**
+ * Avisa quando uma escrita (POST/PUT/PATCH/DELETE) termina com sucesso. O cache de requisições
+ * usa isso para se invalidar sozinho (ver lib/queryClient).
+ */
+export function registerMutationListener(listener: (url: string) => void): void {
+  _onMutation = listener;
+}
+
 function buildHeaders(extra?: HeadersInit): HeadersInit {
   const token = tokenStore.get();
   const base: Record<string, string> = {
@@ -113,6 +123,9 @@ export async function safeFetch(
       handleUnauthorized();
       throw new Error(STATUS_MESSAGES[401]!);
     }
+
+    const metodo = (init?.method ?? 'GET').toUpperCase();
+    if (res.ok && metodo !== 'GET' && metodo !== 'HEAD') _onMutation?.(url);
 
     return res;
   } catch (err) {
