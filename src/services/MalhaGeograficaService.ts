@@ -265,30 +265,49 @@ async function tentarIbge(sinal?: AbortSignal): Promise<MalhaCarregada | null> {
  *
  * `null` só quando não há geometria nenhuma a desenhar.
  */
-export async function carregarMalha(
-  sinal?: AbortSignal,
-): Promise<MalhaCarregada | null> {
-  if (cache) return cache;
-  if (emVoo) return emVoo;
+export function carregarMalha(sinal?: AbortSignal): Promise<MalhaCarregada | null> {
+  if (sinal?.aborted) return Promise.reject(abortado());
+  if (cache) return Promise.resolve(cache);
 
-  emVoo = (async () => {
-    const daApi = await tentarApi(sinal);
-
-    if (!daApi || daApi.totalOficiais === 0) {
-      const doIbge = await tentarIbge(sinal);
-      if (doIbge) {
-        cache = mesclar(daApi, doIbge);
-        return cache;
-      }
-    }
-
-    cache = daApi;
-    return cache;
-  })().finally(() => {
+  // O download é COMPARTILHADO e não pertence a nenhum consumidor — por isso
+  // roda sem o sinal de quem chamou. Antes ele herdava o sinal do primeiro
+  // chamador: no StrictMode o efeito monta, desmonta (abortando) e remonta no
+  // mesmo tick, a segunda montagem recebia a MESMA promessa já abortada e o
+  // mapa ficava sem contorno até o cenário mudar. A malha é baixada uma vez por
+  // sessão; terminá-la nunca é desperdício.
+  emVoo ??= carregarSemDono().finally(() => {
     emVoo = null;
   });
 
-  return emVoo;
+  return sinal ? desistivel(emVoo, sinal) : emVoo;
+}
+
+async function carregarSemDono(): Promise<MalhaCarregada | null> {
+  const daApi = await tentarApi();
+
+  if (!daApi || daApi.totalOficiais === 0) {
+    const doIbge = await tentarIbge();
+    if (doIbge) {
+      cache = mesclar(daApi, doIbge);
+      return cache;
+    }
+  }
+
+  cache = daApi;
+  return cache;
+}
+
+const abortado = () => new DOMException("Carga da malha abandonada", "AbortError");
+
+/** O sinal cancela só a ESPERA deste consumidor, não o download comum. */
+function desistivel<T>(promessa: Promise<T>, sinal: AbortSignal): Promise<T> {
+  return new Promise<T>((resolver, rejeitar) => {
+    const desistir = () => rejeitar(abortado());
+    sinal.addEventListener("abort", desistir, { once: true });
+    promessa.then(resolver, rejeitar).finally(() =>
+      sinal.removeEventListener("abort", desistir),
+    );
+  });
 }
 
 // ---------------------------------------------------------------------------

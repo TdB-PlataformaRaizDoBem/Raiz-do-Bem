@@ -6,13 +6,17 @@
  */
 
 import type {
+  AnaliseColecaoAPI,
+  AnaliseUnidadeAPI,
   ColecaoVulnerabilidadeAPI,
   FaixaVulnerabilidade,
   FeatureAPI,
   Geometry,
+  IndicadorComparavel,
   NivelGeografico,
   VulnerabilidadePropertiesAPI,
 } from "../entities/VulnerabilidadeGeoAPI";
+import { formatMoeda, formatPercent } from "../../utils/numberUtils";
 import { avaliarProcedencia, type Procedencia } from "../procedencia";
 
 /** Um fator que compõe o score, já normalizado para exibição. */
@@ -51,6 +55,66 @@ export interface SimulacaoViewModel {
   simulado: boolean;
 }
 
+export interface ComparativoViewModel {
+  chave: IndicadorComparavel;
+  label: string;
+  /** Formata o valor bruto do indicador para exibição. */
+  formatar: (valor: number) => string;
+  valor: number;
+  referencia: number;
+  /** Desvio relativo à média nacional, em % (positivo = acima). */
+  desvioPercent: number | null;
+  desfavoravel: boolean;
+}
+
+export interface SensibilidadeViewModel {
+  /** Queda do índice de prioridade (0–1) com +100 voluntários. */
+  reducaoPor100Voluntarios: number;
+  voluntariosParaFaixaInferior: number | null;
+  faixaInferior: FaixaVulnerabilidade | null;
+}
+
+export interface AnaliseViewModel {
+  posicaoPrioridade: number;
+  posicaoVulnerabilidade: number;
+  totalUnidades: number;
+  percentilVulnerabilidade: number;
+  comparativo: ComparativoViewModel[];
+  sensibilidade: SensibilidadeViewModel | null;
+}
+
+export interface AnaliseColecaoViewModel {
+  universo: number;
+  referencia: {
+    populacao: number;
+    scoreMedio: number;
+    prioridadeMedia: number;
+  };
+  capacidade: {
+    demandaPublicoAlvo: number;
+    capacidadeSimulada: number;
+    demandaResidual: number;
+    coberturaPercent: number;
+    voluntariosAplicados: number;
+    voluntariosFaltantes: number;
+    unidadesSimuladas: number;
+  } | null;
+  parametros: {
+    pesos: Record<string, number>;
+    limiaresFaixa: Record<FaixaVulnerabilidade, number>;
+    capacidadeAnualPorDentista: number;
+    fracaoPublicoAlvo: number;
+    densidadeReferenciaDentistas: number;
+    periodo: string;
+    modelo: {
+      disponivel: boolean;
+      tipo: string | null;
+      faixaPopulacaoTreino: [number, number];
+      unidadesExtrapoladas: number;
+    };
+  };
+}
+
 export interface RegiaoViewModel {
   codigoIbge: string;
   nome: string;
@@ -78,6 +142,8 @@ export interface RegiaoViewModel {
 
   fatores: FatorViewModel[];
   indicadores: IndicadoresViewModel | null;
+  /** Null num back-end sem o campo: os blocos que dependem dele não aparecem. */
+  analise: AnaliseViewModel | null;
 
   fonteGeometria: string;
   fonteIndicadores: string;
@@ -104,6 +170,10 @@ export interface ColecaoViewModel {
    * no treino do modelo. Nenhuma delas deve ser lida como projeção confiável.
    */
   totalExtrapoladas: number;
+  /** Referência nacional, totais e parâmetros. Null num back-end antigo. */
+  analise: AnaliseColecaoViewModel | null;
+  metodoScore: string | null;
+  geradoEm: string | null;
 }
 
 export const ROTULO_FAIXA: Record<FaixaVulnerabilidade, string> = {
@@ -133,6 +203,92 @@ const METADADOS_FATOR = {
     descricao: "População sem acesso regular a serviço de saúde",
   },
 } as const;
+
+const decimal = (casas: number) => (v: number) =>
+  v.toFixed(casas).replace(".", ",");
+
+/** Rótulo e formato de cada indicador comparável. Ordem = ordem de exibição. */
+export const METADADOS_INDICADOR: Record<
+  IndicadorComparavel,
+  { label: string; formatar: (v: number) => string }
+> = {
+  taxa_pobreza: { label: "Pobreza", formatar: (v) => formatPercent(v) },
+  idh: { label: "IDH", formatar: decimal(3) },
+  acesso_saude_pct: { label: "Acesso à saúde", formatar: (v) => formatPercent(v) },
+  dentistas_por_1000: { label: "Dentistas / mil hab.", formatar: decimal(2) },
+  renda_media: { label: "Renda per capita", formatar: (v) => formatMoeda(v) },
+};
+
+function montarAnalise(api: AnaliseUnidadeAPI | null | undefined): AnaliseViewModel | null {
+  if (!api) return null;
+  const sens = api.sensibilidade;
+  return {
+    posicaoPrioridade: api.posicao_prioridade,
+    posicaoVulnerabilidade: api.posicao_vulnerabilidade,
+    totalUnidades: api.total_unidades,
+    percentilVulnerabilidade: api.percentil_vulnerabilidade,
+    comparativo: api.comparativo
+      // Um indicador novo no back-end não pode derrubar a tela antiga.
+      .filter((c) => c.indicador in METADADOS_INDICADOR)
+      .map((c) => ({
+        chave: c.indicador,
+        label: METADADOS_INDICADOR[c.indicador].label,
+        formatar: METADADOS_INDICADOR[c.indicador].formatar,
+        valor: c.valor,
+        referencia: c.referencia_nacional,
+        desvioPercent: c.desvio_relativo_pct ?? null,
+        desfavoravel: c.desfavoravel,
+      })),
+    sensibilidade: sens
+      ? {
+          reducaoPor100Voluntarios: sens.reducao_prioridade_por_100_voluntarios,
+          voluntariosParaFaixaInferior: sens.voluntarios_para_faixa_inferior ?? null,
+          faixaInferior: sens.faixa_inferior ?? null,
+        }
+      : null,
+  };
+}
+
+function montarAnaliseColecao(
+  api: AnaliseColecaoAPI | null | undefined,
+): AnaliseColecaoViewModel | null {
+  if (!api) return null;
+  const p = api.parametros;
+  const c = api.capacidade;
+  return {
+    universo: api.universo,
+    referencia: {
+      populacao: api.referencia_nacional.populacao,
+      scoreMedio: api.referencia_nacional.score_vulnerabilidade_medio,
+      prioridadeMedia: api.referencia_nacional.indice_prioridade_medio,
+    },
+    capacidade: c
+      ? {
+          demandaPublicoAlvo: c.demanda_publico_alvo,
+          capacidadeSimulada: c.capacidade_simulada,
+          demandaResidual: c.demanda_residual,
+          coberturaPercent: c.cobertura_percent,
+          voluntariosAplicados: c.voluntarios_aplicados,
+          voluntariosFaltantes: c.voluntarios_faltantes,
+          unidadesSimuladas: c.unidades_simuladas,
+        }
+      : null,
+    parametros: {
+      pesos: p.pesos_score,
+      limiaresFaixa: p.limiares_faixa,
+      capacidadeAnualPorDentista: p.capacidade_anual_por_dentista,
+      fracaoPublicoAlvo: p.fracao_publico_alvo,
+      densidadeReferenciaDentistas: p.densidade_referencia_dentistas,
+      periodo: p.periodo,
+      modelo: {
+        disponivel: p.modelo.disponivel,
+        tipo: p.modelo.tipo ?? null,
+        faixaPopulacaoTreino: p.modelo.faixa_populacao_treino,
+        unidadesExtrapoladas: p.modelo.unidades_extrapoladas,
+      },
+    },
+  };
+}
 
 function montarFatores(props: VulnerabilidadePropertiesAPI): FatorViewModel[] {
   const comp = props.componentes;
@@ -210,6 +366,7 @@ export function toRegiaoViewModel(feature: FeatureAPI): RegiaoViewModel {
           deficitDentistas: Math.max(0, 2 - ind.dentistas_por_1000),
         }
       : null,
+    analise: montarAnalise(p.analise),
 
     fonteGeometria: p.fonte_geometria ?? "desconhecida",
     fonteIndicadores: p.fonte_indicadores ?? "desconhecida",
@@ -234,6 +391,9 @@ export function toColecaoViewModel(
     // está desenhado na tela, não o que a API respondeu antes do join.
     procedencia: avaliarProcedencia(api.features),
     totalExtrapoladas: regioes.filter((r) => r.extrapolado).length,
+    analise: montarAnaliseColecao(api.analise),
+    metodoScore: api.metadados?.metodo_score ?? null,
+    geradoEm: api.metadados?.gerado_em ?? null,
   };
 }
 

@@ -96,8 +96,79 @@ export interface VulnerabilidadePropertiesAPI {
    */
   indice_prioridade: number;
 
+  /** Contexto nacional e sensibilidade. Ausente com incluir_indicadores=false
+   *  ou num back-end anterior a este campo — a UI degrada sem ele. */
+  analise?: AnaliseUnidadeAPI | null;
+
   fonte_geometria?: string;
   fonte_indicadores?: string;
+}
+
+export type IndicadorComparavel =
+  | "taxa_pobreza"
+  | "idh"
+  | "acesso_saude_pct"
+  | "dentistas_por_1000"
+  | "renda_media";
+
+export interface ComparativoIndicadorAPI {
+  indicador: IndicadorComparavel;
+  valor: number;
+  /** Média das 27 UFs ponderada por população. */
+  referencia_nacional: number;
+  desvio_relativo_pct?: number | null;
+  /** True quando o desvio vai na direção que agrava a vulnerabilidade. */
+  desfavoravel: boolean;
+}
+
+export interface SensibilidadeAPI {
+  /** Queda do índice de prioridade (0–1) com +100 voluntários. */
+  reducao_prioridade_por_100_voluntarios: number;
+  /** Voluntários ADICIONAIS ao cenário para descer uma faixa. */
+  voluntarios_para_faixa_inferior?: number | null;
+  faixa_inferior?: FaixaVulnerabilidade | null;
+}
+
+export interface AnaliseUnidadeAPI {
+  posicao_prioridade: number;
+  posicao_vulnerabilidade: number;
+  total_unidades: number;
+  percentil_vulnerabilidade: number;
+  comparativo: ComparativoIndicadorAPI[];
+  sensibilidade?: SensibilidadeAPI | null;
+}
+
+export interface AnaliseColecaoAPI {
+  universo: number;
+  referencia_nacional: {
+    populacao: number;
+    score_vulnerabilidade_medio: number;
+    indice_prioridade_medio: number;
+    indicadores: Record<IndicadorComparavel, number>;
+  };
+  capacidade?: {
+    demanda_publico_alvo: number;
+    capacidade_simulada: number;
+    demanda_residual: number;
+    cobertura_percent: number;
+    voluntarios_aplicados: number;
+    voluntarios_faltantes: number;
+    unidades_simuladas: number;
+  } | null;
+  parametros: {
+    pesos_score: Record<string, number>;
+    limiares_faixa: Record<FaixaVulnerabilidade, number>;
+    capacidade_anual_por_dentista: number;
+    fracao_publico_alvo: number;
+    densidade_referencia_dentistas: number;
+    periodo: string;
+    modelo: {
+      disponivel: boolean;
+      tipo?: string | null;
+      faixa_populacao_treino: [number, number];
+      unidades_extrapoladas: number;
+    };
+  };
 }
 
 export interface SimulacaoAPI {
@@ -154,6 +225,8 @@ export interface ColecaoVulnerabilidadeAPI {
   bbox?: [number, number, number, number] | null;
   paginacao?: PaginacaoAPI | null;
   metadados?: MetadadosAPI | null;
+  /** Foreign member: referência nacional, totais e parâmetros do cálculo. */
+  analise?: AnaliseColecaoAPI | null;
 }
 
 /** Parâmetros de consulta aceitos pelos três endpoints geográficos. */

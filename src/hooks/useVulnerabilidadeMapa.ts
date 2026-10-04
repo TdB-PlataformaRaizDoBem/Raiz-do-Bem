@@ -19,11 +19,10 @@
  * em efeito e sem leitura de ref durante o render.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { VulnerabilidadePropertiesAPI } from "../domain/entities/VulnerabilidadeGeoAPI";
 import {
   toColecaoViewModel,
-  toRegiaoViewModel,
   type ColecaoViewModel,
   type RegiaoViewModel,
 } from "../domain/mappers/VulnerabilidadeMapper";
@@ -68,7 +67,10 @@ export interface UseVulnerabilidadeMapa {
 export function useVulnerabilidadeMapa(
   cenarioVoluntarios: string,
 ): UseVulnerabilidadeMapa {
-  const [selecionada, setSelecionada] = useState<RegiaoViewModel | null>(null);
+  // Guarda só o CÓDIGO. Guardar o ViewModel congelava o painel no cenário do
+  // clique: o usuário selecionava o Maranhão, digitava 900 voluntários no
+  // simulador e o detalhe seguia mostrando "nenhum voluntário, cobertura 0%".
+  const [codigoSelecionado, setCodigoSelecionado] = useState<string | null>(null);
   const [tentativa, setTentativa] = useState(0);
   const [resultado, setResultado] = useState<ResultadoCarga>(RESULTADO_INICIAL);
 
@@ -114,12 +116,19 @@ export function useVulnerabilidadeMapa(
   const refetch = useCallback(() => setTentativa((n) => n + 1), []);
 
   const selecionar = useCallback((props: VulnerabilidadePropertiesAPI | null) => {
-    setSelecionada(
-      props
-        ? toRegiaoViewModel({ type: "Feature", geometry: null, properties: props })
-        : null,
-    );
+    setCodigoSelecionado(props?.codigo_ibge ?? null);
   }, []);
+
+  // Derivado da coleção EM TELA: acompanha cada novo cenário sem efeito nem
+  // cópia. Se o estado sair do conjunto, a seleção some com ele.
+  const selecionada = useMemo(
+    () =>
+      codigoSelecionado
+        ? (resultado.colecao?.regioes.find((r) => r.codigoIbge === codigoSelecionado) ??
+          null)
+        : null,
+    [codigoSelecionado, resultado.colecao],
+  );
 
   return {
     colecao: resultado.colecao,
