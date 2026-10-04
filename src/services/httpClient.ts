@@ -1,3 +1,4 @@
+import type { LoginResponseDTO } from '../domain/types/auth';
 import { tokenStore } from './tokenStore';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
@@ -50,6 +51,50 @@ function buildHeaders(extra?: HeadersInit): HeadersInit {
   return { ...base, ...(extra as Record<string, string> ?? {}) };
 }
 
+let _refreshInFlight: Promise<boolean> | null = null;
+
+/**
+ * Troca o refresh token por um novo par de tokens (POST /auth/refreshToken).
+ * Chamadas simultâneas compartilham a mesma requisição.
+ *
+ * @returns true se os tokens foram renovados; false (e tokenStore limpo, se o
+ *          back recusou o refresh token) caso contrário.
+ */
+export function refreshAccessToken(): Promise<boolean> {
+  if (_refreshInFlight) return _refreshInFlight;
+
+  const refreshToken = tokenStore.getRefresh();
+  if (!refreshToken) return Promise.resolve(false);
+
+  _refreshInFlight = (async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/auth/refreshToken`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+      if (!res.ok) {
+        tokenStore.clear();
+        return false;
+      }
+      const data = (await res.json()) as LoginResponseDTO;
+      tokenStore.set(data.token, data.refreshToken);
+      return true;
+    } catch {
+      // Falha de rede: mantém os tokens para uma nova tentativa depois.
+      return false;
+    } finally {
+      _refreshInFlight = null;
+    }
+  })();
+
+  return _refreshInFlight;
+}
+
+function fetchComAuth(url: string, init?: RequestInit): Promise<Response> {
+  return fetch(url, { ...init, headers: buildHeaders(init?.headers) });
+}
+
 export async function safeFetch(
   path: string,
   init?: RequestInit,
@@ -57,10 +102,12 @@ export async function safeFetch(
   const url = path.startsWith('http') ? path : `${BASE_URL}${path}`;
 
   try {
-    const res = await fetch(url, {
-      ...init,
-      headers: buildHeaders(init?.headers),
-    });
+    let res = await fetchComAuth(url, init);
+
+    // Access token expirado: tenta renovar uma vez e repete a requisição.
+    if (res.status === 401 && tokenStore.getRefresh() && (await refreshAccessToken())) {
+      res = await fetchComAuth(url, init);
+    }
 
     if (res.status === 401) {
       handleUnauthorized();
@@ -119,7 +166,7 @@ export async function publicFetch(
     });
 
     return res;
-  } catch (err) {
+  } catch {
     // Falha de rede (servidor offline, sem internet)
     throw new Error('Sem conexão com o servidor. Verifique sua rede.');
   }

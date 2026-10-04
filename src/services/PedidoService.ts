@@ -35,16 +35,14 @@ export async function getPedidosCompletos(): Promise<PedidoViewModel[]> {
 }
 
 /**
- * GET /pedido-ajuda/:id
- * Retorna pedido específico ou null se não encontrado (404).
+ * O backend não expõe GET /pedido-ajuda/{id}; o pedido é localizado na listagem
+ * (GET /pedido-ajuda). Retorna null se não encontrado.
  */
 export async function getPedidoCompleto(
   id: number,
 ): Promise<PedidoViewModel | null> {
-  const res = await safeFetch(`${ENDPOINT}/${id}`);
-  if (res.status === 404) return null;
-  const data = await handleResponse<PedidoAjudaAPI>(res);
-  return mapPedido(data);
+  const todos = await getPedidosCompletos();
+  return todos.find((p) => p.id === id) ?? null;
 }
 
 /**

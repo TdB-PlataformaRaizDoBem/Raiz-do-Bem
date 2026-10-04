@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginRequest } from '../services/authService';
 import { tokenStore } from '../services/tokenStore';
 import { extractAuthUser, isTokenExpired, decodeJwtPayload } from '../services/jwtUtils';
-import { registerUnauthenticatedHandler } from '../services/httpClient';
+import { refreshAccessToken, registerUnauthenticatedHandler } from '../services/httpClient';
 import { AuthContext, type AuthContextValue } from './auth';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -19,12 +19,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = tokenStore.get();
     if (!token) return null;
     const authUser = extractAuthUser(token);
-    if (!authUser) tokenStore.clear();
+    // Access token expirado/inválido: mantém o refresh token para a renovação silenciosa.
+    if (!authUser && !tokenStore.getRefresh()) tokenStore.clear();
     return authUser;
   });
 
-  // Sempre false: tokenStore é síncrono, nunca há estado de carregamento.
-  const isLoading = false;
+  // F5 com access token expirado mas refresh token ainda salvo: renova em
+  // segundo plano antes de decidir se o usuário está logado.
+  const [isLoading, setIsLoading] = useState(
+    () => user === null && tokenStore.getRefresh() !== null,
+  );
+
+  useEffect(() => {
+    if (!isLoading) return;
+    let cancelled = false;
+    refreshAccessToken().then((ok) => {
+      if (cancelled) return;
+      const token = ok ? tokenStore.get() : null;
+      const authUser = token ? extractAuthUser(token) : null;
+      if (authUser) {
+        setUser(authUser);
+      } else {
+        tokenStore.clear();
+      }
+      setIsLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoading]);
 
   const clearAuthState = useCallback((): void => {
     tokenStore.clear();
@@ -44,14 +67,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearAuthState, navigate]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const token = tokenStore.get();
       if (!token) return;
 
       const payload = decodeJwtPayload(token);
       if (payload && isTokenExpired(payload)) {
+        if (await refreshAccessToken()) {
+          const renovado = extractAuthUser(tokenStore.get() ?? '');
+          if (renovado) {
+            setUser(renovado);
+            return;
+          }
+        }
         if (import.meta.env.DEV) {
-          console.info('[AuthContext] Token expirado detectado — desautenticando.');
+          console.info('[AuthContext] Token expirado e sem renovação — desautenticando.');
         }
         clearAuthState();
         navigate('/auth/login', { replace: true });
@@ -65,14 +95,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, senha: string): Promise<void> => {
       clearAuthState();
 
-      const { token } = await loginRequest(email, senha);
+      const { token, refreshToken } = await loginRequest(email, senha);
       const authUser = extractAuthUser(token);
 
       if (!authUser) {
         throw new Error('Credenciais inválidas. Verifique seu e-mail e senha.');
       }
 
-      tokenStore.set(token);
+      tokenStore.set(token, refreshToken ?? null);
       setUser(authUser);
 
       if (authUser.role === 'ADMIN') {
