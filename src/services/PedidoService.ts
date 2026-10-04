@@ -46,27 +46,6 @@ export async function getPedidoCompleto(
 }
 
 /**
- * GET /pedido-ajuda (filtrado no front)
- * Retorna pedidos com status APROVADO que ainda não possuem beneficiário vinculado.
- */
-export async function getPedidosAprovadosLivres(): Promise<PedidoViewModel[]> {
-  const todos = await getPedidosCompletos();
-  // Excluir pedidos que já possuem beneficiário vinculado
-  try {
-    const { getBeneficiariosCompletos } = await import("./Beneficiarioservice");
-    const beneficiarios = await getBeneficiariosCompletos();
-    const vinculados = new Set(
-      beneficiarios.map((b) => b.pedido?.id).filter(Boolean) as number[],
-    );
-    return todos.filter(
-      (p) => p.statusAPI === "APROVADO" && !vinculados.has(p.id),
-    );
-  } catch {
-    return todos.filter((p) => p.statusAPI === "APROVADO");
-  }
-}
-
-/**
  * POST /pedido-ajuda
  */
 export async function criarPedidoAjuda(

@@ -60,6 +60,7 @@ A ONG Turma do Bem conecta dentistas a jovens em situação de vulnerabilidade s
 | **Vite** | 7.x | Bundler e servidor de desenvolvimento ultrarrápido |
 | **Tailwind CSS** | 4.x | Estilização utilitária e responsividade |
 | **React Router DOM** | 7.x | Gerenciamento de rotas e navegação entre páginas |
+| **TanStack Query** | 5.x | Cache de requisições: dados compartilhados entre telas, sem buscas repetidas |
 | **React Hook Form** | 7.x | Gerenciamento e validação de formulários |
 
 ---

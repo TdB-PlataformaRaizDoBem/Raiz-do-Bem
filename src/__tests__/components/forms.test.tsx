@@ -219,7 +219,8 @@ describe('CreateBeneficiario (novo beneficiário)', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Cadastrar Beneficiário' }));
 
     await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
-    expect(bodyOf(fetchMock)).toEqual({ idPedidoAjuda: 7, idProgramaSocial: 2 });
+    // a última chamada agora é o refetch automático das listas; o corpo está no POST
+    expect(JSON.parse(String(chamadasCom('POST')[0][1]?.body))).toEqual({ idPedidoAjuda: 7, idProgramaSocial: 2 });
     expect(await screen.findByText('Beneficiário criado com sucesso!')).toBeInTheDocument();
   });
 

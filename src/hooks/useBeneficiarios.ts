@@ -1,13 +1,17 @@
-import { useAsync } from "./useAsync";
 import { getBeneficiariosCompletos, getBeneficiarioCompleto, type BeneficiarioCompleto } from "../services/Beneficiarioservice";
- 
-// Lista completa — usada na página de gerenciamento
+import { queryKeys } from "./queryKeys";
+import { useDomainQuery } from "./useDomainQuery";
+
+// Lista completa — usada na página de gerenciamento, no dashboard e na busca de contatos do chat
 export const useBeneficiarios = () =>
-  useAsync<BeneficiarioCompleto[]>(getBeneficiariosCompletos);
- 
+  useDomainQuery<BeneficiarioCompleto[]>({
+    queryKey: queryKeys.beneficiarios,
+    queryFn: getBeneficiariosCompletos,
+  });
+
 // beneficiário por cpf
 export const useBeneficiario = (cpf: string) =>
-  useAsync<BeneficiarioCompleto | null>(
-    () => getBeneficiarioCompleto(cpf),
-    [cpf]
-  );
+  useDomainQuery<BeneficiarioCompleto | null>({
+    queryKey: queryKeys.beneficiario(cpf),
+    queryFn: () => getBeneficiarioCompleto(cpf),
+  });

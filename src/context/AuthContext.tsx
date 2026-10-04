@@ -4,6 +4,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { loginRequest } from '../services/authService';
 import { tokenStore } from '../services/tokenStore';
@@ -13,6 +14,7 @@ import { AuthContext, type AuthContextValue } from './auth';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // tokenStore é síncrono (in-memory) — lazy initializer elimina o useEffect de init.
   const [user, setUser] = useState(() => {
@@ -51,8 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearAuthState = useCallback((): void => {
     tokenStore.clear();
+    // Dados em cache são do usuário que saiu: nunca podem aparecer para o próximo login.
+    queryClient.clear();
     setUser(null);
-  }, []);
+  }, [queryClient]);
 
   const logout = useCallback((): void => {
     clearAuthState();

@@ -5,6 +5,8 @@ module.exports = {
   testMatch: ['**/*.test.ts', '**/*.test.tsx'],
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   moduleNameMapper: {
+    // render/renderHook com QueryClientProvider embutido (ver src/test/rtl.tsx)
+    '^@testing-library/react$': '<rootDir>/src/test/rtl.tsx',
     // Assets e estilos não importam para testes unitários
     '\.(css|svg|png|jpe?g|gif|webp)$': '<rootDir>/src/test/fileMock.ts',
   },
