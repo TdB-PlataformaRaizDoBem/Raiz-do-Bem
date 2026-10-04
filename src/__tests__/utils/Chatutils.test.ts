@@ -8,7 +8,6 @@ import {
   formatPreview,
   normalizeTel,
 } from '../../utils/Chatutils';
-import { AUTH_KEYS, USERS } from '../../data/auth';
 
 const irPara = (path: string) => window.history.pushState({}, '', path);
 
@@ -102,12 +101,5 @@ describe('avatar', () => {
 
   it('avatarInitials usa os dígitos antes dos dois últimos', () => {
     expect(avatarInitials('+5511987654321')).toBe('43');
-  });
-});
-
-describe('data/auth (constantes legadas)', () => {
-  it('mantém as chaves de storage e usuários de exemplo', () => {
-    expect(AUTH_KEYS).toEqual({ TOKEN: '@RaizDoBem:token', USER: '@RaizDoBem:user' });
-    expect(Object.keys(USERS)).toEqual(['ADMIN', 'COORD']);
   });
 });

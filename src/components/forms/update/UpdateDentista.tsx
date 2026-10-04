@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm, FormProvider, useFormContext, Controller } from "react-hook-form";
 import type { DentistaViewModel } from "../../../domain/mappers/DentistaMapper";
 import { atualizarDentista } from "../../../services/DentistaService";
@@ -77,8 +78,20 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
     register,
     control,
     handleSubmit,
+    getValues,
+    resetField,
     formState: { errors, isDirty, isSubmitting },
   } = methods;
+
+  // As especialidades chegam do back depois do primeiro render: quando carregam, descobre o id
+  // da especialidade atual pelo nome. `resetField` define o valor E o padrão, então o formulário
+  // continua "sem mudanças" até o usuário editar algo (e nada é alterado durante o render).
+  useEffect(() => {
+    if (!especialidades || getValues("idEspecialidade") > 0) return;
+    const id = resolverIdInicial();
+    if (id > 0) resetField("idEspecialidade", { defaultValue: id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [especialidades]);
 
   const onSubmit = async (data: DentistaEditavel) => {
     if (!isDirty) return;
@@ -196,37 +209,20 @@ const UpdateDentista = ({ initialData, onSuccess }: UpdateDentistaProps) => {
                 validate: (val) =>
                   (val !== undefined && val > 0) || "Selecione uma especialidade",
               }}
-              render={({ field, fieldState }) => {
-                const valorResolvido =
-                  field.value && field.value > 0
-                    ? field.value
-                    : (() => {
-                        const nomeAtual = initialData.especialidades?.[0];
-                        if (!nomeAtual || !especialidades) return field.value;
-                        const encontrada = especialidades.find(
-                          (e) => e.descricao.toLowerCase() === nomeAtual.toLowerCase()
-                        );
-                        if (encontrada && encontrada.id !== field.value) {
-                          field.onChange(encontrada.id);
-                        }
-                        return encontrada?.id ?? field.value;
-                      })();
-
-                return (
-                  <SelectEspecialidade
-                    value={valorResolvido || ""}
-                    onChange={(id) => field.onChange(id)}
-                    onBlur={field.onBlur}
-                    especialidades={especialidades ?? []}
-                    loading={loadingEspecialidades}
-                    error={fieldState.error?.message}
-                    fetchError={errorEspecialidades}
-                    required
-                    label="Especialidade"
-                    name="idEspecialidade"
-                  />
-                );
-              }}
+              render={({ field, fieldState }) => (
+                <SelectEspecialidade
+                  value={field.value || ""}
+                  onChange={(id) => field.onChange(id)}
+                  onBlur={field.onBlur}
+                  especialidades={especialidades ?? []}
+                  loading={loadingEspecialidades}
+                  error={fieldState.error?.message}
+                  fetchError={errorEspecialidades}
+                  required
+                  label="Especialidade"
+                  name="idEspecialidade"
+                />
+              )}
             />
           </div>
 

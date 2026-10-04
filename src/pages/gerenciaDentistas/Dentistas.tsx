@@ -17,14 +17,10 @@ export const Dentistas = () => {
   const { data: dentistas, loading, error, refetch } = useDentistas();
 
   return (
-    <AsyncEstado
-      loading={loading}
-      error={error}
-      vazio={!dentistas?.length}
-      mensagemVazio="Nenhum dentista cadastrado."
-    >
+    <AsyncEstado loading={loading} error={error}>
       <UserManagementPage<DentistaCompleto>
         title="Gerenciamento de Dentistas"
+        mensagemVazio="Nenhum dentista cadastrado."
         users={dentistas ?? []}
         getId={(u) => u.id}
         filterConfig={dentistaFilterConfig}

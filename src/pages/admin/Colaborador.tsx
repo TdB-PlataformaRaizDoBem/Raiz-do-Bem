@@ -98,6 +98,7 @@ export default function Colaborador() {
     <AsyncEstado loading={loading} error={error}>
       <UserManagementPage<ColaboradorCompleto>
         title="Gerenciamento de Colaboradores"
+        mensagemVazio="Nenhum colaborador cadastrado."
         users={colaboradores ?? []}
         getId={(u) => u.id}
         filterConfig={colaboradorFilterConfig}

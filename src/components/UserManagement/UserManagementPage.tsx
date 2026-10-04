@@ -183,13 +183,14 @@ function Toolbar({
   children,
   search,
   actions,
+  hasFilters,
 }: {
   children?: React.ReactNode;
   search: React.ReactNode;
   actions?: React.ReactNode;
+  /** Só mostra o botão "Filtros" quando a página realmente tem grupos de filtro. */
+  hasFilters: boolean;
 }) {
-  const hasFilters = React.Children.count(children) > 0;
-
   return (
     <div className="w-full mb-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -427,6 +428,7 @@ export function UserManagementPage<T>({
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
       <Toolbar
+        hasFilters={config.groups.length > 0}
         search={
           <Search
             placeholder={`Pesquisar ${title.toLowerCase()}...`}

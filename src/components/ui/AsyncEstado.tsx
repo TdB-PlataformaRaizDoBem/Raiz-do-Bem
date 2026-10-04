@@ -1,10 +1,6 @@
 type AsyncEstadoProps = {
   loading: boolean;
   error: string | null;
-  /** @deprecated */
-  vazio?: boolean;
-  /** @deprecated */
-  mensagemVazio?: string;
   children: React.ReactNode;
 };
 

@@ -90,6 +90,13 @@ describe('página Pedidos de Ajuda', () => {
     expect(screen.getByText('Protocolo: #1')).toBeInTheDocument();
   });
 
+  it('lista vazia mostra a mensagem própria da página', async () => {
+    rotas((url, init) => (url === '/pedido-ajuda' && !init?.method ? ok([]) : undefined));
+    renderPagina(<PedidosAjuda />);
+
+    expect(await screen.findByText('Nenhum pedido encontrado.')).toBeInTheDocument();
+  });
+
   it('erro ao carregar', async () => {
     rotas((url) => (url === '/pedido-ajuda' ? fakeResponse({ status: 500, body: { mensagem: 'Falha geral' } }) : undefined));
     renderPagina(<PedidosAjuda />);
@@ -317,6 +324,13 @@ describe('página Designação (Atendimento)', () => {
       expect(await screen.findByRole('dialog')).toBeInTheDocument();
     });
 
+    it('sem beneficiários pendentes mostra a mensagem da aba', async () => {
+      rotas((url) => (url === '/beneficiario' ? ok([]) : undefined));
+      renderPagina(<Designacao />);
+
+      expect(await screen.findByText('Nenhum beneficiário pendente de designação.')).toBeInTheDocument();
+    });
+
     it('erro ao carregar os beneficiários', async () => {
       rotas((url) => (url === '/beneficiario' ? fakeResponse({ status: 500, body: { mensagem: 'Falha nos beneficiários' } }) : undefined));
       renderPagina(<Designacao />);
@@ -375,6 +389,20 @@ describe('página Designação (Atendimento)', () => {
       expect(screen.getByText('Concluído 01/04/2026')).toBeInTheDocument();
       await userEvent.click(screen.getAllByRole('button', { name: 'Ver detalhes' })[0]);
       expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    });
+
+    it.each([
+      ['Em atendimento', 'Nenhum atendimento em andamento.'],
+      ['Concluídos', 'Nenhum atendimento concluído.'],
+      ['Todos', 'Nenhum atendimento encontrado.'],
+    ])('aba "%s" sem registros mostra "%s"', async (aba, mensagem) => {
+      rotas((url, init) => (url === '/atendimento' && !init?.method ? ok([]) : undefined));
+      renderPagina(<Designacao />);
+      await screen.findByText('Maria Pendente');
+
+      await userEvent.click(screen.getByRole('button', { name: aba }));
+
+      expect(await screen.findByText(mensagem)).toBeInTheDocument();
     });
 
     it('erro ao carregar os atendimentos', async () => {

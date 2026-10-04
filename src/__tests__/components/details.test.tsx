@@ -280,8 +280,23 @@ describe('DentistaDetails', () => {
     expect(screen.getByText('Sim')).toBeInTheDocument();
     expect(screen.getByText('CRO-SP 12345')).toBeInTheDocument();
     expect(screen.getByText('Masculino')).toBeInTheDocument();
+    expect(screen.getByText('Ortodontia')).toBeInTheDocument();
     expect(screen.getByText(/Rua A, 10/)).toBeInTheDocument();
     expect(screen.getByText(/São Paulo - SP/)).toBeInTheDocument();
+  });
+
+  it('várias especialidades aparecem separadas por vírgula', () => {
+    renderCompleto(
+      <DentistaDetails {...props({ data: mapDentista(dentistaApi({ especialidades: ['Ortodontia', 'Endodontia'] })) })} />,
+    );
+
+    expect(screen.getByText('Ortodontia, Endodontia')).toBeInTheDocument();
+  });
+
+  it('sem especialidades mostra "Não informado"', () => {
+    renderCompleto(<DentistaDetails {...props({ data: mapDentista(dentistaApi({ especialidades: [] })) })} />);
+
+    expect(screen.getAllByText('Não informado').length).toBeGreaterThan(0);
   });
 
   it('endereço ausente mostra "Não informado"', () => {

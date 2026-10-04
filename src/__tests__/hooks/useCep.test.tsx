@@ -115,6 +115,72 @@ describe('useCep', () => {
     expect(methods().getValues('endereco.cidade')).toBe('');
   });
 
+  it('ViaCEP fora do ar: mostra o aviso no campo do CEP e não deixa promise rejeitada solta', async () => {
+    const naoTratadas: unknown[] = [];
+    const registrar = (motivo: unknown) => naoTratadas.push(motivo);
+    process.on('unhandledRejection', registrar);
+    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
+    const { rerender } = renderHook(({ cep }) => useCep<Form>(cep, 'endereco'), {
+      wrapper: Wrapper,
+      initialProps: { cep: '' },
+    });
+
+    rerender({ cep: '01001000' });
+
+    await waitFor(() =>
+      expect(methods().formState.errors.endereco?.cep?.message).toBe('Não foi possível consultar o CEP agora. Tente novamente.'),
+    );
+    await new Promise((r) => setTimeout(r, 20));
+    process.off('unhandledRejection', registrar);
+    expect(naoTratadas).toEqual([]);
+    expect(methods().getValues('endereco.cidade')).toBe('');
+  });
+
+  it('erro HTTP do ViaCEP (ex.: 500) também mostra o aviso', async () => {
+    fetchMock.mockResolvedValue(fakeResponse({ status: 500, body: { message: 'indisponível' } }));
+    const { rerender } = renderHook(({ cep }) => useCep<Form>(cep, 'endereco'), {
+      wrapper: Wrapper,
+      initialProps: { cep: '' },
+    });
+
+    rerender({ cep: '01001000' });
+
+    await waitFor(() =>
+      expect(methods().formState.errors.endereco?.cep?.message).toBe('Não foi possível consultar o CEP agora. Tente novamente.'),
+    );
+  });
+
+  it('consulta cancelada (AbortError) não mostra aviso ao usuário', async () => {
+    fetchMock.mockRejectedValue(Object.assign(new Error('abortado'), { name: 'AbortError' }));
+    const { rerender } = renderHook(({ cep }) => useCep<Form>(cep, 'endereco'), {
+      wrapper: Wrapper,
+      initialProps: { cep: '' },
+    });
+
+    rerender({ cep: '01001000' });
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    await new Promise((r) => setTimeout(r, 20));
+    expect(methods().formState.errors.endereco?.cep).toBeUndefined();
+  });
+
+  it('um CEP válido depois de uma falha limpa o aviso', async () => {
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    fetchMock.mockResolvedValueOnce(viaCep({ cep: 'x', logradouro: 'Praça da Sé', localidade: 'São Paulo', uf: 'SP' }));
+    const { rerender } = renderHook(({ cep }) => useCep<Form>(cep, 'endereco'), {
+      wrapper: Wrapper,
+      initialProps: { cep: '' },
+    });
+
+    rerender({ cep: '01001000' });
+    await waitFor(() => expect(methods().formState.errors.endereco?.cep).toBeDefined());
+
+    rerender({ cep: '01001001' });
+
+    await waitFor(() => expect(methods().getValues('endereco.cidade')).toBe('São Paulo'));
+    expect(methods().formState.errors.endereco?.cep).toBeUndefined();
+  });
+
   it('corpo vazio (204) não faz nada', async () => {
     fetchMock.mockResolvedValue(fakeResponse({ status: 204 }));
     const { rerender } = renderHook(({ cep }) => useCep<Form>(cep, 'endereco'), {
