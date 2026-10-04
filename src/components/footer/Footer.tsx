@@ -111,7 +111,7 @@ const Footer = () => {
               <ul className="space-y-3 list-none p-0">
                 {contact_emails.map((contact, idx) => (
                   <li key={idx}>
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
                       {contact.label}
                     </span>
                     <br />
@@ -141,10 +141,10 @@ const Footer = () => {
         <hr className="border-lightgreen/30 mt-10 mb-6" />
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-center md:text-left">
-          <p className="text-xs text-gray-400 italic">
+          <p className="text-xs text-gray-700 italic">
             © {year} Turma do Bem — Todos os direitos reservados
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-700">
             Projeto Acadêmico · FIAP {year}
           </p>
         </div>

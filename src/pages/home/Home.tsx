@@ -19,7 +19,8 @@ import { useLenis } from "../../hooks/useLenis";
 import { useHeroReveal } from "../../hooks/useHeroReveal";
 import { Reveal } from "../../components/animation/Reveal";
 import { Counter } from "../../components/animation/Counter";
-import { StoryScroller, type StoryPanel } from "../../components/animation/StoryScroller";
+import type { StoryPanel } from "../../components/animation/StoryScroller";
+import { SlideCarousel } from "../../components/carousel/SlideCarousel";
 
 const sectionLabel =
   "text-[10px] uppercase tracking-[0.2em] text-darkgreen/60 font-bold mb-2 block text-center";
@@ -29,9 +30,9 @@ const containerMax = "max-w-[1240px] mx-auto";
 
 const btnBase =
   "inline-flex items-center justify-center font-bold rounded-xl transition-all duration-300 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
-const btnPrimaryOnDark = `${btnBase} bg-orange text-white shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/70 focus-visible:ring-offset-darkgreen`;
+const btnPrimaryOnDark = `${btnBase} bg-orange text-white text-shadow-contrast shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/70 focus-visible:ring-offset-darkgreen`;
 const btnSecondaryOnDark = `${btnBase} bg-white/10 text-white border-2 border-white/40 backdrop-blur-sm hover:bg-white/20 hover:border-white motion-safe:hover:-translate-y-1 focus-visible:ring-white/70 focus-visible:ring-offset-darkgreen`;
-const btnPrimaryOnLight = `${btnBase} bg-orange text-white shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/60 focus-visible:ring-offset-white`;
+const btnPrimaryOnLight = `${btnBase} bg-orange text-white text-shadow-contrast shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/60 focus-visible:ring-offset-white`;
 const btnOutlineOnLight = `${btnBase} border-2 border-darkgreen text-darkgreen hover:bg-darkgreen/5 motion-safe:hover:-translate-y-1 focus-visible:ring-darkgreen/40 focus-visible:ring-offset-white`;
 
 // Números oficiais divulgados pela Turma do Bem (turmadobem.org.br), 2026.
@@ -264,13 +265,13 @@ const Home = () => {
       </section>
 
       {/* ── HISTÓRIAS EM SCROLL (pin + parallax + text reveal) ──────────── */}
-      <section className="bg-white pt-16 md:pt-24 pb-6 px-6">
+      <section className="bg-white pt-16 md:pt-24 pb-16 md:pb-24 px-6">
         <span className={sectionLabel}>Nossa Missão</span>
-        <h2 className={`${sectionTitle} max-w-3xl mx-auto text-balance`}>
+        <h2 className={`${sectionTitle} max-w-3xl mx-auto text-balance mb-14 md:mb-16`}>
           Por trás de cada consulta, existe uma história sendo transformada
         </h2>
+        <SlideCarousel panels={story_panels} />
       </section>
-      <StoryScroller panels={story_panels} />
 
       {/* ── IMPACTO ──────────────────────────────────────────────────── */}
       <section className="bg-cream py-20 md:py-28 px-6">
@@ -344,10 +345,10 @@ const Home = () => {
                   alt={prog.title}
                   className="w-full h-56 rounded-2xl object-cover"
                 />
-                <h3 className="text-white font-fredoka text-2xl md:text-[2rem] font-bold my-5">
+                <h3 className="text-white text-shadow-contrast font-fredoka text-2xl md:text-[2rem] font-bold my-5">
                   {prog.title}
                 </h3>
-                <p className="text-white text-sm md:text-base leading-relaxed max-w-[522px] relative z-10">
+                <p className="text-white text-shadow-contrast text-sm md:text-base leading-relaxed max-w-[522px] relative z-10">
                   {prog.text}
                 </p>
                 <img
@@ -530,7 +531,7 @@ const Home = () => {
             </div>
 
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h2 className="md:ml-10 text-[1.8rem] md:text-[2rem] font-bold text-white leading-tight text-balance">
+              <h2 className="md:ml-10 text-[1.8rem] md:text-[2rem] font-bold text-white text-shadow-contrast leading-tight text-balance">
                 Seu sorriso importa. <br /> Peça ajuda agora.
               </h2>
               <Link

@@ -13,12 +13,13 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       label,
       error,
       labelClassName = "text-white",
-      errorClassName = "text-red-500",
+      errorClassName = "text-white",
       className,
       ...rest
     },
     ref
   ) => {
+    const errorId = error ? `${rest.name}-error` : undefined;
     const baseStyleTextarea = `
       border 
       border-gray-200
@@ -51,11 +52,13 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           {...rest}
           id={rest.name}
           ref={ref}
+          aria-invalid={!!error}
+          aria-describedby={errorId}
           className={baseStyleTextarea}
         />
 
         {error && (
-          <p className={`text-sm mt-1 ${errorClassName}`}>
+          <p id={errorId} role="alert" className={`text-sm mt-1 ${errorClassName}`}>
             {error}
           </p>
         )}

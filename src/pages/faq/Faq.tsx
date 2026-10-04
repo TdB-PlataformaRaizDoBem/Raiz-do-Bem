@@ -7,7 +7,7 @@ const Faq = () => {
     "before:content-[''] before:flex-1 before:h-[5px] before:bg-darkgreen before:rounded-[10px] before:mt-[30px] after:content-[''] after:flex-1 after:h-[5px] after:bg-darkgreen after:rounded-[10px] after:mt-[30px]";
 
   const summaryBase =
-    "list-none cursor-pointer relative pr-[25px] font-bold text-black after:content-['+'] after:absolute after:right-0 after:font-bold after:text-[1.2rem] after:transition-transform after:duration-300";
+    "list-none cursor-pointer relative pr-[25px] font-bold text-black after:content-['+'] after:absolute after:right-0 after:font-bold after:text-[1.2rem] after:transition-transform after:duration-300 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/70 focus-visible:ring-offset-2";
 
   return (
     <div className="bg-white">
@@ -17,15 +17,18 @@ const Faq = () => {
       >
         <h1
           id="perguntas-frequentes"
-          className="text-center text-3xl md:text-[3rem] font-title font-bold mb-[100px] md:mb-[110px] max-w-[320px] md:max-w-full mx-auto"
+          className="animate-rise-in text-center text-3xl md:text-[3rem] font-title font-bold mb-[100px] md:mb-[110px] max-w-[320px] md:max-w-full mx-auto"
         >
           Perguntas Frequentes
         </h1>
 
         {faqCategories.map((category: FaqCategory, i: number) => (
-          <section key={i} className="mb-[120px]">
+          <section
+            key={i}
+            className={`mb-[120px] animate-rise-in animate-delay-${Math.min(i + 1, 6)}`}
+          >
             <h2
-              className={`text-center text-2xl md:text-[2.5rem] font-bold flex gap-4 md:gap-[60px] mb-[60px] items-start 
+              className={`text-center text-2xl md:text-[2.5rem] font-bold flex gap-4 md:gap-[60px] mb-[60px] items-start
               ${lineDecorator} before:hidden md:before:block after:hidden md:after:block`}
             >
               {category.title}
@@ -58,10 +61,10 @@ const Faq = () => {
         <img
           src={MascoteFaq}
           alt="Mascote Dentinho"
-          className="order-1 lg:order-none w-full max-w-[350px] md:max-w-[500px] lg:max-w-[450px] xl:max-w-[700px] object-contain block"
+          className="animate-scale-in order-1 lg:order-none w-full max-w-[350px] md:max-w-[500px] lg:max-w-[450px] xl:max-w-[700px] object-contain block"
         />
 
-        <div className="flex-1 max-w-[560px] text-center lg:text-left flex flex-col justify-center mb-10 lg:mb-[100px]">
+        <div className="animate-rise-in animate-delay-2 flex-1 max-w-[560px] text-center lg:text-left flex flex-col justify-center mb-10 lg:mb-[100px]">
           <span className="text-lg md:text-[1.25rem] text-gray-600">
             Você Tem Mais Perguntas?
           </span>
@@ -79,7 +82,7 @@ const Faq = () => {
 
           <Link
             to="/contato"
-            className="bg-orange text-white w-full max-w-[260px] md:max-w-[300px] lg:max-w-[220px] h-[40px] rounded-lg flex items-center justify-center font-medium transition-colors hover:bg-[#e57e0f] mx-auto lg:mx-0"
+            className="bg-orange text-white text-shadow-contrast w-full max-w-[260px] md:max-w-[300px] lg:max-w-[220px] h-[40px] rounded-lg flex items-center justify-center font-medium transition-colors hover:bg-[#e57e0f] mx-auto lg:mx-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/50 focus-visible:ring-offset-2"
           >
             Contate-Nos
           </Link>

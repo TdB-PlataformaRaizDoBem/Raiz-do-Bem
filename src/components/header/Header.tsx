@@ -37,7 +37,7 @@ export function Header() {
   const navLinkStyle = `
     font-sans text-[1.125rem] relative transition-colors duration-200
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 rounded
-    [&.active]:text-orange [&.active]:font-bold
+    [&.active]:text-darkgreen [&.active]:font-bold
     [&.active]:after:content-[''] [&.active]:after:absolute [&.active]:after:bottom-[-5px]
     [&.active]:after:left-0 [&.active]:after:w-full [&.active]:after:h-[2px]
     [&.active]:after:bg-orange [&.active]:after:rounded-[2px]
@@ -46,14 +46,14 @@ export function Header() {
   const navLinkMobileStyle = `
     font-sans text-[1.125rem] relative inline-block py-2
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 rounded
-    [&.active]:text-orange [&.active]:font-bold
+    [&.active]:text-white [&.active]:font-bold
     [&.active]:after:content-[''] [&.active]:after:absolute [&.active]:after:bottom-0
     [&.active]:after:left-1/2 [&.active]:after:-translate-x-1/2
     [&.active]:after:w-12 [&.active]:after:h-[2px] [&.active]:after:bg-orange
   `;
 
   const ctaStyle = `
-    bg-orange text-white rounded-lg font-semibold
+    bg-orange text-white text-shadow-contrast rounded-lg font-semibold
     transition-all duration-200 motion-safe:hover:-translate-y-0.5 active:scale-95
     hover:bg-[#e07c1c] px-[15px] py-[10px]
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50

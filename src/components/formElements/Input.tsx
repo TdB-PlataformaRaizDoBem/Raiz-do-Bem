@@ -13,7 +13,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       label,
       labelClassName = "text-black",
       error,
-      errorClassName = "text-red-500",
+      errorClassName = "text-red-800",
       className,
       ...inputProps
     },
@@ -22,6 +22,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const baseStyleInput = `border border-gray-200 block w-full p-3 rounded-md bg-gray-200 focus:outline-none hover:border-[#fb1] transition-all ${
       error ? "border-red-600" : ""
     } ${className || ""}`;
+    const errorId = error ? `${inputProps.name}-error` : undefined;
 
     return (
       <div className="mb-4 w-full">
@@ -35,10 +36,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {...inputProps}
           ref={ref}
           id={inputProps.name}
+          aria-invalid={!!error}
+          aria-describedby={errorId}
           className={baseStyleInput}
         />
-        {error && <p className={`text-[10px] font-bold mt-1 ${errorClassName}`}>{error}</p>}
-      </div>  
+        {error && (
+          <p id={errorId} role="alert" className={`text-[10px] font-bold mt-1 ${errorClassName}`}>
+            {error}
+          </p>
+        )}
+      </div>
     );
   }
 );
