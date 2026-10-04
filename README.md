@@ -259,6 +259,19 @@ Abra seu navegador e acesse: **[http://localhost:5173](http://localhost:5173)**
 | `npm run build` | Gera a versão otimizada para produção na pasta `dist/` |
 | `npm run preview` | Visualiza o build de produção localmente |
 | `npm run lint` | Analisa o código em busca de erros e más práticas |
+| `npm test` | Roda os testes unitários (Jest + Testing Library) |
+| `npm run test:watch` | Reexecuta os testes ao salvar um arquivo |
+| `npm run test:coverage` | Roda os testes e gera o relatório de cobertura em `coverage/` (falha abaixo de 92%) |
+
+---
+
+### 🧪 Testes
+
+Os testes ficam todos em `src/__tests__/`, organizados por camada (`services`, `hooks`, `context`, `domain`, `utils`, `routes`, `components` e `pages`). Os helpers (fábricas de dados da API, `fetch` e GSAP simulados) ficam em `src/test/`.
+
+- **Stack:** Jest 30, jsdom, React Testing Library e user-event.
+- **Cobertura mínima:** 92% (statements, branches, funções e linhas), validada por `npm run test:coverage`.
+- **Sem back-end:** nenhum teste chama a API real; as respostas são simuladas, então rodam offline e em poucos segundos.
 
 ---
 
