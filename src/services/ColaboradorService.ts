@@ -4,7 +4,7 @@ import {
   mapColaboradores,
   type ColaboradorViewModel,
 } from "../domain/mappers/ColaboradorMapper";
-import { handleResponse, safeFetch } from "./httpClient";
+import { assertOk, handleResponse, safeFetch } from "./httpClient";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/colaborador`;
@@ -46,6 +46,9 @@ export async function atualizarColaborador(
     headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
+
+  // Sem isto, um erro do back (ex.: 409 e-mail em uso) seria exibido como sucesso.
+  await assertOk(res);
 
   if (res.status === 204 || res.headers.get("content-length") === "0") {
     return null; 
