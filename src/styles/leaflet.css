@@ -1,0 +1,250 @@
+/**
+ * Ajustes do Leaflet para o design system do Raiz do Bem.
+ *
+ * O CSS base vem do pacote (`import "leaflet/dist/leaflet.css"` no componente
+ * do mapa). Aqui só o que destoa da identidade visual, mais o conflito de
+ * empilhamento com a Sidebar.
+ */
+
+/* ---------------------------------------------------------------------------
+   Superfície
+   Fundo transparente: quem pinta é o card. Sem tile layer, não existe "oceano"
+   nem países vizinhos — só os polígonos do Brasil sobre o canvas neutro.
+--------------------------------------------------------------------------- */
+.leaflet-container {
+  z-index: 0;
+  font-family: var(--font-sans);
+  background: transparent;
+  outline: none;
+}
+
+/* A Sidebar do app usa z-index 1001/1002. Sem esta trava, os controles do
+   Leaflet (1000 por padrão) passam por cima do menu no mobile. */
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 500;
+}
+
+/* ---------------------------------------------------------------------------
+   Polígonos
+--------------------------------------------------------------------------- */
+.leaflet-interactive {
+  transition:
+    fill-opacity 200ms ease,
+    stroke-width 200ms ease;
+}
+
+/* Sombra suave sob a malha: destaca o país do canvas sem contorno grosso. */
+.leaflet-overlay-pane svg {
+  filter: drop-shadow(0 8px 20px rgb(28 38 52 / 0.16));
+}
+
+.leaflet-interactive:focus-visible {
+  outline: 2px solid #1c2634;
+  outline-offset: 1px;
+}
+
+/* ---------------------------------------------------------------------------
+   Badges flutuantes de urgência
+
+   Ancorados no centroide de cada região. Sobre um mapa base com ruas e nomes,
+   o número precisa de fundo próprio para permanecer legível — texto solto
+   sobre tile raster é ilegível em metade das áreas.
+
+   `transform: translate(-50%, -50%)` centraliza o badge no ponto; sem isso o
+   divIcon fica pendurado pelo canto superior esquerdo.
+--------------------------------------------------------------------------- */
+.mapa-badge-wrapper {
+  background: transparent;
+  border: none;
+  width: auto !important;
+  height: auto !important;
+}
+
+.mapa-badge {
+  position: relative;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.94);
+  border: 1px solid rgb(0 0 0 / 0.06);
+  /* Sombra dupla: a interna dá o contorno que separa do tile, a externa
+     levanta o badge da superfície. */
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.6),
+    0 3px 10px rgb(28 38 52 / 0.22);
+  font-family: var(--font-sans);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.mapa-badge::before {
+  /* Faixa lateral com a cor da urgência — mantém o vínculo com a legenda
+     mesmo quando o polígono por baixo está esmaecido. */
+  content: "";
+  width: 3px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: var(--badge-cor);
+}
+
+.mapa-badge:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.8),
+    0 6px 16px rgb(28 38 52 / 0.3);
+}
+
+.mapa-badge__nome {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgb(55 65 81);
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mapa-badge__valor {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--badge-cor);
+}
+
+/* Ponto discreto no canto do badge: marca os estados com cenário de
+   voluntários preenchido. Distingue, de relance, dado real de hipótese —
+   sem isso, um estado verde por simulação parece igual a um verde de verdade. */
+.mapa-badge__marca {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1.5px solid #ffffff;
+}
+
+.mapa-badge--ativo {
+  background: #111827;
+  border-color: rgb(255 255 255 / 0.25);
+}
+
+.mapa-badge--ativo .mapa-badge__nome {
+  color: rgb(255 255 255 / 0.75);
+}
+
+.mapa-badge--ativo .mapa-badge__valor {
+  color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------------
+   Controles de zoom — mesmo raio e borda dos cards do sistema
+--------------------------------------------------------------------------- */
+.leaflet-control-zoom {
+  border: 1px solid var(--color-canvas-line) !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgb(255 255 255 / 0.9);
+  color: var(--color-black);
+  border-bottom-color: var(--color-canvas-line);
+  backdrop-filter: blur(6px);
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+.leaflet-control-zoom a.leaflet-disabled {
+  background: rgb(255 255 255 / 0.6);
+  color: rgb(0 0 0 / 0.2);
+}
+
+/* ---------------------------------------------------------------------------
+   Tooltip das feições
+--------------------------------------------------------------------------- */
+.leaflet-tooltip.mapa-vuln-tooltip {
+  background: rgb(255 255 255 / 0.97);
+  border: 1px solid var(--color-canvas-line);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 28px rgb(28 38 52 / 0.14);
+  padding: 0.625rem 0.75rem;
+  font-family: var(--font-sans);
+  backdrop-filter: blur(8px);
+}
+
+.leaflet-tooltip.mapa-vuln-tooltip::before {
+  border-top-color: rgb(255 255 255 / 0.97);
+}
+
+/* ---------------------------------------------------------------------------
+   Popup rico (último nível da hierarquia)
+--------------------------------------------------------------------------- */
+.mapa-vuln-popup .leaflet-popup-content-wrapper {
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-canvas-line);
+  box-shadow: 0 16px 36px rgb(28 38 52 / 0.16);
+  font-family: var(--font-sans);
+  padding: 0.25rem;
+}
+
+.mapa-vuln-popup .leaflet-popup-content {
+  margin: 0.75rem 0.875rem;
+  line-height: 1.4;
+}
+
+.mapa-vuln-popup .leaflet-popup-tip {
+  border: 1px solid var(--color-canvas-line);
+  box-shadow: none;
+}
+
+.mapa-vuln-popup .leaflet-popup-close-button {
+  color: rgb(0 0 0 / 0.25);
+  padding: 0.5rem 0.5rem 0 0;
+}
+
+.mapa-vuln-popup .leaflet-popup-close-button:hover {
+  color: var(--color-black);
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Créditos: presentes por exigência de licença, porém discretos
+--------------------------------------------------------------------------- */
+.leaflet-control-attribution {
+  background: rgb(255 255 255 / 0.75) !important;
+  color: rgb(0 0 0 / 0.35);
+  font-size: 9px;
+  border-radius: 0.5rem 0 0 0;
+  backdrop-filter: blur(6px);
+}
+
+.leaflet-control-attribution a {
+  color: rgb(0 0 0 / 0.5);
+}
+
+/* ---------------------------------------------------------------------------
+   Respeita quem desativou animações no sistema operacional
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .leaflet-fade-anim .leaflet-tile,
+  .leaflet-zoom-anim .leaflet-zoom-animated,
+  .leaflet-interactive {
+    transition: none !important;
+  }
+}

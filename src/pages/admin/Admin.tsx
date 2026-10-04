@@ -10,10 +10,17 @@ const Designacao = lazy(() => import("../designacao/Designacao").then((m) => ({ 
 const ConversasScreen = lazy(() => import("../conversas/ConversasScreen"));
 const ChatScreen = lazy(() => import("../chat/ChatScreen"));
 
+// Exclusivo do perfil ADMIN. A rota /admin/* já está sob
+// <ProtectedRoutes allowedRoles={['ADMIN']}> em App.tsx, então nenhum
+// COLABORADOR alcança este componente. O chunk do Leaflet só é baixado quando
+// esta rota é aberta.
+const MapaVulnerabilidade = lazy(() => import("../vulnerabilidade/MapaVulnerabilidade"));
+
 const Admin = () => {
   return (
     <Routes>
       <Route path="dashboard" element={<Dashboard />} />
+      <Route path="mapa" element={<MapaVulnerabilidade />} />
       <Route path="colaboradores" element={<Colaborador />} />
       <Route path="beneficiarios" element={<Beneficiarios />} />
       <Route path="dentistas" element={<Dentistas />} />

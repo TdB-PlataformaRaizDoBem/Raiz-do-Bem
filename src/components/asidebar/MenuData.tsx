@@ -5,6 +5,7 @@ import beneficiario from "../../assets/svgs/beneficiario.svg";
 import solicitacoes from "../../assets/svgs/pedidosAjuda.svg";
 import forward from "../../assets/svgs/forward.svg";
 import comunicacao from "../../assets/svgs/comunicacao.svg";
+import mapaRegiao from "../../assets/svgs/dentistasRegiao.svg";
 
 export interface MenuItem {
   label: string;
@@ -21,7 +22,10 @@ export const Menu_Data: Record<"admin" | "coordenador", MenuItem[]> = {
     { label: "Dentistas", icon: dentista, path: "/admin/dentistas" },
     { label: "Beneficiários", icon: beneficiario, path: "/admin/beneficiarios" },
     { label: "Pedidos de Ajuda", icon: solicitacoes, path: "/admin/solicitacoes" },
-    { label: "Atendimento", icon: forward, path: "/admin/atendimento" }
+    { label: "Atendimento", icon: forward, path: "/admin/atendimento" },
+    // Exclusivo do ADMIN: propositalmente ausente da lista "coordenador".
+    // Junto com allowedRoles em App.tsx, o coordenador não vê nem alcança a rota.
+    { label: "Mapa de Vulnerabilidade", icon: mapaRegiao, path: "/admin/mapa" }
   ],
   coordenador: [
     { label: "Painel Geral", icon: painelGeral, path: "/coord/dashboard" },
