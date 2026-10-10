@@ -15,11 +15,7 @@ function normalizeDigits(phone: string): string {
   return d.startsWith("55") && d.length >= 12 ? d.slice(2) : d;
 }
 
-/**
- * Dado um número de telefone do chat (+5511...), procura nas listas de Beneficiários
- * e Dentistas (já em cache quando o usuário passou por essas telas) e retorna
- * nome + perfil se encontrar.
- */
+/** Acha o beneficiário ou dentista dono de um telefone do chat. */
 export function useContactLookup(telefone: string): {
   contact: ContactInfo | null;
   loadingContact: boolean;

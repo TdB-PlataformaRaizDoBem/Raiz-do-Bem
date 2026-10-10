@@ -5,13 +5,14 @@ import { getPedidosCompletos, type PedidoCompleto } from "../services/PedidoServ
 import { queryKeys } from "./queryKeys";
 import { useDomainQuery, type DomainQueryState } from "./useDomainQuery";
 
+/** Pedidos de ajuda (GET /pedido-ajuda). Só leitura: escritas ficam em `PedidoService` e invalidam o cache. */
 export const usePedidos = () =>
   useDomainQuery<PedidoCompleto[]>({
     queryKey: queryKeys.pedidos,
     queryFn: getPedidosCompletos,
   });
 
-// O back não tem GET por id: reaproveita a lista já em cache em vez de buscá-la de novo.
+/** Pedido por id (seleciona da lista em cache; não há GET por id). */
 export const usePedido = (id: number) =>
   useDomainQuery<PedidoCompleto[], PedidoCompleto | null>({
     queryKey: queryKeys.pedidos,
@@ -19,11 +20,7 @@ export const usePedido = (id: number) =>
     select: (lista) => lista.find((p) => p.id === id) ?? null,
   });
 
-/**
- * Pedidos APROVADOS que ainda não têm beneficiário vinculado.
- * Cruza o cache de pedidos com o de beneficiários; se os beneficiários não puderem ser
- * carregados, devolve todos os aprovados (mesmo comportamento de antes).
- */
+/** Pedidos APROVADOS que ainda não viraram beneficiário. */
 export const usePedidosAprovadosLivres = (): DomainQueryState<PedidoCompleto[]> => {
   const pedidos = usePedidos();
   const beneficiarios = useQuery({ queryKey: queryKeys.beneficiarios, queryFn: getBeneficiariosCompletos });

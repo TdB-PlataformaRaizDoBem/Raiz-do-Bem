@@ -2,14 +2,14 @@ import { getBeneficiariosCompletos, getBeneficiarioCompleto, type BeneficiarioCo
 import { queryKeys } from "./queryKeys";
 import { useDomainQuery } from "./useDomainQuery";
 
-// Lista completa — usada na página de gerenciamento, no dashboard e na busca de contatos do chat
+/** Beneficiários (GET /beneficiario), em cache compartilhado. */
 export const useBeneficiarios = () =>
   useDomainQuery<BeneficiarioCompleto[]>({
     queryKey: queryKeys.beneficiarios,
     queryFn: getBeneficiariosCompletos,
   });
 
-// beneficiário por cpf
+/** Beneficiário por CPF. */
 export const useBeneficiario = (cpf: string) =>
   useDomainQuery<BeneficiarioCompleto | null>({
     queryKey: queryKeys.beneficiario(cpf),

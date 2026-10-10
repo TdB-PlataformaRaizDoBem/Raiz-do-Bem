@@ -1,5 +1,6 @@
 import React from "react";
 
+/** Trava o scroll do `body` com painel aberto em telas < 1280 px (ou sempre, com `forceLock`). */
 export function useScrollLock(isOpen: boolean, forceLock: boolean = false) {
   React.useEffect(() => {
     const handleScrollLock = () => {

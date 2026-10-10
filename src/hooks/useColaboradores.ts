@@ -8,7 +8,7 @@ export const useColaboradores = () =>
     queryFn: getColaboradoresCompletos,
   });
 
-// O back não tem GET por id: reaproveita a lista já em cache em vez de buscá-la de novo.
+/** Colaborador por id (seleciona da lista em cache; não há GET por id). */
 export const useColaborador = (id: number) =>
   useDomainQuery<ColaboradorCompleto[], ColaboradorCompleto | null>({
     queryKey: queryKeys.colaboradores,

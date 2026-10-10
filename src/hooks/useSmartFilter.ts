@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import type { PageFilterConfig } from "../components/UserManagement/FilterConfig";
 
-/** Normaliza texto para comparação sem acentos e minúsculas */
+/** Minúsculo, sem acentos e sem espaços nas pontas. */
 export function normalizeText(text: string): string {
   return text
     .normalize("NFD")
@@ -10,12 +10,7 @@ export function normalizeText(text: string): string {
     .trim();
 }
 
-/**
- * Hook de filtro inteligente.
- *
- * @param items   Lista original de itens
- * @param config  Configuração de filtros declarada pela página
- */
+/** Busca por texto + um filtro ativo por grupo (clicar de novo desativa), conforme o `PageFilterConfig`. */
 export function useSmartFilter<T>(items: T[], config: PageFilterConfig<T>) {
   const [searchText, setSearchText] = useState("");
 

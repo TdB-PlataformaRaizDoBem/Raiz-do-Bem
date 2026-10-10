@@ -2,14 +2,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, motionQuery } from "../lib/gsap";
 
-/**
- * Smooth scroll com inércia (Lenis), sincronizado ao ticker do GSAP para
- * que o ScrollTrigger continue lendo a posição real do scroll.
- *
- * Escopo: só roda enquanto a Home está montada. No unmount, o Lenis é
- * destruído e o ticker removido — as demais páginas (autenticadas ou não)
- * continuam com o scroll nativo do navegador, sem qualquer efeito colateral.
- */
+/** Smooth scroll (Lenis) sincronizado ao GSAP, ativo só enquanto a Home está montada. */
 export function useLenis() {
   useEffect(() => {
     if (!window.matchMedia(motionQuery).matches) return;

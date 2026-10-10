@@ -12,8 +12,8 @@
 
 [🌐 Acessar o site](https://raiz-do-bem.vercel.app/) &nbsp;·&nbsp;
 [📁 Repositório](https://github.com/TdB-PlataformaRaizDoBem/Raiz-do-Bem) &nbsp;·&nbsp;
-[🎨 Organização](https://https://github.com/TdB-PlataformaRaizDoBem)
-[🎥 Pitch](https://youtu.be/3qlfh8A-jWMm)
+[🎨 Organização](https://github.com/TdB-PlataformaRaizDoBem) &nbsp;·&nbsp;
+[🎥 Pitch](https://youtu.be/3qlfh8A-jWM) &nbsp;·&nbsp;
 [🎥 Como Usar](https://1drv.ms/f/c/b0ad38be1ceef4ff/IgAlG98XUoZGQ61FEvMsyMTOAerK_bjnil6JWOr8vByswcg?e=rlFmSF)
 
 </div>
@@ -24,10 +24,10 @@
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Arquitetura e Documentação](#-arquitetura-e-documentação)
 - [Estrutura de Pastas](#-estrutura-de-pastas)
 - [Como Executar Localmente](#-como-executar-localmente)
 - [Páginas e Funcionalidades](#-páginas-e-funcionalidades)
-- [Links Importantes](#-links-importantes)
 - [Integrantes do Grupo](#-integrantes-do-grupo)
 - [Licença](#-licença)
 
@@ -62,6 +62,18 @@ A ONG Turma do Bem conecta dentistas a jovens em situação de vulnerabilidade s
 | **React Router DOM** | 7.x | Gerenciamento de rotas e navegação entre páginas |
 | **TanStack Query** | 5.x | Cache de requisições: dados compartilhados entre telas, sem buscas repetidas |
 | **React Hook Form** | 7.x | Gerenciamento e validação de formulários |
+| **Leaflet / React-Leaflet** | 1.9 / 5.x | Mapa de vulnerabilidade social |
+| **GSAP, Lenis** | 3.x / 1.x | Animações e scroll suave da área pública |
+
+---
+
+## 📚 Arquitetura e Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Camadas, fluxo de dados, cache, autenticação, rotas e como adicionar uma funcionalidade |
+
+O front-end conversa com três serviços: a **API principal** (Java), o chat **ms-sandbox-menager** (WhatsApp) e a **vulnerabilidade-api** (mapa). Diagrama em [`ARCHITECTURE.md`](ARCHITECTURE.md#visão-geral).
 
 ---
 
@@ -69,188 +81,70 @@ A ONG Turma do Bem conecta dentistas a jovens em situação de vulnerabilidade s
 
 ```
 Raiz-do-Bem/
-├── public/
-│   └── TDB_logo.svg                    # Logo exibida no navegador
-│
+├── public/                    # Arquivos estáticos (logo)
+├── ARCHITECTURE.md            # Guia de arquitetura
 ├── src/
-│   ├── assets/
-│   │   ├── img/                        # Imagens (fotos, banners, mascote Dentinho)
-│   │   └── svgs/                       # Ícones e ilustrações vetoriais
-│   │
-│   ├── data/                           # ① CAMADA DE DADOS (mock)
-│   │   ├── auth.tsx                    # Credenciais e lógica de autenticação
-│   │   ├── beneficiariosData.tsx       # Dados e tipos dos beneficiários
-│   │   ├── colaboradorData.tsx         # Dados e tipos dos colaboradores
-│   │   ├── dentistasData.tsx           # Dados e tipos dos dentistas
-│   │   └── pedidosAjudaData.tsx        # Dados e tipos dos pedidos de ajuda
-│   │
-│   ├── services/                       # ② CAMADA DE SERVIÇOS (acesso a dados)
-│   │   ├── Beneficiarioservice.tsx     # getBeneficiariosCompletos, getBeneficiarioCompleto
-│   │   ├── ColaboradorService.tsx      # getColaboradoresCompletos, getColaboradorCompleto
-│   │   ├── DentistaService.tsx         # getDentistasCompletos, getDentistasProximos
-│   │   ├── PedidoService.tsx           # getPedidosCompletos, aprovarPedido, negarPedido
-│   │   └── DesignacaoService.tsx       # getDesignacoes e operações relacionadas
-│   │
-│   ├── hooks/                          # ③ CAMADA DE ESTADO (custom hooks)
-│   │   ├── useAsync.tsx                # Hook genérico: AsyncState<T> tipado (idle/loading/success/error)
-│   │   ├── useBeneficiarios.tsx        # useBeneficiarios · useBeneficiario(id)
-│   │   ├── useDentistas.tsx            # useDentistas · useDentista(id) · useDentistasProximos
-│   │   ├── useColaboradores.tsx        # useColaboradores · useColaborador(id)
-│   │   ├── usePedidos.tsx              # usePedidos · usePedido(id) · usePedidosAprovadosLivres
-│   │   ├── useDesignacao.tsx           # Lógica de designação de casos
-│   │   ├── useAuth.tsx                 # Autenticação e controle de sessão
-│   │   ├── useCep.tsx                  # Busca de endereço por CEP (autocomplete)
-│   │   ├── useDashboardData.tsx        # Métricas agregadas para o painel
-│   │   ├── useImpactStats.tsx          # Estatísticas de impacto social
-│   │   ├── useNotification.tsx         # Sistema de notificações (Toast)
-│   │   ├── useOrderState.tsx           # Estado de pedidos
-│   │   ├── useProfessionalStats.tsx    # Estatísticas por dentista
-│   │   ├── useScrollLock.tsx           # Bloqueia scroll quando modais estão abertos
-│   │   ├── useUser.tsx                 # Dados do usuário autenticado
-│   │   └── validateAge.tsx             # Validação de idade mínima nos formulários
-│   │
-│   ├── components/                     # ④ CAMADA DE APRESENTAÇÃO
-│   │   ├── details/                    # Componentes de detalhe por entidade
-│   │   │   ├── BeneficiarioDetails.tsx # Detalhe completo com seções isoladas
-│   │   │   ├── DentistaDetails.tsx     # Detalhe do dentista voluntário
-│   │   │   ├── ColaboradorDetails.tsx  # Detalhe do colaborador/coordenador
-│   │   │   ├── DesignacaoDetails.tsx   # Detalhe de designação de caso
-│   │   │   └── PedidosDetails.tsx      # Detalhe de pedido de ajuda
-│   │   ├── ui/
-│   │   │   ├── AsyncEstado.tsx         # Feedback padronizado: loading · erro · vazio
-│   │   │   ├── Button.tsx              # Botão com variantes (primary, secondary...)
-│   │   │   ├── Modal.tsx               # Modal reutilizável
-│   │   │   ├── Toast.tsx               # Notificações temporárias
-│   │   │   ├── Search.tsx              # Campo de busca
-│   │   │   ├── FilterBar.tsx           # Barra de filtros
-│   │   │   └── buttonFilters/          # Botões de ação (editar, deletar, etc.)
-│   │   ├── asidebar/                   # Sidebar lateral de navegação interna
-│   │   ├── context/                    # Context API para notificações globais
-│   │   ├── footer/                     # Rodapé do site
-│   │   ├── formElements/               # Inputs e TextAreas genéricos reutilizáveis
-│   │   ├── forms/
-│   │   │   ├── create/                 # Formulários de cadastro (beneficiário, dentista, coord)
-│   │   │   └── update/                 # Formulários de edição
-│   │   ├── header/                     # Cabeçalho do site público
-│   │   ├── impactChart/                # Gráfico de impacto social
-│   │   ├── orderStatusBarChart/        # Gráfico de status de pedidos
-│   │   ├── pendingOrdersList/          # Lista de pedidos pendentes
-│   │   ├── staticCard/                 # Cards de métricas do dashboard
-│   │   ├── StateRanking/               # Ranking de estados por atendimentos
-│   │   ├── UserManagement.tsx/         # Página de gestão de usuários
-│   │   ├── userActions/                # Barra de ações por perfil
-│   │   ├── userCard/                   # Card de exibição de usuário
-│   │   ├── userHeader/                 # Header interno pós-login
-│   │   └── userInformation/            # Container de informações detalhadas
-│   │
-│   ├── pages/                          # Páginas da aplicação (uma pasta por rota)
-│   │   ├── home/                       # Página inicial (landing page)
-│   │   ├── about/                      # Sobre a TdB
-│   │   ├── contact/                    # Contato e formulário de pedido de ajuda
-│   │   ├── faq/                        # Perguntas frequentes
-│   │   ├── login/                      # Login com autenticação por perfil
-│   │   ├── voluntary/                  # Inscrição de dentistas voluntários
-│   │   ├── Team/                       # Equipe de desenvolvimento
-│   │   ├── dashboard/                  # Painel principal pós-login
-│   │   ├── admin/                      # Painel do administrador + colaboradores
-│   │   ├── coord/                      # Painel do coordenador
-│   │   ├── gerenciaBeneficiarios/      # Gestão de beneficiários
-│   │   ├── gerenciaDentistas/          # Gestão de dentistas voluntários
-│   │   ├── designacao/                 # Designação de casos a dentistas
-│   │   ├── pedidosAjuda/               # Pedidos de ajuda recebidos
-│   │   └── reports/                    # Relatórios e métricas
-│   │
-│   ├── Routes/
-│   │   ├── Routes.tsx                  # Definição de todas as rotas
-│   │   └── ProtectedRoutes.tsx         # Rotas protegidas por autenticação e perfil
-│   │
-│   ├── layout/
-│   │   ├── Layout.tsx                  # Layout base com Header e Footer
-│   │   └── ScrollToTop.tsx             # Scroll para o topo ao navegar entre rotas
-│   │
-│   ├── App.tsx                         # Componente raiz
-│   ├── main.tsx                        # Ponto de entrada — monta o React no DOM
-│   └── index.css                       # Estilos globais e configuração do Tailwind
-│
-├── vercel.json                         # Configuração de deploy (redirecionamento de rotas SPA)
-├── index.html                          # HTML base do Vite
-├── package.json                        # Dependências e scripts
-├── tsconfig.json                       # Configuração do TypeScript
-└── vite.config.ts                      # Configuração do Vite
+│   ├── assets/                # Imagens e SVGs
+│   ├── domain/                # ① DOMÍNIO (sem React)
+│   │   ├── entities/          #    Formato dos dados da API
+│   │   ├── mappers/           #    API → ViewModel (formatação de CPF, datas, status)
+│   │   └── types/             #    Enums, tipos de autenticação
+│   ├── services/              # ② SERVIÇOS (HTTP, sem React)
+│   │   ├── httpClient.ts      #    safeFetch / publicFetch: token, renovação, erros
+│   │   ├── tokenStore.ts      #    Tokens JWT na localStorage
+│   │   └── *Service.ts        #    Um arquivo por recurso (Pedido, Beneficiario, Dentista...)
+│   ├── hooks/                 # ③ HOOKS (leitura em cache, filtros, formulários, voz, animações)
+│   ├── context/               #    Sessão (Auth), mensagens não lidas e leitura em voz
+│   ├── lib/                   #    Cliente do TanStack Query e GSAP
+│   ├── components/            # ④ COMPONENTES (UI reutilizável)
+│   │   ├── ui/                #    Botão, modal, toast, paginação, busca
+│   │   ├── forms/             #    Formulários de criação e edição
+│   │   ├── details/           #    Painéis de detalhe por entidade
+│   │   ├── chat/              #    Tela de conversas
+│   │   └── vulnerabilityMap/  #    Mapa e painéis de análise
+│   ├── pages/                 # ⑤ PÁGINAS (uma pasta por tela; ações de escrita ficam aqui)
+│   ├── Routes/                #    Rotas públicas e ProtectedRoutes (autenticação + role)
+│   ├── layout/                #    PublicLayout, AuthLayout e AppLayout
+│   ├── utils/                 #    Formatação, datas, CSV e geo
+│   ├── styles/                #    Tailwind, tema e Leaflet
+│   ├── __tests__/             #    Testes, espelhando as camadas
+│   ├── test/                  #    Fábricas e mocks de teste
+│   ├── App.tsx                #    Providers e rotas
+│   └── main.tsx               #    Ponto de entrada
+├── .env.template              # Modelo das variáveis de ambiente
+├── vercel.json                # Deploy: reescrita das rotas da SPA
+└── vite.config.ts
 ```
 
 ---
 
 ## 🚀 Como Executar Localmente
 
-Siga o passo a passo abaixo para rodar o projeto na sua máquina. O processo é simples e leva menos de 5 minutos.
-
-### ✅ Pré-requisitos
-
-Antes de começar, verifique se você tem as seguintes ferramentas instaladas:
-
-- **Node.js** — versão **18 ou superior** ([Baixar aqui](https://nodejs.org/))
-- **npm** — já vem junto com o Node.js *(versão 9 ou superior)*
-- **Git** — para clonar o repositório ([Baixar aqui](https://git-scm.com/))
-
-> 💡 **Como verificar se já tem instalado?** Abra o terminal e rode os comandos abaixo. Se aparecer um número de versão, está tudo certo!
-
-```bash
-node --version
-npm --version
-git --version
-```
-
----
-
-### 📦 Passo a Passo
-
-**1. Clone o repositório**
-
-Abra o terminal na pasta onde deseja salvar o projeto e execute:
+**Pré-requisitos:** [Node.js](https://nodejs.org/) 18+, npm 9+ e Git.
 
 ```bash
 git clone https://github.com/TdB-PlataformaRaizDoBem/Raiz-do-Bem
-```
-
-**2. Acesse a pasta do projeto**
-
-```bash
-cd raiz-do-bem
-```
-
-**3. Instale as dependências**
-
-Este comando irá baixar todas as bibliotecas necessárias (React, TypeScript, Tailwind, etc.):
-
-```bash
+cd Raiz-do-Bem
 npm install
+cp .env.template .env.local   # ajuste as URLs abaixo
+npm run dev                   # http://localhost:5173
 ```
 
-> ⏳ Aguarde a instalação terminar. Isso pode levar alguns segundos dependendo da sua conexão.
+| Variável | Serviço | Valor local padrão |
+|---|---|---|
+| `VITE_API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
+| `VITE_CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
+| `VITE_GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
 
-**4. Inicie o servidor de desenvolvimento**
+> As duas APIs em FastAPI usam a porta 8000 por padrão. Para rodá-las juntas, suba uma em outra porta (`uvicorn app.main:app --port 8001`) e ajuste a variável. Sem a API principal no ar, login e telas internas não funcionam.
 
-```bash
-npm run dev
-```
+| Variável | Serviço | Valor local padrão |
+|---|---|---|
+| `VITE_API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
+| `VITE_CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
+| `VITE_GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
 
-**5. Acesse no navegador**
-
-Após rodar o comando acima, o terminal exibirá uma mensagem como esta:
-
-```
-  VITE v7.x.x  ready in Xms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-```
-
-Abra seu navegador e acesse: **[http://localhost:5173](http://localhost:5173)**
-
-🎉 **Pronto! A plataforma Raiz do Bem está rodando localmente.**
-
----
+> As duas APIs em FastAPI usam a porta 8000 por padrão. Para rodá-las juntas, suba uma delas em outra porta (`uvicorn app.main:app --port 8001`) e ajuste a variável correspondente. Sem a API principal no ar, o login e as telas internas não funcionam.
 
 ### 🔧 Outros Scripts Disponíveis
 
@@ -260,49 +154,24 @@ Abra seu navegador e acesse: **[http://localhost:5173](http://localhost:5173)**
 | `npm run build` | Gera a versão otimizada para produção na pasta `dist/` |
 | `npm run preview` | Visualiza o build de produção localmente |
 | `npm run lint` | Analisa o código em busca de erros e más práticas |
-| `npm test` | Roda os testes unitários (Jest + Testing Library) |
-| `npm run test:watch` | Reexecuta os testes ao salvar um arquivo |
-| `npm run test:coverage` | Roda os testes e gera o relatório de cobertura em `coverage/` (falha abaixo de 92%) |
+| `npm test` | Executa `vitest run` (veja a nota em [Testes](#-testes)) |
+| `npm run test:watch` | Executa `vitest` em modo contínuo |
 
 ---
 
 ### 🧪 Testes
 
-Os testes ficam todos em `src/__tests__/`, organizados por camada (`services`, `hooks`, `context`, `domain`, `utils`, `routes`, `components` e `pages`). Os helpers (fábricas de dados da API, `fetch` e GSAP simulados) ficam em `src/test/`.
+Ficam em `src/__tests__/` (por camada); fábricas e mocks em `src/test/`. Nenhum teste chama a API real.
 
-- **Stack:** Jest 30, jsdom, React Testing Library e user-event.
-- **Cobertura mínima:** 92% (statements, branches, funções e linhas), validada por `npm run test:coverage`.
-- **Sem back-end:** nenhum teste chama a API real; as respostas são simuladas, então rodam offline e em poucos segundos.
+> **Pendência:** as suítes usam a API do Jest (`jest.config.cjs`), mas `npm test` roda o **Vitest** em ambiente `node` e o pacote `jest` não está nas `devDependencies`. Por isso a maioria das suítes não carrega. Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md#testes).
 
 ---
 
 ### ⚠️ Problemas Comuns
 
-<details>
-<summary><strong>Erro: "npm não é reconhecido como comando"</strong></summary>
-
-O Node.js não está instalado ou não foi adicionado ao PATH. Acesse [nodejs.org](https://nodejs.org/) e baixe a versão LTS. Reinicie o terminal após a instalação.
-
-</details>
-
-<details>
-<summary><strong>Erro: "porta 5173 já está em uso"</strong></summary>
-
-Outra aplicação está usando essa porta. O Vite irá automaticamente tentar a próxima porta disponível (5174, 5175...). Basta acessar a URL que aparecer no terminal.
-
-</details>
-
-<details>
-<summary><strong>Erro durante o "npm install"</strong></summary>
-
-Tente limpar o cache do npm e reinstalar:
-
-```bash
-npm cache clean --force
-npm install
-```
-
-</details>
+- **`npm` não é reconhecido:** instale o Node.js LTS e reinicie o terminal.
+- **Porta 5173 em uso:** o Vite usa a próxima livre; veja a URL no terminal.
+- **Erro no `npm install`:** rode `npm cache clean --force` e tente de novo.
 
 ---
 
@@ -322,30 +191,21 @@ npm install
 
 ### 🔒 Área Interna (pós-login)
 
-| Perfil | Acesso |
-|---|---|
-| **Administrador** | Painel geral, gestão de colaboradores, relatórios completos |
-| **Coordenador** | Dashboard, gestão de beneficiários, dentistas, pedidos e designações |
-| **Dentista** | Perfil profissional, tarefas atribuídas e registro de atendimentos |
+O login (`/auth/login`) usa a API principal e devolve um JWT; o perfil vem do token. Existem dois perfis: **Administrador** (`ADMIN`) e **Coordenador** (`COLABORADOR`). Beneficiários e dentistas são cadastros gerenciados pela equipe e **não têm login**.
 
-### Perfis de Teste
-| Conta | Senha |
-|---|---|
-| **admin@raizdobem.org** | 123 |
-| **coord@raizdobem.org** | 123 |
----
+| Funcionalidade | Coordenador | Administrador |
+|---|:---:|:---:|
+| Painel geral (indicadores e gráficos) | ✔ | ✔ |
+| Pedidos de ajuda: aprovar e suspender | ✔ | ✔ |
+| Beneficiários e dentistas: listar, criar e editar | ✔ | ✔ |
+| Atendimento: designar e encerrar | ✔ | ✔ |
+| Conversas por WhatsApp | ✔ | ✔ |
+| Excluir beneficiários e dentistas | — | ✔ |
+| Exportar CSV | — | ✔ |
+| Gestão de colaboradores | — | ✔ |
+| Mapa de vulnerabilidade social | — | ✔ |
 
-> Importante: Para total visualização da plataforma estática recomendamos acessar as páginas internas (privadas) com os usuários da tabela acima.
-
-## 🔗 Links Importantes
-
-| Recurso | Link |
-|---|---|
-| 🌐 Site em produção | [https://tdb-plataformaraizdobem.github.io/Front-End/](https://tdb-plataformaraizdobem.github.io/Front-End/) |
-| 📁 Repositório Front-End | [https://github.com/TdB-PlataformaRaizDoBem/Front-End](https://github.com/TdB-PlataformaRaizDoBem/Front-End) |
-| 🏢 Organização no GitHub | [https://github.com/TdB-PlataformaRaizDoBem](https://github.com/TdB-PlataformaRaizDoBem) |
-| 🎥 Pitch Explicativo do Código e Telas | [https://youtu.be/3qlfh8A-jWM](https://youtu.be/3qlfh8A-jWM) |
-| 🎥 Como Usar a Plataforma | [https://1drv.ms/f/c/b0ad38be1ceef4ff/IgAlG98XUoZGQ61FEvMsyMTOAerK_bjnil6JWOr8vByswcg?e=rlFmSF](https://1drv.ms/f/c/b0ad38be1ceef4ff/IgAlG98XUoZGQ61FEvMsyMTOAerK_bjnil6JWOr8vByswcg?e=rlFmSF) |
+As contas de acesso são criadas na API principal por um administrador (**Colaboradores → Novo**); não há contas de teste embutidas no front-end.
 
 ---
 

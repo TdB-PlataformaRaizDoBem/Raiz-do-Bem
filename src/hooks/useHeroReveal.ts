@@ -11,11 +11,7 @@ interface UseHeroRevealOptions {
   fadeEls: RefObject<(HTMLElement | null)[]>;
 }
 
-/**
- * Reveal de hero em duas camadas: título em linhas (GSAP SplitText, como o
- * "PLAY TO / THRIVE" da referência) seguido do fade dos elementos de apoio.
- * Usado tanto na Home quanto no Sobre para manter a mesma abertura de página.
- */
+/** Animação de abertura do hero (GSAP): título linha a linha + fade. Sem animação com `prefers-reduced-motion`. */
 export function useHeroReveal({ scope, heading, fadeEls }: UseHeroRevealOptions) {
   useGSAP(
     () => {

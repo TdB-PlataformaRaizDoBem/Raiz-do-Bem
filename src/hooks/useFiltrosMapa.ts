@@ -1,18 +1,11 @@
-/**
- * Estado dos filtros do mapa e derivação da lista visível.
- *
- * Separado do hook de navegação de propósito: filtrar NÃO recarrega dado. As
- * duas coisas mudam em ritmos diferentes — a navegação faz requisição, o filtro
- * é puramente local — e misturá-las faria cada clique num checkbox disparar
- * tráfego de rede.
- */
+/** Filtros do mapa. Separado da carga de dados: filtrar é local e não faz requisição. */
 
 import { useCallback, useMemo, useState } from "react";
 import type { FaixaVulnerabilidade } from "../domain/entities/VulnerabilidadeGeoAPI";
 import type { RegiaoViewModel } from "../domain/mappers/VulnerabilidadeMapper";
 import { normalizarBusca } from "../utils/geoUtils";
 
-/** Faixas em ordem de urgência decrescente — a ordem em que o painel exibe. */
+/** Faixas da mais urgente para a menos urgente. */
 export const FAIXAS_ORDENADAS: FaixaVulnerabilidade[] = [
   "muito_alta",
   "alta",
@@ -41,6 +34,7 @@ export interface FiltrosMapa {
 
 const MAX_SUGESTOES = 8;
 
+/** Filtra as UFs por faixa e por nome/código IBGE; sugestões a partir de 2 caracteres (máx. 8). */
 export function useFiltrosMapa(regioes: RegiaoViewModel[]): FiltrosMapa {
   const [faixas, setFaixas] = useState<Set<FaixaVulnerabilidade>>(new Set());
   const [termo, setTermo] = useState("");

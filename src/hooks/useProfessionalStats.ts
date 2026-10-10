@@ -10,6 +10,7 @@ const calcular = (lista: DentistaViewModel[]) => ({
   totalDentistas: lista.length,
 });
 
+/** Total de dentistas e quantos estão disponíveis. */
 export const useProfessionalStats = () => {
   const { data } = useQuery({
     queryKey: queryKeys.dentistas,

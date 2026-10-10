@@ -1,13 +1,14 @@
 import { useAuth } from './useAuth';
 import type { AuthUser } from './useAuth';
 
-/** Retorna o perfil público do usuário autenticado, ou null se não autenticado. */
+/** Atalho para `useAuth().user`. */
 export function useUser(): AuthUser | null {
   const { user } = useAuth();
   return user;
 }
 
 
+/** @deprecated Sempre retorna null. Use `useUser()`. */
 export function getUser(): AuthUser | null {
   if (import.meta.env.DEV) {
     console.warn(

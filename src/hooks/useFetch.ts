@@ -5,6 +5,7 @@ type RequestReturn<T> = {
   json: T | null;
 };
 
+/** `fetch` avulso com loading/erro e abort automático. Sem token: só para APIs externas (ex.: ViaCEP). */
 const useFetch = <T = unknown,>() => {
   const [data, setData] = React.useState<T | null>(null);
   const [error, setError] = React.useState<string | null>(null);
