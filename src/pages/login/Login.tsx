@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import Input from '../../components/formElements/Input';
-import ImagemLogin from '../../assets/img/imagemLogin.png';
+import ImagemLogin from '../../assets/img/imagemLogin.webp';
 import { useAuth } from '../../hooks/useAuth';
 
 interface LoginFormValues {
@@ -58,7 +58,7 @@ const Login = () => {
             <h1 className="text-darkgreen font-fredoka text-4xl font-bold mb-4">
               Turma do Bem
             </h1>
-            <p className="text-gray-400 text-m italic max-w-[400px] border-l-4 p-2 border-orange">
+            <p className="text-gray-600 text-m italic max-w-[400px] border-l-4 p-2 border-orange">
               Gerencie o maior projeto de voluntariado odontológico do mundo e
               transforme sorrisos.
             </p>
@@ -117,7 +117,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-orange w-full hover:bg-amber text-white font-bold text-xl rounded-xl shadow-lg mt-6 !h-auto py-3 flex items-center justify-center text-center leading-none disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-orange-strong w-full hover:bg-[#8f4400] text-white font-bold text-xl rounded-xl shadow-lg mt-6 !h-auto py-3 flex items-center justify-center text-center leading-none disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Validando...' : 'Entrar no Sistema'}
             </Button>
@@ -125,13 +125,13 @@ const Login = () => {
             <Link
               to="/"
               className="rounded-lg font-semibold transition-all duration-300 min-w-0
-                         bg-red-500 text-white hover:bg-red-600 flex items-center justify-center text-center p-3"
+                         bg-red-600 text-white hover:bg-red-700 flex items-center justify-center text-center p-3"
             >
               Voltar ao Início
             </Link>
           </form>
 
-          <footer className="mt-24 text-center text-gray-300 text-[10px] uppercase tracking-[0.2em]">
+          <footer className="mt-24 text-center text-gray-600 text-xs uppercase tracking-[0.2em]">
             © 2026 Turma do Bem | Projeto Raiz do Bem
           </footer>
         </div>

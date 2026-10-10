@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /coord
+Disallow: /403
+
+Sitemap: https://raiz-do-bem.vercel.app/sitemap.xml

@@ -8,7 +8,7 @@ import {
   matchRoutes,
 } from 'react-router-dom';
 import { routes, type AppRoute } from './Routes/Routes';
-import { AppLayout, AuthLayout, PublicLayout } from './layout/Layout';
+import { AuthLayout, PublicLayout } from './layout/Layout';
 import { ProtectedRoutes } from './Routes/ProtectedRoutes';
 import ScrollToTop from './layout/ScrollToTop';
 import { NotificationProvider } from './components/context/NotificationProvider';
@@ -17,6 +17,8 @@ import { SpeechProvider } from './context/SpeechContext';
 import FullScreenLoader from './components/ui/FullScreenLoader';
 import { queryClient } from './lib/queryClient';
 
+// Layout da área logada: fora do bundle de entrada (ver comentário em layout/AppLayout.tsx).
+const AppLayout = lazy(() => import('./layout/AppLayout').then((m) => ({ default: m.AppLayout })));
 const Login     = lazy(() => import('./pages/login/Login'));
 const Admin     = lazy(() => import('./pages/admin/Admin'));
 const Coord     = lazy(() => import('./pages/coord/Coord'));
@@ -30,6 +32,11 @@ const AppRoutes = () => {
     if (matches) {
       const lastMatch = matches[matches.length - 1].route as AppRoute;
       document.title = lastMatch.title || 'Raiz do Bem';
+      if (lastMatch.description) {
+        document
+          .querySelector('meta[name="description"]')
+          ?.setAttribute('content', lastMatch.description);
+      }
     }
   }, [location]);
 

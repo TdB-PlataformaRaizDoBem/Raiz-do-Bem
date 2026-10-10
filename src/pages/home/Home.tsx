@@ -1,14 +1,16 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 
-import HeroPhoto from "../../assets/img/hero-dentista-exame.jpg";
-import VoluntariosImg from "../../assets/img/voluntarios-atendimento.jpg";
-import CriancasImg from "../../assets/img/criancas-escovando-dentes.jpg";
-import DentistasRedeImg from "../../assets/img/dentistas-tdb.png";
-import DentistaDoBemImg from "../../assets/img/dentistaDoBem2.png";
-import ApoloniaImg from "../../assets/img/Apolonia2.png";
-import ApoloniaAtendimentoImg from "../../assets/img/apolonia-atendimento-odontologico.jpg";
-import MascoteDentinho from "../../assets/img/dentinhoIntegrantes.png";
+import HeroPhoto640 from "../../assets/img/hero-dentista-exame-640.webp";
+import HeroPhoto1024 from "../../assets/img/hero-dentista-exame-1024.webp";
+import HeroPhoto1600 from "../../assets/img/hero-dentista-exame-1600.webp";
+import VoluntariosImg from "../../assets/img/voluntarios-atendimento.webp";
+import CriancasImg from "../../assets/img/criancas-escovando-dentes.webp";
+import DentistasRedeImg from "../../assets/img/dentistas-tdb.webp";
+import DentistaDoBemImg from "../../assets/img/dentistaDoBem2.webp";
+import ApoloniaImg from "../../assets/img/Apolonia2.webp";
+import ApoloniaAtendimentoImg from "../../assets/img/apolonia-atendimento-odontologico.webp";
+import MascoteDentinho from "../../assets/img/dentinhoIntegrantes.webp";
 import Abstract2 from "../../assets/svgs/abstract2.svg";
 import Abstract3 from "../../assets/svgs/abstract3.svg";
 import TdbLogo from "../../assets/svgs/TDB_logo.svg";
@@ -21,18 +23,19 @@ import { Reveal } from "../../components/animation/Reveal";
 import { Counter } from "../../components/animation/Counter";
 import type { StoryPanel } from "../../components/animation/StoryScroller";
 import { SlideCarousel } from "../../components/carousel/SlideCarousel";
+import { YouTubeFacade } from "../../components/media/YouTubeFacade";
 
 const sectionLabel =
-  "text-[10px] uppercase tracking-[0.2em] text-darkgreen/60 font-bold mb-2 block text-center";
+  "text-xs uppercase tracking-[0.2em] text-darkgreen font-bold mb-2 block text-center";
 const sectionTitle =
   "text-center font-fredoka text-3xl md:text-5xl lg:text-[4rem] font-bold text-balance";
 const containerMax = "max-w-[1240px] mx-auto";
 
 const btnBase =
   "inline-flex items-center justify-center font-bold rounded-xl transition-all duration-300 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
-const btnPrimaryOnDark = `${btnBase} bg-orange text-white text-shadow-contrast shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/70 focus-visible:ring-offset-darkgreen`;
+const btnPrimaryOnDark = `${btnBase} bg-orange-strong text-white text-shadow-contrast shadow-lg hover:bg-[#8f4400] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/70 focus-visible:ring-offset-darkgreen`;
 const btnSecondaryOnDark = `${btnBase} bg-white/10 text-white border-2 border-white/40 backdrop-blur-sm hover:bg-white/20 hover:border-white motion-safe:hover:-translate-y-1 focus-visible:ring-white/70 focus-visible:ring-offset-darkgreen`;
-const btnPrimaryOnLight = `${btnBase} bg-orange text-white text-shadow-contrast shadow-lg hover:bg-[#e07c1c] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/60 focus-visible:ring-offset-white`;
+const btnPrimaryOnLight = `${btnBase} bg-orange-strong text-white text-shadow-contrast shadow-lg hover:bg-[#8f4400] motion-safe:hover:-translate-y-1 focus-visible:ring-orange/60 focus-visible:ring-offset-white`;
 const btnOutlineOnLight = `${btnBase} border-2 border-darkgreen text-darkgreen hover:bg-darkgreen/5 motion-safe:hover:-translate-y-1 focus-visible:ring-darkgreen/40 focus-visible:ring-offset-white`;
 
 // Números oficiais divulgados pela Turma do Bem (turmadobem.org.br), 2026.
@@ -187,7 +190,13 @@ const Home = () => {
       <section ref={heroRef} className="relative w-full">
         <div className="relative w-full h-[62vh] sm:h-[70vh] md:h-[85vh] md:min-h-[640px]">
           <img
-            src={HeroPhoto}
+            src={HeroPhoto1024}
+            srcSet={`${HeroPhoto640} 640w, ${HeroPhoto1024} 1024w, ${HeroPhoto1600} 1600w`}
+            sizes="100vw"
+            width={1600}
+            height={1065}
+            fetchPriority="high"
+            decoding="async"
             alt="Dentista voluntário da Turma do Bem examina os dentes de uma criança atendida"
             className="absolute inset-0 w-full h-full object-cover object-[38%_30%]"
           />
@@ -199,7 +208,7 @@ const Home = () => {
               ref={(el) => {
                 heroFadeRefs.current[0] = el;
               }}
-              className="uppercase tracking-[0.25em] text-[11px] md:text-xs font-bold text-lightgreen mb-4"
+              className="uppercase tracking-[0.25em] text-[11px] md:text-xs font-bold text-mint mb-4"
             >
               Turma do Bem · Raiz do Bem
             </p>
@@ -299,7 +308,7 @@ const Home = () => {
         <Reveal className={`${containerMax} mt-14 md:mt-16`}>
           <div className="bg-darkgreen rounded-3xl px-8 py-7 md:px-12 md:py-9 flex flex-col md:flex-row items-center gap-4 md:gap-8 justify-between text-center md:text-left">
             <div>
-              <span className="inline-block text-[10px] uppercase tracking-[0.2em] font-bold text-lightgreen mb-2">
+              <span className="inline-block text-xs uppercase tracking-[0.2em] font-bold text-mint mb-2">
                 Aconteceu em 2026
               </span>
               <p className="text-white font-fredoka text-xl md:text-2xl font-bold text-balance">
@@ -332,7 +341,7 @@ const Home = () => {
           {programs_content.map((prog, idx) => (
             <Reveal key={prog.title} delay={idx * 0.12} className="w-full">
               <article
-                className="bg-orange rounded-3xl w-full flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden
+                className="bg-orange-strong rounded-3xl w-full flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden
                            motion-safe:hover:-translate-y-1 motion-safe:transition-transform duration-300"
               >
                 {prog.badge && (
@@ -343,6 +352,10 @@ const Home = () => {
                 <img
                   src={prog.img}
                   alt={prog.title}
+                  width={522}
+                  height={275}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-56 rounded-2xl object-cover"
                 />
                 <h3 className="text-white text-shadow-contrast font-fredoka text-2xl md:text-[2rem] font-bold my-5">
@@ -356,6 +369,8 @@ const Home = () => {
                   className="absolute bottom-0 left-0 w-full pointer-events-none"
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                 />
               </article>
             </Reveal>
@@ -365,7 +380,7 @@ const Home = () => {
 
       {/* ── NOTÍCIAS & CONQUISTAS ────────────────────────────────────── */}
       <section className="bg-darkgreen py-20 md:py-28 px-6">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-lightgreen font-bold mb-2 block text-center">
+        <span className="text-xs uppercase tracking-[0.2em] text-mint font-bold mb-2 block text-center">
           Notícias &amp; Conquistas
         </span>
         <h2 className="text-center font-fredoka text-3xl md:text-5xl font-bold text-white text-balance mb-14 md:mb-16 max-w-2xl mx-auto">
@@ -384,7 +399,7 @@ const Home = () => {
                 className="group flex flex-col h-full bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/25 motion-safe:transition-all motion-safe:hover:-translate-y-1 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/60"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-orange bg-orange/10 px-2.5 py-1 rounded-full">
+                  <span className="text-xs uppercase tracking-[0.15em] font-bold text-[#ffd2a0] bg-orange/10 px-2.5 py-1 rounded-full">
                     {item.tag}
                   </span>
                   <span className="text-xs text-white/50">{item.date}</span>
@@ -395,7 +410,7 @@ const Home = () => {
                 <p className="text-sm text-white/70 leading-relaxed flex-1">
                   {item.text}
                 </p>
-                <span className="text-sm font-bold text-lightgreen mt-5 group-hover:underline">
+                <span className="text-sm font-bold text-mint mt-5 group-hover:underline">
                   Leia a matéria completa →
                 </span>
               </a>
@@ -418,6 +433,10 @@ const Home = () => {
             <img
               src={VoluntariosImg}
               alt="Equipe de voluntários realizando atendimento odontológico"
+              width={1000}
+              height={667}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
             />
           </Reveal>
@@ -473,7 +492,11 @@ const Home = () => {
             src={MascoteDentinho}
             alt=""
             aria-hidden="true"
-            className="w-50 md:w-80 shrink-0"
+            width={640}
+            height={427}
+            loading="lazy"
+            decoding="async"
+            className="w-50 md:w-80 h-auto shrink-0"
           />
           <Reveal className="text-center md:text-left md:flex-1 min-w-0">
             <h2 className="font-fredoka text-3xl md:text-4xl font-bold text-white mb-4 text-balance">
@@ -502,13 +525,9 @@ const Home = () => {
 
         <Reveal className={containerMax} y={48}>
           <div className="w-full aspect-video rounded-3xl overflow-hidden shadow-lg border border-black/5">
-            <iframe
-              width="100%"
-              height="100%"
-              src="https://www.youtube.com/embed/YtdglTuuOyI"
+            <YouTubeFacade
+              videoId="YtdglTuuOyI"
               title="Documentário sobre o impacto social da Turma do Bem"
-              className="w-full h-full"
-              allowFullScreen
             />
           </div>
         </Reveal>
@@ -518,7 +537,7 @@ const Home = () => {
       <section id="cta" className=" pt-4 pb-24 px-6">
         <Reveal className={containerMax}>
           <div
-            className="min-h-[300px] md:h-[322px] bg-orange flex flex-col md:flex-row
+            className="min-h-[300px] md:h-[322px] bg-orange-strong flex flex-col md:flex-row
               justify-center md:justify-between items-center rounded-3xl p-10 shadow-xl
               motion-safe:hover:-translate-y-1 motion-safe:transition-transform duration-300"
           >
@@ -526,7 +545,11 @@ const Home = () => {
               <img
                 src={TdbLogo}
                 alt="Logo Turma do Bem"
-                className="w-[130px] md:w-[250px] object-contain"
+                width={120}
+                height={60}
+                loading="lazy"
+                decoding="async"
+                className="w-[130px] md:w-[250px] h-auto object-contain"
               />
             </div>
 

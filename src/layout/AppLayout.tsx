@@ -1,0 +1,40 @@
+import React from "react";
+import { useLocation, Outlet } from "react-router-dom";
+import Sidebar from "../components/asidebar/Sidebar";
+import UserHeader from "../components/userHeader/UserHeader";
+import { UnreadProvider } from "../context/UnreadContext";
+
+/**
+ * Layout da área logada. Fica num arquivo próprio e é carregado com `lazy` em App.tsx:
+ * quem só visita as páginas públicas não baixa Sidebar, ícones do menu nem o serviço de chat.
+ */
+export const AppLayout = () => {
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const location = useLocation();
+  const isChatRoute = location.pathname.includes("/chat");
+
+  return (
+    <UnreadProvider>
+      <div className={`bg-white flex max-w-450 mx-auto ${isChatRoute ? "h-screen overflow-hidden" : "min-h-screen"}`}>
+        <Sidebar isCollapsed={isCollapsed} setCollapsed={setIsCollapsed} />
+        <main
+          className={`
+            flex-1 transition-all duration-300 relative
+            ${isCollapsed ? "lg:ml-24" : "lg:ml-75"}
+            max-lg:ml-0
+            ${isChatRoute
+              ? "h-screen overflow-hidden flex flex-col pt-3 lg:pb-3!"
+              : "min-h-screen max-lg:pb-[100px] p-5 lg:p-8 xl:p-10 lg:pt-12"
+            }
+          `}
+          style={isChatRoute ? {
+            paddingBottom: "calc(120px + env(safe-area-inset-bottom, 0px))",
+          } : undefined}
+        >
+          {!isChatRoute && <UserHeader />}
+          <Outlet />
+        </main>
+      </div>
+    </UnreadProvider>
+  );
+};

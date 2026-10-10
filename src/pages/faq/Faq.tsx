@@ -1,5 +1,5 @@
 import { faqCategories, type FaqCategory, type FaqItem } from "./faqData";
-import MascoteFaq from "../../assets/img/mascote.png";
+import MascoteFaq from "../../assets/img/mascote.webp";
 import { Link } from "react-router-dom";
 
 const Faq = () => {
@@ -82,7 +82,7 @@ const Faq = () => {
 
           <Link
             to="/contato"
-            className="bg-orange text-white text-shadow-contrast w-full max-w-[260px] md:max-w-[300px] lg:max-w-[220px] h-[40px] rounded-lg flex items-center justify-center font-medium transition-colors hover:bg-[#e57e0f] mx-auto lg:mx-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/50 focus-visible:ring-offset-2"
+            className="bg-orange-strong text-white text-shadow-contrast w-full max-w-[260px] md:max-w-[300px] lg:max-w-[220px] h-[40px] rounded-lg flex items-center justify-center font-medium transition-colors hover:bg-[#e57e0f] mx-auto lg:mx-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/50 focus-visible:ring-offset-2"
           >
             Contate-Nos
           </Link>

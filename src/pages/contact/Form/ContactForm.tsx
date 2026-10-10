@@ -113,7 +113,7 @@ const ContactForm = () => {
           <h2 className="text-white text-3xl font-bold font-fredoka">
             Solicitar Ajuda
           </h2>
-          <p className="text-white/60 text-xs mt-1 italic uppercase tracking-widest">
+          <p className="text-white/85 text-xs mt-1 italic uppercase tracking-widest">
             Preencha com os dados de quem necessita de um dentista
           </p>
         </div>
@@ -311,7 +311,7 @@ const ContactForm = () => {
                 <span className="text-white font-bold text-xs">
                   REDE PÚBLICA (SUS)
                 </span>
-                <p className="text-white/70 text-sm mt-1">
+                <p className="text-white/85 text-sm mt-1">
                   Procure a <strong>Unidade Básica de Saúde (UBS)</strong> mais
                   próxima de você. Solicite informações sobre o programa{" "}
                   <strong>Brasil Sorridente</strong> para triagem odontológica
@@ -323,7 +323,7 @@ const ContactForm = () => {
                 <span className="text-white font-bold text-xs">
                   FACULDADES DE ODONTOLOGIA
                 </span>
-                <p className="text-white/70 text-sm mt-1">
+                <p className="text-white/85 text-sm mt-1">
                   Busque por <strong>"Clínica de Odontologia"</strong> em
                   universidades federais ou estaduais da sua região.
                 </p>
@@ -348,7 +348,7 @@ const ContactForm = () => {
         <Button
           type="submit"
           disabled={!!mensagemErro || isSubmitting}
-          className={`bg-orange !text-white text-shadow-contrast mt-2 ${
+          className={`bg-orange-strong !text-white text-shadow-contrast mt-2 ${
             mensagemErro || isSubmitting
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-amber"

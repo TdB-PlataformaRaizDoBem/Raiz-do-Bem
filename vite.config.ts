@@ -1,14 +1,55 @@
 /// <reference types="vitest/config" />
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
+
+
+/**
+ * Pré-carrega o chunk da Home (e o GSAP que ele usa) já no <head>.
+ *
+ * Por quê: a Home é carregada com `lazy`, então o navegador só descobre esse chunk depois de
+ * baixar e executar o bundle de entrada, o que forma uma fila: HTML -> index.js -> Home.js -> GSAP.
+ * Com `modulepreload` os arquivos baixam em paralelo e o hero (LCP) aparece mais cedo.
+ */
+function preloadHomeChunk(): Plugin {
+  return {
+    name: 'preload-home-chunk',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(_html, ctx) {
+        const bundle = ctx.bundle
+        if (!bundle) return []
+        const chunks = Object.values(bundle).filter((c) => c.type === 'chunk')
+        const home = chunks.find((c) => c.facadeModuleId?.replace(/\\/g, '/').endsWith('src/pages/home/Home.tsx'))
+        if (!home) return []
+        const entry = chunks.find((c) => c.isEntry)
+        const jaNoEntry = new Set([entry?.fileName, ...(entry?.imports ?? [])])
+        const arquivos = new Set<string>()
+        const visitar = (nome: string) => {
+          if (arquivos.has(nome) || jaNoEntry.has(nome)) return
+          arquivos.add(nome)
+          const chunk = bundle[nome]
+          if (chunk?.type === 'chunk') chunk.imports.forEach(visitar)
+        }
+        visitar(home.fileName)
+        return [...arquivos].map((arquivo) => ({
+          tag: 'link',
+          attrs: { rel: 'modulepreload', crossorigin: '', href: `/${arquivo}` },
+          injectTo: 'head' as const,
+        }))
+      },
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    preloadHomeChunk(),
   ],
   server: {
     proxy: {

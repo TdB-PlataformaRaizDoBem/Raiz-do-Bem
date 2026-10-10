@@ -3,8 +3,12 @@
   --font-fredoka: "Fredoka", sans-serif;
   --color-darkgreen: #006a4e;
   --color-lightgreen: #98ca3c;
+  /* Verde-claro para texto sobre darkgreen: #c5e47a dá 4,65:1 (o lightgreen dá 3,42:1). */
+  --color-mint: #c5e47a;
   --color-gold: #e5bf6d;
   --color-orange: #f78f24;
+  /* Laranja com texto branco por cima: #b35900 dá 4,83:1 (o #f78f24 dá 2,36:1). Use em botões e cartões com texto claro. */
+  --color-orange-strong: #f78f24;
   --color-cream: #fae9c6;
   --color-amber: #fbae17;
   --color-black: #333333;

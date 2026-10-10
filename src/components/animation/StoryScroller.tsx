@@ -124,7 +124,7 @@ export function StoryScroller({ panels }: StoryScrollerProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-darkgreen/95 via-darkgreen/55 to-transparent" />
 
               <div className="relative z-10 h-full container mx-auto px-6 lg:px-10 flex flex-col justify-end pb-20 md:pb-28">
-                <p className="inline-block w-fit uppercase tracking-[0.25em] text-xs font-bold text-lightgreen mb-4 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <p className="inline-block w-fit uppercase tracking-[0.25em] text-xs font-bold text-mint mb-4 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   {panel.eyebrow}
                 </p>
                 <h3 className="font-fredoka font-bold text-white text-3xl md:text-5xl lg:text-6xl leading-[1.05] max-w-3xl mb-6">
@@ -169,7 +169,7 @@ export function StoryScroller({ panels }: StoryScrollerProps) {
             <img src={panel.image} alt={panel.imageAlt} className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-darkgreen/95 via-darkgreen/55 to-transparent" />
             <div className="relative z-10 h-full flex flex-col justify-end px-6 pb-14">
-              <p className="inline-block w-fit uppercase tracking-[0.25em] text-xs font-bold text-lightgreen mb-3 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <p className="inline-block w-fit uppercase tracking-[0.25em] text-xs font-bold text-mint mb-3 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
                 {panel.eyebrow}
               </p>
               <h3 className="font-fredoka font-bold text-white text-3xl leading-[1.05] mb-4 text-balance">

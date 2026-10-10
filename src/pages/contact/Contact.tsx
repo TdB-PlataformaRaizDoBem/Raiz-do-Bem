@@ -1,10 +1,10 @@
 import ContactForm from "./Form/ContactForm";
-import Dentinho from "../../assets/img/dentinhoContato.png";
+import Dentinho from "../../assets/img/dentinhoContato.webp";
 
 const Contact = () => {
   return (
     <div className="w-full overflow-x-hidden">
-      <section className="relative min-h-[500px] lg:h-[605px] bg-orange flex flex-col lg:flex-row gap-8 lg:gap-20 justify-center items-center px-6 pt-10 lg:pt-0">
+      <section className="relative min-h-[500px] lg:h-[605px] bg-orange-strong flex flex-col lg:flex-row gap-8 lg:gap-20 justify-center items-center px-6 pt-10 lg:pt-0">
         <h1 className="animate-rise-in text-white text-shadow-contrast text-3xl md:text-5xl lg:text-[4rem] font-fredoka font-bold text-center max-w-[680px] z-10 lg:mb-20">
           Inclusão Social Através do Sorriso
         </h1>
