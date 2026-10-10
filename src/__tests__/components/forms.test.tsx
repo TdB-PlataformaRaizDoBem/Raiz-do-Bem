@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
@@ -44,7 +44,7 @@ describe('SelectEspecialidade', () => {
   const base = { especialidades, loading: false, onChange: () => {} };
 
   it('lista as especialidades e avisa a escolha como número', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<SelectEspecialidade {...base} onChange={onChange} />);
 
     await userEvent.selectOptions(screen.getByRole('combobox'), '2');
@@ -105,7 +105,7 @@ describe('CreateCoord (novo colaborador)', () => {
 
   it('envia os dados limpos (CPF só com dígitos) e fecha o formulário', async () => {
     fetchMock.mockResolvedValue(fakeResponse({ status: 201, body: colaboradorApi() }));
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<CreateCoord onSuccess={onSuccess} />);
 
     await preencherValido();
@@ -158,7 +158,7 @@ describe('CreateCoord (novo colaborador)', () => {
 
   it('erro do back aparece como notificação e não fecha o formulário', async () => {
     fetchMock.mockResolvedValue(fakeResponse({ status: 409, body: { mensagem: 'CPF já cadastrado.' } }));
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<CreateCoord onSuccess={onSuccess} />);
 
     await preencherValido();
@@ -208,7 +208,7 @@ describe('CreateBeneficiario (novo beneficiário)', () => {
       if (url === '/programas-sociais') return fakeResponse({ status: 200, body: [{ id: 2, programa: 'Apolônias do Bem' }] });
       return fakeResponse({ status: 200, body: [] });
     });
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<CreateBeneficiario onSuccess={onSuccess} />);
 
     await screen.findByRole('option', { name: /#7/ });
@@ -267,7 +267,7 @@ describe('CreateBeneficiario (novo beneficiário)', () => {
 
   it('Cancelar chama onSuccess (fecha o modal)', async () => {
     rotas();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<CreateBeneficiario onSuccess={onSuccess} />);
     await screen.findByRole('option', { name: /#7/ });
 
@@ -308,7 +308,7 @@ describe('CreateDentista (novo dentista)', () => {
 
   it('cadastra com os dados normalizados (CRO sem prefixo, CPF/telefone/CEP só dígitos)', async () => {
     rotasDentista();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<CreateDentista onSuccess={onSuccess} />);
 
     await preencherValido();
@@ -372,7 +372,7 @@ describe('CreateDentista (novo dentista)', () => {
 
   it('Cancelar chama onSuccess', async () => {
     rotasDentista();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<CreateDentista onSuccess={onSuccess} />);
     await screen.findByRole('option', { name: 'Ortodontia' });
 
@@ -398,7 +398,7 @@ describe('UpdateCoord (editar colaborador)', () => {
 
   it('atualiza o e-mail por CPF e fecha', async () => {
     fetchMock.mockResolvedValue(fakeResponse({ status: 204 }));
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<UpdateCoord initialData={colaborador()} onSuccess={onSuccess} />);
 
     await digitar('E-mail Corporativo', 'novo@x.com');
@@ -423,7 +423,7 @@ describe('UpdateCoord (editar colaborador)', () => {
 
   it('erro do back vira notificação', async () => {
     fetchMock.mockResolvedValue(fakeResponse({ status: 409, body: { mensagem: 'E-mail em uso.' } }));
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<UpdateCoord initialData={colaborador()} onSuccess={onSuccess} />);
 
     await digitar('E-mail Corporativo', 'outro@x.com');
@@ -451,7 +451,7 @@ describe('UpdateBeneficiario (editar beneficiário)', () => {
     fetchMock.mockImplementation(async (url) =>
       url.startsWith('https://viacep.com.br') ? fakeResponse({ status: 204 }) : fakeResponse({ status: 200, body: beneficiarioApi() }),
     );
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<UpdateBeneficiario initialData={beneficiario()} onSuccess={onSuccess} />);
 
     await digitar('E-mail', 'novo@x.com');
@@ -518,7 +518,7 @@ describe('UpdateBeneficiario (editar beneficiário)', () => {
   });
 
   it('Cancelar chama onSuccess; beneficiário sem endereço abre com campos vazios', async () => {
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(
       <UpdateBeneficiario
         initialData={mapBeneficiario(beneficiarioApi({ endereco: null, programaSocial: 'APOLONIA' }))}
@@ -554,7 +554,7 @@ describe('UpdateDentista (editar dentista)', () => {
   });
 
   it('resolver a especialidade atual não altera o formulário: segue "Sem mudanças" e sem aviso do React', async () => {
-    const erro = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const erro = vi.spyOn(console, 'error').mockImplementation(() => {});
     rotas();
     comNotificacoes(<UpdateDentista initialData={dentista()} onSuccess={() => {}} />);
 
@@ -605,7 +605,7 @@ describe('UpdateDentista (editar dentista)', () => {
 
   it('envia os campos editáveis normalizados (incluindo a especialidade resolvida)', async () => {
     rotas();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<UpdateDentista initialData={dentista()} onSuccess={onSuccess} />);
     await waitFor(() => expect(screen.getByLabelText(/Especialidade/)).toHaveValue('2'));
 
@@ -663,7 +663,7 @@ describe('UpdateDentista (editar dentista)', () => {
 
   it('Cancelar chama onSuccess', async () => {
     rotas();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     comNotificacoes(<UpdateDentista initialData={dentista()} onSuccess={onSuccess} />);
     await screen.findByRole('option', { name: 'Ortodontia' });
 

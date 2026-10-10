@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
@@ -24,21 +24,30 @@ import { beneficiarioApi, colaboradorApi, dentistaApi } from '../../test/factori
 import { installFetch, routeFetch } from '../../test/http';
 
 // Os formulários de edição têm testes próprios: aqui basta saber que o botão os abre e reage ao sucesso.
-jest.mock('../../components/forms/update/UpdateBeneficiario', () => ({
-  __esModule: true,
-  default: ({ onSuccess }: { onSuccess: () => void }) =>
-    jest.requireActual<typeof import('react')>('react').createElement('button', { onClick: onSuccess }, 'salvar-beneficiario'),
-}));
-jest.mock('../../components/forms/update/UpdateCoord', () => ({
-  __esModule: true,
-  default: ({ onSuccess }: { onSuccess: () => void }) =>
-    jest.requireActual<typeof import('react')>('react').createElement('button', { onClick: onSuccess }, 'salvar-coord'),
-}));
-jest.mock('../../components/forms/update/UpdateDentista', () => ({
-  __esModule: true,
-  default: ({ onSuccess }: { onSuccess: () => void }) =>
-    jest.requireActual<typeof import('react')>('react').createElement('button', { onClick: onSuccess }, 'salvar-dentista'),
-}));
+vi.mock('../../components/forms/update/UpdateBeneficiario', async () => {
+  const { createElement } = await vi.importActual<typeof import('react')>('react');
+  return {
+    __esModule: true,
+    default: ({ onSuccess }: { onSuccess: () => void }) =>
+      createElement('button', { onClick: onSuccess }, 'salvar-beneficiario'),
+  };
+});
+vi.mock('../../components/forms/update/UpdateCoord', async () => {
+  const { createElement } = await vi.importActual<typeof import('react')>('react');
+  return {
+    __esModule: true,
+    default: ({ onSuccess }: { onSuccess: () => void }) =>
+      createElement('button', { onClick: onSuccess }, 'salvar-coord'),
+  };
+});
+vi.mock('../../components/forms/update/UpdateDentista', async () => {
+  const { createElement } = await vi.importActual<typeof import('react')>('react');
+  return {
+    __esModule: true,
+    default: ({ onSuccess }: { onSuccess: () => void }) =>
+      createElement('button', { onClick: onSuccess }, 'salvar-dentista'),
+  };
+});
 
 const comNotificacoes = (ui: ReactNode) => render(<NotificationProvider>{ui}</NotificationProvider>);
 
@@ -50,7 +59,7 @@ afterEach(() => {
 
 describe('Button', () => {
   it('renderiza o texto e repassa props', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     render(<Button onClick={onClick}>Salvar</Button>);
 
     await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
@@ -174,7 +183,7 @@ describe('Modal', () => {
   });
 
   it('clicar no fundo fecha; clicar no conteúdo não', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     render(
       <Modal open onClose={onClose}>
         <p>dentro</p>
@@ -219,9 +228,9 @@ class FakeRecognition {
   onend: (() => void) | null = null;
   onerror: (() => void) | null = null;
   onresult: ((e: unknown) => void) | null = null;
-  start = jest.fn();
-  stop = jest.fn();
-  abort = jest.fn();
+  start = vi.fn();
+  stop = vi.fn();
+  abort = vi.fn();
   constructor() {
     FakeRecognition.last = this;
   }
@@ -233,7 +242,7 @@ describe('Search', () => {
   });
 
   it('digitar dispara onChange e o placeholder vira aria-label', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<Search placeholder="Pesquisar dentistas..." onChange={onChange} />);
 
     await userEvent.type(screen.getByLabelText('Pesquisar dentistas...'), 'ab');
@@ -248,7 +257,7 @@ describe('Search', () => {
 
   it('com suporte: o microfone inicia a escuta e entrega a transcrição via onChange', async () => {
     Object.assign(window, { SpeechRecognition: FakeRecognition });
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<Search placeholder="Pesquisar" onChange={onChange} />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Pesquisar por voz' }));
@@ -315,7 +324,7 @@ describe('SelectDentista', () => {
   });
 
   it('selecionar chama onChange com o id', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<SelectDentista value="" onChange={onChange} />);
     await screen.findByRole('option', { name: /Ana Coord/ });
 
@@ -338,7 +347,7 @@ describe('SelectDentista', () => {
 
 describe('DeleteUserButton', () => {
   it('abre a confirmação e Cancelar fecha sem excluir', async () => {
-    const onConfirm = jest.fn(async () => {});
+    const onConfirm = vi.fn(async () => {});
     comNotificacoes(<DeleteUserButton userName="Maria" onConfirm={onConfirm} />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Deletar' }));
@@ -352,7 +361,7 @@ describe('DeleteUserButton', () => {
   });
 
   it('confirmar exclui, fecha o modal e notifica sucesso', async () => {
-    const onConfirm = jest.fn(async () => {});
+    const onConfirm = vi.fn(async () => {});
     comNotificacoes(<DeleteUserButton userName="Maria" onConfirm={onConfirm} />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Deletar' }));
@@ -364,7 +373,7 @@ describe('DeleteUserButton', () => {
   });
 
   it('erro na exclusão mostra a mensagem e mantém o modal aberto', async () => {
-    const onConfirm = jest.fn(async () => {
+    const onConfirm = vi.fn(async () => {
       throw new Error('Beneficiário vinculado a atendimento.');
     });
     comNotificacoes(<DeleteUserButton userName="Maria" onConfirm={onConfirm} />);
@@ -377,7 +386,7 @@ describe('DeleteUserButton', () => {
   });
 
   it('erro que não é Error usa a mensagem padrão', async () => {
-    const onConfirm = jest.fn(async () => {
+    const onConfirm = vi.fn(async () => {
       throw 'falhou';
     });
     comNotificacoes(<DeleteUserButton userName="Maria" onConfirm={onConfirm} />);
@@ -399,12 +408,12 @@ describe('DeleteUserButton', () => {
 });
 
 describe('ExportCsvButton', () => {
-  let click: jest.SpiedFunction<typeof HTMLAnchorElement.prototype.click>;
+  let click: MockInstance<typeof HTMLAnchorElement.prototype.click>;
 
   beforeEach(() => {
-    URL.createObjectURL = jest.fn(() => 'blob:csv');
-    URL.revokeObjectURL = jest.fn();
-    click = jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    URL.createObjectURL = vi.fn(() => 'blob:csv');
+    URL.revokeObjectURL = vi.fn();
+    click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -412,7 +421,7 @@ describe('ExportCsvButton', () => {
   });
 
   it('baixa o arquivo com o nome informado e libera a URL', async () => {
-    const onExport = jest.fn(async () => new Blob(['a;b']));
+    const onExport = vi.fn(async () => new Blob(['a;b']));
     comNotificacoes(<ExportCsvButton onExport={onExport} fileName="dentistas.csv" />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Exportar CSV' }));
@@ -431,7 +440,7 @@ describe('ExportCsvButton', () => {
 
   it('desabilita e mostra "Exportando..." durante a exportação', async () => {
     let liberar: (b: Blob) => void = () => {};
-    const onExport = jest.fn(() => new Promise<Blob>((res) => (liberar = res)));
+    const onExport = vi.fn(() => new Promise<Blob>((res) => (liberar = res)));
     comNotificacoes(<ExportCsvButton onExport={onExport} fileName="x.csv" />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Exportar CSV' }));
@@ -495,7 +504,7 @@ describe('botões "Editar Dados"', () => {
   ];
 
   it.each(casos)('$nome: abre o formulário e, ao salvar, fecha e avisa o pai', async ({ render: ui, salvar }) => {
-    const onUpdated = jest.fn();
+    const onUpdated = vi.fn();
     render(ui(onUpdated));
     expect(screen.queryByText(salvar)).not.toBeInTheDocument();
 
@@ -507,7 +516,7 @@ describe('botões "Editar Dados"', () => {
   });
 
   it.each(casos)('$nome: clicar no fundo do modal fecha sem salvar', async ({ render: ui, salvar }) => {
-    const onUpdated = jest.fn();
+    const onUpdated = vi.fn();
     render(ui(onUpdated));
 
     await userEvent.click(screen.getByRole('button', { name: 'Editar Dados' }));

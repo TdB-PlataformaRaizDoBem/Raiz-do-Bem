@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import Lenis from 'lenis';
 import * as React from 'react';
@@ -10,14 +10,14 @@ import { useSpeech } from '../../hooks/useSpeech';
 import { useVoiceSearch } from '../../hooks/useVoiceSearch';
 import { resetGsapMock, runMatchMedia } from '../../test/gsapMock';
 
-jest.mock('../../lib/gsap', () => jest.requireActual('../../test/gsapMock'));
-jest.mock('@gsap/react', () => ({ useGSAP: jest.requireActual<{ useGSAP: unknown }>('../../test/gsapMock').useGSAP }));
-jest.mock('lenis', () => ({
+vi.mock('../../lib/gsap', () => import('../../test/gsapMock'));
+vi.mock('@gsap/react', async () => ({ useGSAP: (await import('../../test/gsapMock')).useGSAP }));
+vi.mock('lenis', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({ on: jest.fn(), raf: jest.fn(), destroy: jest.fn() })),
+  default: vi.fn().mockImplementation(() => ({ on: vi.fn(), raf: vi.fn(), destroy: vi.fn() })),
 }));
 
-type Synth = { speak: jest.Mock; cancel: jest.Mock };
+type Synth = { speak: Mock; cancel: Mock };
 const synth = () => (window as unknown as { speechSynthesis: Synth }).speechSynthesis;
 
 beforeEach(() => {
@@ -86,17 +86,15 @@ describe('useSpeech', () => {
     expect(synth().cancel).toHaveBeenCalled();
   });
 
-  it('sem suporte do navegador: isSupported é false e speak não faz nada', () => {
+  it('sem suporte do navegador: isSupported é false e speak não faz nada', async () => {
     const original = synth();
     Reflect.deleteProperty(window, 'speechSynthesis');
 
     // `isSupported` é calculado quando o módulo carrega: carrega uma cópia isolada do hook,
     // reaproveitando a mesma instância do React para os hooks continuarem válidos.
-    let useSpeechIsolado: typeof useSpeech = useSpeech;
-    jest.isolateModules(() => {
-      jest.doMock('react', () => React);
-      useSpeechIsolado = jest.requireActual<{ useSpeech: typeof useSpeech }>('../../hooks/useSpeech').useSpeech;
-    });
+    vi.resetModules();
+    vi.doMock('react', () => React);
+    const { useSpeech: useSpeechIsolado } = await import('../../hooks/useSpeech');
     const { result, unmount } = renderHook(() => useSpeechIsolado());
 
     expect(result.current.isSupported).toBe(false);
@@ -105,7 +103,7 @@ describe('useSpeech', () => {
     expect(result.current.isSpeaking).toBe(false);
     unmount();
 
-    jest.dontMock('react');
+    vi.doUnmock('react');
     Object.assign(window, { speechSynthesis: original });
   });
 });
@@ -122,9 +120,9 @@ class FakeRecognition {
   onend: (() => void) | null = null;
   onerror: (() => void) | null = null;
   onresult: ((e: unknown) => void) | null = null;
-  start = jest.fn();
-  stop = jest.fn();
-  abort = jest.fn();
+  start = vi.fn();
+  stop = vi.fn();
+  abort = vi.fn();
   constructor() {
     FakeRecognition.instances.push(this);
   }
@@ -189,8 +187,8 @@ describe('useVoiceSearch', () => {
   });
 
   it('entrega a transcrição ao callback mais recente', () => {
-    const primeiro = jest.fn();
-    const segundo = jest.fn();
+    const primeiro = vi.fn();
+    const segundo = vi.fn();
     const { result, rerender } = renderHook(({ cb }) => useVoiceSearch(cb), { initialProps: { cb: primeiro } });
     act(() => result.current.toggle());
     rerender({ cb: segundo });
@@ -202,7 +200,7 @@ describe('useVoiceSearch', () => {
   });
 
   it.each([[undefined], ['']])('transcrição vazia (%p) não chama o callback', (texto) => {
-    const cb = jest.fn();
+    const cb = vi.fn();
     const { result } = renderHook(() => useVoiceSearch(cb));
     act(() => result.current.toggle());
 
@@ -310,21 +308,21 @@ describe('useLenis', () => {
     renderHook(() => useLenis());
 
     expect(Lenis).toHaveBeenCalledTimes(1);
-    const lenis = (Lenis as unknown as jest.Mock).mock.results[0].value as {
-      on: jest.Mock;
-      raf: jest.Mock;
+    const lenis = (Lenis as unknown as Mock).mock.results[0].value as {
+      on: Mock;
+      raf: Mock;
     };
     expect(lenis.on).toHaveBeenCalledWith('scroll', ScrollTrigger.update);
     expect(gsap.ticker.add).toHaveBeenCalledTimes(1);
     expect(gsap.ticker.lagSmoothing).toHaveBeenCalledWith(0);
 
     // o frame do ticker repassa o tempo em ms ao Lenis
-    const onFrame = (gsap.ticker.add as jest.Mock).mock.calls[0][0] as (t: number) => void;
+    const onFrame = (gsap.ticker.add as Mock).mock.calls[0][0] as (t: number) => void;
     onFrame(2);
     expect(lenis.raf).toHaveBeenCalledWith(2000);
 
     // easing exponencial limitado a 1
-    const opts = (Lenis as unknown as jest.Mock).mock.calls[0][0] as { easing: (t: number) => number; duration: number };
+    const opts = (Lenis as unknown as Mock).mock.calls[0][0] as { easing: (t: number) => number; duration: number };
     expect(opts.duration).toBe(0.8);
     expect(opts.easing(0)).toBeCloseTo(0.001, 3);
     expect(opts.easing(1)).toBe(1);
@@ -333,7 +331,7 @@ describe('useLenis', () => {
   it('destrói o Lenis e remove o ticker ao desmontar', () => {
     matchMedia(true);
     const { unmount } = renderHook(() => useLenis());
-    const lenis = (Lenis as unknown as jest.Mock).mock.results[0].value as { destroy: jest.Mock };
+    const lenis = (Lenis as unknown as Mock).mock.results[0].value as { destroy: Mock };
 
     unmount();
 
@@ -375,7 +373,7 @@ describe('useHeroReveal', () => {
     });
 
     expect(gsap.from).toHaveBeenCalledTimes(2);
-    const chamadas = (gsap.from as jest.Mock).mock.calls as [unknown[], Record<string, unknown>][];
+    const chamadas = (gsap.from as Mock).mock.calls as [unknown[], Record<string, unknown>][];
     // o fade dos elementos de apoio é agendado na hora; o título só depois das fontes carregarem
     const [elementosFade, opcoesFade] = chamadas[0];
     expect(elementosFade).toEqual([fade]); // null filtrado
@@ -408,7 +406,7 @@ describe('useHeroReveal', () => {
     runMatchMedia((q) => q === '(prefers-reduced-motion: reduce)');
 
     expect(gsap.set).toHaveBeenCalledTimes(1);
-    expect((gsap.set as jest.Mock).mock.calls[0][1]).toEqual({ autoAlpha: 1 });
+    expect((gsap.set as Mock).mock.calls[0][1]).toEqual({ autoAlpha: 1 });
     expect(gsap.from).not.toHaveBeenCalled();
   });
 });

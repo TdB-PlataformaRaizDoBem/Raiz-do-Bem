@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
@@ -133,9 +133,9 @@ describe('BeneficiarioDetails', () => {
   const props = (o = {}) => ({
     data: mapBeneficiario(beneficiarioApi()),
     isAdmin: true,
-    onClose: jest.fn(),
-    onDeleted: jest.fn(),
-    onUpdated: jest.fn(),
+    onClose: vi.fn(),
+    onDeleted: vi.fn(),
+    onUpdated: vi.fn(),
     ...o,
   });
 
@@ -226,8 +226,8 @@ describe('BeneficiarioDetails', () => {
 describe('ColaboradorDetails', () => {
   it('mostra dados, mailto e exclui por CPF', async () => {
     fetchMock.mockResolvedValue(fakeResponse({ status: 204 }));
-    const onClose = jest.fn();
-    const onDeleted = jest.fn();
+    const onClose = vi.fn();
+    const onDeleted = vi.fn();
     renderCompleto(
       <ColaboradorDetails
         data={mapColaborador(colaboradorApi())}
@@ -251,7 +251,7 @@ describe('ColaboradorDetails', () => {
   });
 
   it('Fechar chama onClose', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     renderCompleto(
       <ColaboradorDetails data={mapColaborador(colaboradorApi())} onClose={onClose} onDeleted={() => {}} onUpdated={() => {}} />,
     );
@@ -266,9 +266,9 @@ describe('DentistaDetails', () => {
   const props = (o = {}) => ({
     data: mapDentista(dentistaApi()),
     isAdmin: true,
-    onClose: jest.fn(),
-    onDeleted: jest.fn(),
-    onUpdated: jest.fn(),
+    onClose: vi.fn(),
+    onDeleted: vi.fn(),
+    onUpdated: vi.fn(),
     ...o,
   });
 
@@ -349,9 +349,9 @@ describe('PedidoDetails', () => {
   const props = (api = {}, o = {}) => ({
     data: mapPedido(pedidoApi(api)),
     isCoord: false,
-    onAprovar: jest.fn(),
-    onSuspender: jest.fn(),
-    onClose: jest.fn(),
+    onAprovar: vi.fn(),
+    onSuspender: vi.fn(),
+    onClose: vi.fn(),
     ...o,
   });
 
@@ -408,7 +408,7 @@ describe('PedidoDetails', () => {
   });
 
   it('Imprimir chama window.print e Fechar chama onClose', async () => {
-    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
+    const print = vi.spyOn(window, 'print').mockImplementation(() => {});
     const p = props();
     renderCompleto(<PedidoDetails {...p} />);
 
@@ -426,7 +426,7 @@ describe('PedidoDetails', () => {
 describe('BeneficiarioDesignacaoDetails', () => {
   it('só permite designar depois de escrever o prontuário e envia o texto sem espaços nas pontas', async () => {
     const data = mapBeneficiario(beneficiarioApi());
-    const onDesignar = jest.fn();
+    const onDesignar = vi.fn();
     renderCompleto(<BeneficiarioDesignacaoDetails data={data} onDesignar={onDesignar} onClose={() => {}} />);
 
     expect(screen.getByRole('button', { name: 'Designar dentista' })).toBeDisabled();
@@ -464,7 +464,7 @@ describe('BeneficiarioDesignacaoDetails', () => {
   });
 
   it('Fechar chama onClose', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     renderCompleto(
       <BeneficiarioDesignacaoDetails data={mapBeneficiario(beneficiarioApi())} onDesignar={() => {}} onClose={onClose} />,
     );
@@ -501,7 +501,7 @@ describe('AtendimentoDetails', () => {
   });
 
   it('encerra com o prontuário e o id do colaborador logado', async () => {
-    const onEncerrar = jest.fn();
+    const onEncerrar = vi.fn();
     const data = emAndamento();
     renderCompleto(<AtendimentoDetails data={data} onEncerrar={onEncerrar} onClose={() => {}} />);
     await waitFor(() => expect(screen.getByLabelText('Colaborador responsável')).toHaveValue(5));
@@ -515,7 +515,7 @@ describe('AtendimentoDetails', () => {
 
   it('o botão fica desabilitado sem prontuário ou antes de descobrir o colaborador', async () => {
     fetchMock.mockImplementation(() => new Promise(() => {})); // colaborador nunca resolve
-    const onEncerrar = jest.fn();
+    const onEncerrar = vi.fn();
     renderCompleto(<AtendimentoDetails data={emAndamento()} onEncerrar={onEncerrar} onClose={() => {}} />);
 
     expect(screen.getByRole('button', { name: 'Encerrar atendimento' })).toBeDisabled();
@@ -532,7 +532,7 @@ describe('AtendimentoDetails', () => {
   });
 
   it('modo leitura: sem formulário; concluído permite "Atualizar atendimento"', async () => {
-    const onEncerrar = jest.fn();
+    const onEncerrar = vi.fn();
     renderCompleto(
       <AtendimentoDetails data={concluido()} modoLeitura permitirAtualizar onEncerrar={onEncerrar} onClose={() => {}} />,
     );
@@ -577,7 +577,7 @@ describe('AtendimentoDetails', () => {
   });
 
   it('Fechar chama onClose', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     renderCompleto(<AtendimentoDetails data={emAndamento()} onClose={onClose} />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Fechar' }));

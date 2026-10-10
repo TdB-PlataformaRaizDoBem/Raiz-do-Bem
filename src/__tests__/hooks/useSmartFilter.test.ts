@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import type { PageFilterConfig } from '../../components/UserManagement/FilterConfig';
 import type { BeneficiarioViewModel } from '../../domain/mappers/Beneficiariomapper';

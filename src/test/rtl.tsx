@@ -1,5 +1,5 @@
 /**
- * Substitui `@testing-library/react` nos testes (via moduleNameMapper do Jest): `render` e
+ * Substitui `@testing-library/react` nos testes (via `test.alias` do Vitest, em vite.config.ts): `render` e
  * `renderHook` passam a embrulhar tudo num QueryClientProvider com um cache NOVO por chamada,
  * como o App faz em produção. Os testes continuam importando de '@testing-library/react'.
  */

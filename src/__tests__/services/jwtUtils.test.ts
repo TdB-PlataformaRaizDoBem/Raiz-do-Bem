@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 import { decodeJwtPayload, extractAuthUser, isTokenExpired } from '../../services/jwtUtils';
 import { makeJwt, nowInSeconds } from '../../test/jwt';
 
@@ -81,7 +81,7 @@ describe('extractAuthUser', () => {
   });
 
   it('rejeita role desconhecida', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     expect(extractAuthUser(makeJwt({ groups: ['SUPERUSER'] }))).toBeNull();
     warn.mockRestore();
   });

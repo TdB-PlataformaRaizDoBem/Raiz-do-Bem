@@ -35,7 +35,7 @@ export function SpeechProvider({ children }: { children: React.ReactNode }) {
       setTtsState(enabled);
       try {
         localStorage.setItem("raiz-do-bem:tts", String(enabled));
-      } catch {}
+      } catch { /* localStorage indisponível: preferência não persiste */ }
       if (!enabled) cancel();
     },
     [cancel],
@@ -60,6 +60,7 @@ export function SpeechProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSpeechContext() {
   return useContext(SpeechContext);
 }

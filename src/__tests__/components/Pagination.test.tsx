@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Pagination } from '../../components/ui/Pagination';
@@ -6,7 +6,7 @@ import { Pagination } from '../../components/ui/Pagination';
 type Props = Partial<React.ComponentProps<typeof Pagination>>;
 
 function renderPagination(props: Props = {}) {
-  const onPageChange = jest.fn();
+  const onPageChange = vi.fn();
   render(
     <Pagination
       page={1}

@@ -1,7 +1,7 @@
-import { jest } from '@jest/globals';
+import { vi, type Mock } from 'vitest';
 
 /**
- * jest-environment-jsdom não expõe fetch/Response. Este fake implementa só o que
+ * O ambiente jsdom dos testes não garante fetch/Response completos. Este fake implementa só o que
  * o httpClient usa: status, ok, headers.get, text(), json() e clone().
  */
 export interface FakeResponseInit {
@@ -36,11 +36,11 @@ export function fakeResponse({
   return res as unknown as Response;
 }
 
-export type FetchMock = jest.Mock<(url: string, init?: RequestInit) => Promise<Response>>;
+export type FetchMock = Mock<(url: string, init?: RequestInit) => Promise<Response>>;
 
 /** Instala um fetch falso global e o devolve para configurar respostas/inspecionar chamadas. */
 export function installFetch(): FetchMock {
-  const mock: FetchMock = jest.fn();
+  const mock: FetchMock = vi.fn();
   globalThis.fetch = mock as unknown as typeof fetch;
   return mock;
 }

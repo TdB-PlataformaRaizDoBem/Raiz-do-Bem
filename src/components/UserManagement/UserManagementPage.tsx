@@ -19,7 +19,7 @@ function getInitialViewMode(): ViewMode {
   try {
     const saved = localStorage.getItem(VIEW_MODE_KEY);
     if (saved === "table" || saved === "cards") return saved;
-  } catch {}
+  } catch { /* localStorage indisponível: usa o padrão */ }
   return "cards";
 }
 
@@ -225,14 +225,15 @@ function EmptyState({
   variant,
   mensagemVazio,
   onClearFilters,
-  showCreateButton,
+  showCreateButton = false,
   onCreate,
 }: {
   variant: EmptyStateVariant;
   mensagemVazio: string;
   onClearFilters: () => void;
-  showCreateButton: boolean;
-  onCreate: () => void;
+  /** Só a variante "lista-vazia" oferece criar; a de filtro sem resultado só oferece limpar. */
+  showCreateButton?: boolean;
+  onCreate?: () => void;
 }) {
   if (variant === "filtro-sem-resultado") {
     return (
@@ -334,7 +335,7 @@ export function UserManagementPage<T>({
 
   const handleViewModeChange = React.useCallback((mode: ViewMode) => {
     setViewMode(mode);
-    try { localStorage.setItem(VIEW_MODE_KEY, mode); } catch {}
+    try { localStorage.setItem(VIEW_MODE_KEY, mode); } catch { /* localStorage indisponível: preferência não persiste */ }
   }, []);
 
   const defaultConfig: PageFilterConfig<T> = React.useMemo(
@@ -504,8 +505,6 @@ export function UserManagementPage<T>({
           variant="filtro-sem-resultado"
           mensagemVazio={mensagemVazio}
           onClearFilters={clearAll}
-          showCreateButton={showCreateButton}
-          onCreate={() => setOpen(true)}
         />
       )}
 

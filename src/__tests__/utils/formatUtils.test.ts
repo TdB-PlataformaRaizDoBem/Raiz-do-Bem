@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import { formatCEP, formatCPF, formatPhone, normalizeStr } from '../../utils/formatUtils';
 
 describe('normalizeStr', () => {

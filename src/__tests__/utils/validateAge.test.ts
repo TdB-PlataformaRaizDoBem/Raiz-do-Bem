@@ -1,14 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { validateAge } from '../../hooks/validateAge';
 
 describe('validateAge', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date(2026, 9, 4, 12, 0, 0)); // 04/10/2026
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 9, 4, 12, 0, 0)); // 04/10/2026
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('devolve 0 quando não há data', () => {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import useFetch from '../../hooks/useFetch';
 import { fakeResponse, installFetch, type FetchMock } from '../../test/http';
@@ -86,7 +86,7 @@ describe('useFetch', () => {
   });
 
   it('erro HTTP com corpo que não é JSON usa a mensagem padrão', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     fetchMock.mockResolvedValue(fakeResponse({ status: 500, text: '<html>' }));
     const { result } = renderHook(() => useFetch());
 

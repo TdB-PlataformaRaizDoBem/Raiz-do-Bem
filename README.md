@@ -163,7 +163,14 @@ npm run dev                   # http://localhost:5173
 
 Ficam em `src/__tests__/` (por camada); fábricas e mocks em `src/test/`. Nenhum teste chama a API real.
 
-> **Pendência:** as suítes usam a API do Jest (`jest.config.cjs`), mas `npm test` roda o **Vitest** em ambiente `node` e o pacote `jest` não está nas `devDependencies`. Por isso a maioria das suítes não carrega. Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md#testes).
+O único executor é o **Vitest** (ambiente `jsdom`, configurado em `vite.config.ts`):
+
+```bash
+npm test               # roda tudo e exige 92% de cobertura (meta do projeto)
+npm run test:watch     # modo interativo
+```
+
+Detalhes em [`ARCHITECTURE.md`](ARCHITECTURE.md#testes).
 
 ---
 

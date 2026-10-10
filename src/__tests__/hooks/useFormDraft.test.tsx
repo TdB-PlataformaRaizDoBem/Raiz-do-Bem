@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
 import { loadFormDraft, useFormDraft } from '../../hooks/useFormDraft';
@@ -7,11 +7,11 @@ const KEY = 'raiz-do-bem:teste';
 
 beforeEach(() => {
   localStorage.clear();
-  jest.useFakeTimers();
+  vi.useFakeTimers();
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 describe('loadFormDraft', () => {
@@ -49,10 +49,10 @@ describe('useFormDraft', () => {
     act(() => result.current.form.setValue('nome', 'Ana Maria'));
     expect(localStorage.getItem(KEY)).toBeNull();
 
-    act(() => jest.advanceTimersByTime(999));
+    act(() => vi.advanceTimersByTime(999));
     expect(localStorage.getItem(KEY)).toBeNull();
 
-    act(() => jest.advanceTimersByTime(1));
+    act(() => vi.advanceTimersByTime(1));
     expect(JSON.parse(localStorage.getItem(KEY) ?? '{}')).toEqual({ nome: 'Ana Maria' });
   });
 
@@ -62,7 +62,7 @@ describe('useFormDraft', () => {
 
     act(() => result.current.form.setValue('nome', 'novo'));
     act(() => result.current.clearDraft());
-    act(() => jest.advanceTimersByTime(2000));
+    act(() => vi.advanceTimersByTime(2000));
 
     expect(localStorage.getItem(KEY)).toBeNull();
   });

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
@@ -13,7 +13,7 @@ import { useUnread } from '../../hooks/useUnread';
 import { getUser, useUser } from '../../hooks/useUser';
 import { fakeResponse, installFetch, type FetchMock } from '../../test/http';
 
-type Synth = { speak: jest.Mock; cancel: jest.Mock };
+type Synth = { speak: Mock; cancel: Mock };
 const synth = () => (window as unknown as { speechSynthesis: Synth }).speechSynthesis;
 
 beforeEach(() => {
@@ -21,7 +21,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 /* ───────────── Toast ───────────── */
@@ -61,7 +61,7 @@ describe('NotificationProvider', () => {
   }
 
   it('useNotification fora do provider lança erro explicativo', () => {
-    const erro = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const erro = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => renderHook(() => useNotification())).toThrow(
       'useNotification deve ser usado dentro de um NotificationProvider',
     );
@@ -69,7 +69,7 @@ describe('NotificationProvider', () => {
   });
 
   it('mostra o toast com a cor do tipo e some depois de 3 segundos', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     render(
       <NotificationProvider>
         <Disparador />
@@ -80,12 +80,12 @@ describe('NotificationProvider', () => {
     expect(screen.getByText('Salvo com sucesso!')).toHaveClass('bg-green-600');
 
     act(() => {
-      jest.advanceTimersByTime(2999);
+      vi.advanceTimersByTime(2999);
     });
     expect(screen.getByText('Salvo com sucesso!')).toBeInTheDocument();
 
     act(() => {
-      jest.advanceTimersByTime(1);
+      vi.advanceTimersByTime(1);
     });
     expect(screen.queryByText('Salvo com sucesso!')).not.toBeInTheDocument();
   });
@@ -190,10 +190,10 @@ describe('SpeechProvider', () => {
   });
 
   it('funciona mesmo com o localStorage bloqueado', () => {
-    const get = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    const get = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
-    const set = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    const set = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
 
@@ -238,17 +238,17 @@ describe('UnreadProvider', () => {
   });
 
   it('atualiza a cada 5 segundos', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     fetchMock.mockResolvedValue(fakeResponse({ status: 200, body: conversas(1) }));
     const { result } = renderHook(() => useUnread(), { wrapper });
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
     });
     const chamadasIniciais = fetchMock.mock.calls.length;
 
     fetchMock.mockResolvedValue(fakeResponse({ status: 200, body: conversas(1, 4) }));
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(5000);
+      await vi.advanceTimersByTimeAsync(5000);
     });
 
     expect(fetchMock.mock.calls.length).toBeGreaterThan(chamadasIniciais);
@@ -269,17 +269,17 @@ describe('UnreadProvider', () => {
   });
 
   it('para de atualizar ao desmontar', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     fetchMock.mockResolvedValue(fakeResponse({ status: 200, body: [] }));
     const { unmount } = renderHook(() => useUnread(), { wrapper });
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
     });
 
     unmount();
     const aposDesmontar = fetchMock.mock.calls.length;
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(20000);
+      await vi.advanceTimersByTimeAsync(20000);
     });
 
     expect(fetchMock.mock.calls.length).toBe(aposDesmontar);
@@ -303,7 +303,7 @@ describe('useAuth / useUser', () => {
     };
 
   it('useAuth fora do AuthProvider lança erro explicativo', () => {
-    const erro = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const erro = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => renderHook(() => useAuth())).toThrow('[useAuth] Deve ser usado dentro de <AuthProvider>');
     erro.mockRestore();
   });
@@ -320,7 +320,7 @@ describe('useAuth / useUser', () => {
   });
 
   it('getUser (deprecada) devolve null', () => {
-    const aviso = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const aviso = vi.spyOn(console, 'warn').mockImplementation(() => {});
     expect(getUser()).toBeNull();
     aviso.mockRestore();
   });

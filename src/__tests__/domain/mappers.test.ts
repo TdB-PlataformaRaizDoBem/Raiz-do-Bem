@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import type { DentistaAPI } from '../../domain/entities/DentistaAPI';
 import {
   atendimentoApi,

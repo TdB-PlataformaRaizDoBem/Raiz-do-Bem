@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
@@ -9,11 +9,11 @@ import { resetGsapMock } from '../../test/gsapMock';
 import { fakeResponse, installFetch, type FetchMock } from '../../test/http';
 import { makeJwt, nowInSeconds } from '../../test/jwt';
 
-jest.mock('../../lib/gsap', () => jest.requireActual('../../test/gsapMock'));
-jest.mock('@gsap/react', () => ({ useGSAP: jest.requireActual<{ useGSAP: unknown }>('../../test/gsapMock').useGSAP }));
-jest.mock('lenis', () => ({
+vi.mock('../../lib/gsap', () => import('../../test/gsapMock'));
+vi.mock('@gsap/react', async () => ({ useGSAP: (await import('../../test/gsapMock')).useGSAP }));
+vi.mock('lenis', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({ on: jest.fn(), raf: jest.fn(), destroy: jest.fn() })),
+  default: vi.fn().mockImplementation(() => ({ on: vi.fn(), raf: vi.fn(), destroy: vi.fn() })),
 }));
 
 let fetchMock: FetchMock;
@@ -194,7 +194,7 @@ describe('App — autenticação e permissões', () => {
     backFalso((url) =>
       url === '/auth/tokenAcesso' ? fakeResponse({ status: 422, body: { mensagem: 'Email ou senha inválido(s).' } }) : undefined,
     );
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
     irPara('/auth/login');
     render(<App />);
 

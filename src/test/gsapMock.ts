@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { vi, type Mock } from 'vitest';
 import { useEffect } from 'react';
 
 /**
@@ -7,8 +7,8 @@ import { useEffect } from 'react';
  * os executam com `runMatchMedia()` para verificar o que a animação faria.
  *
  * Uso nos testes:
- *   jest.mock('../../lib/gsap', () => require('../../test/gsapMock'));
- *   jest.mock('@gsap/react', () => ({ useGSAP: require('../../test/gsapMock').useGSAP }));
+ *   vi.mock('../../lib/gsap', () => import('../../test/gsapMock'));
+ *   vi.mock('@gsap/react', async () => ({ useGSAP: (await import('../../test/gsapMock')).useGSAP }));
  */
 
 type MatchMediaEntry = { query: string; fn: () => unknown };
@@ -16,26 +16,26 @@ type MatchMediaEntry = { query: string; fn: () => unknown };
 export const registry: MatchMediaEntry[] = [];
 
 const mm = {
-  add: jest.fn((query: string, fn: () => unknown) => {
+  add: vi.fn((query: string, fn: () => unknown) => {
     registry.push({ query, fn });
     return mm;
   }),
-  revert: jest.fn(),
+  revert: vi.fn(),
 };
 
 export const gsap = {
-  matchMedia: jest.fn(() => mm),
-  to: jest.fn(),
-  from: jest.fn(),
-  fromTo: jest.fn(),
-  set: jest.fn(),
-  registerPlugin: jest.fn(),
-  ticker: { add: jest.fn(), remove: jest.fn(), lagSmoothing: jest.fn() },
+  matchMedia: vi.fn(() => mm),
+  to: vi.fn(),
+  from: vi.fn(),
+  fromTo: vi.fn(),
+  set: vi.fn(),
+  registerPlugin: vi.fn(),
+  ticker: { add: vi.fn(), remove: vi.fn(), lagSmoothing: vi.fn() },
 };
 
 export const ScrollTrigger = {
-  update: jest.fn(),
-  create: jest.fn<(vars?: unknown) => { kill: jest.Mock }>(() => ({ kill: jest.fn() })),
+  update: vi.fn(),
+  create: vi.fn<(vars?: unknown) => { kill: Mock }>(() => ({ kill: vi.fn() })),
 };
 
 export class SplitText {

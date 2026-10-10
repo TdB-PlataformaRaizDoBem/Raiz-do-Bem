@@ -2,7 +2,7 @@ import { act, screen, waitFor } from '@testing-library/react';
 import type { QueryClient } from '@tanstack/react-query';
 import { render } from '../../test/rtl';
 import { createTestQueryClient } from '../../test/queryClient';
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { AuthProvider } from '../../context/AuthContext';
@@ -12,7 +12,7 @@ import { safeFetch } from '../../services/httpClient';
 import { fakeResponse } from '../../test/http';
 import { makeJwt, nowInSeconds } from '../../test/jwt';
 
-type FetchMock = jest.Mock<(url: string, init?: RequestInit) => Promise<Response>>;
+type FetchMock = Mock<(url: string, init?: RequestInit) => Promise<Response>>;
 
 let fetchMock: FetchMock;
 
@@ -51,12 +51,12 @@ describe('AuthProvider', () => {
   beforeEach(() => {
     window.localStorage.clear();
     tokenStore.clear();
-    fetchMock = jest.fn();
+    fetchMock = vi.fn();
     globalThis.fetch = fetchMock as unknown as typeof fetch;
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('ao carregar a página (F5)', () => {
@@ -259,7 +259,7 @@ describe('AuthProvider', () => {
     });
 
     it('a verificação periódica renova o token vencido sem deslogar', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       // access válido na montagem; vence logo depois
       tokenStore.set(makeJwt({ exp: nowInSeconds() + 120, nome: 'Antes' }), 'refresh');
       fetchMock.mockResolvedValue(refreshOk(makeJwt({ nome: 'Depois' })));
@@ -267,7 +267,7 @@ describe('AuthProvider', () => {
       expect(screen.getByTestId('user')).toHaveTextContent('Antes');
 
       await act(async () => {
-        await jest.advanceTimersByTimeAsync(3 * 60_000); // passa do exp + skew
+        await vi.advanceTimersByTimeAsync(3 * 60_000); // passa do exp + skew
       });
 
       expect(screen.getByTestId('user')).toHaveTextContent('Depois');
@@ -275,13 +275,13 @@ describe('AuthProvider', () => {
     });
 
     it('a verificação periódica desloga quando a renovação falha', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       tokenStore.set(makeJwt({ exp: nowInSeconds() + 120 }), 'refresh');
       fetchMock.mockResolvedValue(fakeResponse({ status: 401 }));
       renderProvider();
 
       await act(async () => {
-        await jest.advanceTimersByTimeAsync(3 * 60_000);
+        await vi.advanceTimersByTimeAsync(3 * 60_000);
       });
 
       expect(screen.getByTestId('auth')).toHaveTextContent('false');

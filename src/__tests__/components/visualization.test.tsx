@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Counter } from '../../components/animation/Counter';
@@ -14,8 +14,8 @@ import { beneficiarioApi, pedidoApi } from '../../test/factories';
 import { resetGsapMock, runMatchMedia } from '../../test/gsapMock';
 import { installFetch, routeFetch } from '../../test/http';
 
-jest.mock('../../lib/gsap', () => jest.requireActual('../../test/gsapMock'));
-jest.mock('@gsap/react', () => ({ useGSAP: jest.requireActual<{ useGSAP: unknown }>('../../test/gsapMock').useGSAP }));
+vi.mock('../../lib/gsap', () => import('../../test/gsapMock'));
+vi.mock('@gsap/react', async () => ({ useGSAP: (await import('../../test/gsapMock')).useGSAP }));
 
 const painel = (n: number): StoryPanel => ({
   eyebrow: `Etapa ${n}`,
@@ -150,7 +150,7 @@ describe('SlideCarousel', () => {
   const rect = (left: number, width: number) => () => ({ left, width, right: left + width, top: 0, bottom: 0, height: 0, x: left, y: 0 }) as DOMRect;
 
   beforeEach(() => {
-    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+    window.HTMLElement.prototype.scrollIntoView = vi.fn();
   });
 
   it('renderiza todos os slides, setas e pontos; o primeiro começa ativo', () => {
@@ -195,7 +195,7 @@ describe('SlideCarousel', () => {
   });
 
   it('ao rolar, ativa o slide cujo centro está mais perto do centro da trilha', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     render(<SlideCarousel panels={painéis} />);
     const track = screen.getByRole('region');
     track.getBoundingClientRect = rect(0, 1000); // centro 500
@@ -206,15 +206,15 @@ describe('SlideCarousel', () => {
 
     fireEvent.scroll(track);
     act(() => {
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
     });
 
     expect(screen.getByRole('button', { name: /slide 3/ })).toHaveAttribute('aria-current', 'true');
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('o redimensionamento também recalcula o slide ativo', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     render(<SlideCarousel panels={painéis} />);
     const track = screen.getByRole('region');
     track.getBoundingClientRect = rect(0, 1000);
@@ -225,11 +225,11 @@ describe('SlideCarousel', () => {
 
     act(() => {
       window.dispatchEvent(new Event('resize'));
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
     });
 
     expect(screen.getByRole('button', { name: /slide 2/ })).toHaveAttribute('aria-current', 'true');
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('arrastar com o mouse', () => {
@@ -242,7 +242,7 @@ describe('SlideCarousel', () => {
     it('o mouse arrasta a trilha e solta ao terminar', () => {
       render(<SlideCarousel panels={painéis} />);
       const track = screen.getByRole('region');
-      track.setPointerCapture = jest.fn();
+      track.setPointerCapture = vi.fn();
       track.scrollLeft = 200;
 
       act(() => {
@@ -270,7 +270,7 @@ describe('SlideCarousel', () => {
     it('toque não inicia arrasto manual (já rola nativamente)', () => {
       render(<SlideCarousel panels={painéis} />);
       const track = screen.getByRole('region');
-      track.setPointerCapture = jest.fn();
+      track.setPointerCapture = vi.fn();
 
       act(() => {
         track.dispatchEvent(pointer('pointerdown', { pointerType: 'touch', clientX: 300, pointerId: 1 }));
@@ -283,7 +283,7 @@ describe('SlideCarousel', () => {
     it('sair com o ponteiro encerra o arrasto', () => {
       render(<SlideCarousel panels={painéis} />);
       const track = screen.getByRole('region');
-      track.setPointerCapture = jest.fn();
+      track.setPointerCapture = vi.fn();
       act(() => {
         track.dispatchEvent(pointer('pointerdown', { pointerType: 'mouse', clientX: 10, pointerId: 1 }));
         track.dispatchEvent(pointer('pointerleave', {}));
@@ -294,7 +294,7 @@ describe('SlideCarousel', () => {
 
   it('remove os listeners ao desmontar', () => {
     const { unmount } = render(<SlideCarousel panels={painéis} />);
-    const remove = jest.spyOn(window, 'removeEventListener');
+    const remove = vi.spyOn(window, 'removeEventListener');
 
     unmount();
 
@@ -317,7 +317,7 @@ describe('Counter', () => {
     runMatchMedia((q) => q === motionQuery);
 
     expect(gsap.to).toHaveBeenCalledTimes(1);
-    const [alvo, opcoes] = (gsap.to as jest.Mock).mock.calls[0] as [{ n: number }, Record<string, unknown> & { onUpdate: () => void }];
+    const [alvo, opcoes] = (gsap.to as Mock).mock.calls[0] as [{ n: number }, Record<string, unknown> & { onUpdate: () => void }];
     expect(alvo).toEqual({ n: 0 });
     expect(opcoes).toMatchObject({ n: 1234.5, duration: 1.6, scrollTrigger: { start: 'top 85%' } });
 
@@ -353,7 +353,7 @@ describe('Reveal', () => {
     runMatchMedia();
 
     expect(gsap.fromTo).toHaveBeenCalledTimes(1);
-    const [el, de, para] = (gsap.fromTo as jest.Mock).mock.calls[0] as [HTMLElement, Record<string, unknown>, Record<string, unknown>];
+    const [el, de, para] = (gsap.fromTo as Mock).mock.calls[0] as [HTMLElement, Record<string, unknown>, Record<string, unknown>];
     expect(el).toHaveClass('bloco');
     expect(de).toEqual({ autoAlpha: 0, y: 50 });
     expect(para).toMatchObject({ autoAlpha: 1, y: 0, delay: 0.3, scrollTrigger: { start: 'top 85%' } });
@@ -364,7 +364,7 @@ describe('Reveal', () => {
 
     runMatchMedia();
 
-    const [, de, para] = (gsap.fromTo as jest.Mock).mock.calls[0] as [unknown, Record<string, unknown>, Record<string, unknown>];
+    const [, de, para] = (gsap.fromTo as Mock).mock.calls[0] as [unknown, Record<string, unknown>, Record<string, unknown>];
     expect(de).toEqual({ autoAlpha: 0, y: 32 });
     expect(para.delay).toBe(0);
   });
@@ -389,7 +389,7 @@ describe('StoryScroller', () => {
 
     runMatchMedia(desktop);
 
-    const chamadas = (gsap.set as jest.Mock).mock.calls.map(([, v]) => (v as { autoAlpha: number }).autoAlpha);
+    const chamadas = (gsap.set as Mock).mock.calls.map(([, v]) => (v as { autoAlpha: number }).autoAlpha);
     expect(chamadas).toEqual([1, 0, 0]);
     expect(gsap.fromTo).toHaveBeenCalledTimes(1); // revela as linhas do primeiro painel
     expect(ScrollTrigger.create).toHaveBeenCalledTimes(1);
@@ -399,7 +399,7 @@ describe('StoryScroller', () => {
     render(<StoryScroller panels={painéis} />);
     runMatchMedia(desktop);
 
-    const config = (ScrollTrigger.create as jest.Mock).mock.calls[0][0] as { end: () => string; scrub: boolean; start: string };
+    const config = (ScrollTrigger.create as Mock).mock.calls[0][0] as { end: () => string; scrub: boolean; start: string };
 
     expect(config.start).toBe('top top');
     expect(config.scrub).toBe(true);
@@ -410,9 +410,9 @@ describe('StoryScroller', () => {
   it('ao rolar troca o painel ativo, faz a transição e revela as linhas do novo painel', () => {
     render(<StoryScroller panels={painéis} />);
     runMatchMedia(desktop);
-    const { onUpdate } = (ScrollTrigger.create as jest.Mock).mock.calls[0][0] as { onUpdate: (self: { progress: number }) => void };
-    (gsap.to as jest.Mock).mockClear();
-    (gsap.fromTo as jest.Mock).mockClear();
+    const { onUpdate } = (ScrollTrigger.create as Mock).mock.calls[0][0] as { onUpdate: (self: { progress: number }) => void };
+    (gsap.to as Mock).mockClear();
+    (gsap.fromTo as Mock).mockClear();
 
     act(() => onUpdate({ progress: 0.5 })); // 3 painéis → índice 1
 
@@ -421,14 +421,14 @@ describe('StoryScroller', () => {
     expect(gsap.to).toHaveBeenCalledTimes(2); // sai o anterior, entra o novo
     expect(gsap.fromTo).toHaveBeenCalledTimes(1);
     // parallax leve na imagem do painel ativo
-    expect((gsap.set as jest.Mock).mock.calls.at(-1)?.[1]).toHaveProperty('yPercent');
+    expect((gsap.set as Mock).mock.calls.at(-1)?.[1]).toHaveProperty('yPercent');
   });
 
   it('mesmo painel não repete a transição, só atualiza o parallax', () => {
     render(<StoryScroller panels={painéis} />);
     runMatchMedia(desktop);
-    const { onUpdate } = (ScrollTrigger.create as jest.Mock).mock.calls[0][0] as { onUpdate: (self: { progress: number }) => void };
-    (gsap.to as jest.Mock).mockClear();
+    const { onUpdate } = (ScrollTrigger.create as Mock).mock.calls[0][0] as { onUpdate: (self: { progress: number }) => void };
+    (gsap.to as Mock).mockClear();
 
     act(() => onUpdate({ progress: 0.1 }));
 
@@ -438,7 +438,7 @@ describe('StoryScroller', () => {
   it('progresso 1 não passa do último painel', () => {
     render(<StoryScroller panels={painéis} />);
     runMatchMedia(desktop);
-    const { onUpdate } = (ScrollTrigger.create as jest.Mock).mock.calls[0][0] as { onUpdate: (self: { progress: number }) => void };
+    const { onUpdate } = (ScrollTrigger.create as Mock).mock.calls[0][0] as { onUpdate: (self: { progress: number }) => void };
 
     act(() => onUpdate({ progress: 1 }));
 
@@ -449,7 +449,7 @@ describe('StoryScroller', () => {
   it('destrói o ScrollTrigger quando a media query deixa de valer', () => {
     render(<StoryScroller panels={painéis} />);
     const limpezas = runMatchMedia(desktop);
-    const trigger = (ScrollTrigger.create as jest.Mock).mock.results[0].value as { kill: jest.Mock };
+    const trigger = (ScrollTrigger.create as Mock).mock.results[0].value as { kill: Mock };
 
     limpezas.forEach((fn) => fn());
 
