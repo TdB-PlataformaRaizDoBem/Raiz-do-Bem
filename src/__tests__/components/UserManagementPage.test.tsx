@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
@@ -148,10 +148,10 @@ describe('UserManagementPage — cards e tabela', () => {
   });
 
   it('funciona com o localStorage bloqueado', async () => {
-    const get = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    const get = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
-    const set = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    const set = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
     renderPage(comTabela);
@@ -334,10 +334,10 @@ describe('UserManagementPage — detalhes', () => {
 });
 
 describe('UserManagementPage — paginação', () => {
-  let scrollIntoView: jest.Mock;
+  let scrollIntoView: Mock;
 
   beforeEach(() => {
-    scrollIntoView = jest.fn();
+    scrollIntoView = vi.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
   });
 

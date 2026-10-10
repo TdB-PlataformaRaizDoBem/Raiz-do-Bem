@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // tokenStore guarda estado em variáveis de módulo: cada teste carrega uma cópia limpa.
 async function loadStore() {
-  jest.resetModules();
+  vi.resetModules();
   const { tokenStore } = await import('../../services/tokenStore');
   return tokenStore;
 }
@@ -69,10 +69,10 @@ describe('tokenStore', () => {
 
   it('segue funcionando em memória se a localStorage estiver indisponível', async () => {
     const store = await loadStore();
-    const getItem = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
-    const setItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('bloqueado');
     });
 

@@ -1,11 +1,15 @@
 /// <reference types="node" />
-// Matchers do jest-dom (toBeInTheDocument, toHaveAttribute...) tipados para @jest/globals.
-import '@testing-library/jest-dom/jest-globals';
-import { jest } from '@jest/globals';
+// Matchers do jest-dom (toBeInTheDocument, toHaveAttribute...) registrados no `expect` do Vitest.
+import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
 import { TextDecoder, TextEncoder } from 'node:util';
 
 // jsdom não expõe TextEncoder/TextDecoder, que o react-router precisa.
 Object.assign(globalThis, { TextEncoder, TextDecoder });
+
+// Sem `globals`, o Testing Library não registra a limpeza automática do DOM entre os testes.
+afterEach(cleanup);
 
 /* ───────── APIs de navegador que o jsdom não implementa ───────── */
 
@@ -50,5 +54,5 @@ class FakeUtterance {
 }
 Object.assign(globalThis, {
   SpeechSynthesisUtterance: FakeUtterance,
-  speechSynthesis: { speak: jest.fn(), cancel: jest.fn() },
+  speechSynthesis: { speak: vi.fn(), cancel: vi.fn() },
 });

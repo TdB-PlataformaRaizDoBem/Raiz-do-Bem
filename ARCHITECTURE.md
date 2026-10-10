@@ -193,7 +193,7 @@ Sub-rotas internas (em [`Admin.tsx`](src/pages/admin/Admin.tsx) e [`Coord.tsx`](
 | `beneficiarios` | Beneficiários | ✔ | ✔ |
 | `dentistas` | Dentistas | ✔ | ✔ |
 | `atendimento` | Designação e atendimentos | ✔ | ✔ |
-| `chat`, `chat/:telefone` | Conversas WhatsApp | ✔ | ✔ |
+| `chat`, `chat/:telefone` | Conversas WhatsApp (com resumo por IA) | ✔ | ✔ |
 | `colaboradores` | Gestão de colaboradores | ✔ | — |
 | `mapa` | Mapa de vulnerabilidade | ✔ | — |
 
@@ -206,7 +206,7 @@ Páginas pesadas (login, admin, mapa) são carregadas com `lazy()`. O Leaflet s�
 | Serviço | Variável de ambiente | Uso | Documentação |
 |---|---|---|---|
 | API principal (Java) | `VITE_API_BASE_URL` | Todo o domínio e a autenticação | Repositório separado, não está neste workspace |
-| `ms-sandbox-menager` | `VITE_CHAT_API_URL` | Chat WhatsApp: histórico, envio, não lidas | `ARCHITECTURE.md` daquele projeto |
+| `ms-sandbox-menager` | `VITE_CHAT_API_URL` | Chat WhatsApp: histórico, envio, não lidas e resumo por IA (`/api/chats/{tel}/summarize`) | `ARCHITECTURE.md` daquele projeto |
 | `vulnerabilidade-api` | `VITE_GEO_API_URL` | Indicadores e malha das 27 UFs | `ARCHITECTURE.md` daquele projeto |
 | ViaCEP | — | Autopreenchimento de endereço | Sem token |
 | API de Malhas do IBGE | — | Fallback da malha do mapa, direto do navegador | — |
@@ -251,12 +251,13 @@ Decisões que valem conhecer:
 
 ## Testes
 
+- Executor único: **Vitest** com `jsdom` ([`vite.config.ts`](vite.config.ts)). Os testes importam `describe`, `it`, `expect` e `vi` de `vitest`.
 - Em [`src/__tests__/`](src/__tests__), espelhando as camadas, mais `src/domain/procedencia.test.ts` ao lado do código.
 - Utilitários em [`src/test/`](src/test): fábricas de dados, `fakeResponse`, JWT de teste, mock do GSAP, `QueryClient` isolado e `rtl.tsx` (`render`/`renderHook` com `QueryClientProvider`).
 - Serviços: `fetch` simulado. Hooks: `renderHook` com um `QueryClient` novo por teste.
-- Meta de cobertura em [`jest.config.cjs`](jest.config.cjs): 92%.
-
-> **Pendência: executor de testes desalinhado.** As suítes usam a API do **Jest** (`@jest/globals`, jsdom, Babel), mas `npm test` roda o **Vitest** em ambiente `node` e o pacote `jest` não está nas `devDependencies`. Resultado: a maioria das suítes não carrega. Até adotar um só executor, trate a cobertura como não verificada.
+- Meta de cobertura: 92%, exigida por `npm test` (limiares em [`vite.config.ts`](vite.config.ts)). Hoje: 100% de linhas, statements e funções, e ~98,7% de ramos.
+- Os ramos que faltam são guardas defensivas que a interface não deixa acionar (por exemplo `if (!el) return` em refs, ou botões já desabilitados) e proteções de SSR.
+- Ramos, quando possível, são testados pelo caminho real. Falhas que não vêm como `Error` só se provocam simulando a função de escrita do serviço (`vi.mock` parcial), porque o `fetch` sempre devolve `Error`.
 
 ## Como adicionar uma funcionalidade
 

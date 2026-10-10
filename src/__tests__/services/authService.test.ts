@@ -1,10 +1,10 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 import { fakeResponse } from '../../test/http';
 
 describe('loginRequest', () => {
   it('faz POST em /auth/tokenAcesso com email e senha e devolve os tokens', async () => {
-    jest.resetModules();
-    const fetchMock = jest.fn<(url: string, init?: RequestInit) => Promise<Response>>();
+    vi.resetModules();
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>();
     globalThis.fetch = fetchMock as unknown as typeof fetch;
     fetchMock.mockResolvedValue(
       fakeResponse({
@@ -27,8 +27,8 @@ describe('loginRequest', () => {
   });
 
   it('propaga a mensagem do back quando as credenciais são inválidas (422)', async () => {
-    jest.resetModules();
-    const fetchMock = jest.fn<(url: string, init?: RequestInit) => Promise<Response>>();
+    vi.resetModules();
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>();
     globalThis.fetch = fetchMock as unknown as typeof fetch;
     fetchMock.mockResolvedValue(
       fakeResponse({

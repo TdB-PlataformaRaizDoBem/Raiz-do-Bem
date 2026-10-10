@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
@@ -19,11 +19,11 @@ import { routes } from '../../Routes/Routes';
 import { resetGsapMock, runMatchMedia } from '../../test/gsapMock';
 import { fakeResponse, installFetch, type FetchMock } from '../../test/http';
 
-jest.mock('../../lib/gsap', () => jest.requireActual('../../test/gsapMock'));
-jest.mock('@gsap/react', () => ({ useGSAP: jest.requireActual<{ useGSAP: unknown }>('../../test/gsapMock').useGSAP }));
-jest.mock('lenis', () => ({
+vi.mock('../../lib/gsap', () => import('../../test/gsapMock'));
+vi.mock('@gsap/react', async () => ({ useGSAP: (await import('../../test/gsapMock')).useGSAP }));
+vi.mock('lenis', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({ on: jest.fn(), raf: jest.fn(), destroy: jest.fn() })),
+  default: vi.fn().mockImplementation(() => ({ on: vi.fn(), raf: vi.fn(), destroy: vi.fn() })),
 }));
 
 let fetchMock: FetchMock;
@@ -75,7 +75,7 @@ describe('Home', () => {
 
     runMatchMedia((q) => q === motionQuery);
 
-    const chamadas = (gsap.to as jest.Mock).mock.calls as [unknown, Record<string, unknown>][];
+    const chamadas = (gsap.to as Mock).mock.calls as [unknown, Record<string, unknown>][];
     const parallax = chamadas.find(([, opts]) => opts.yPercent === -12);
     expect(parallax).toBeDefined();
     expect(parallax?.[1]).toMatchObject({ rotate: -6, scrollTrigger: { scrub: true, start: 'top bottom' } });
@@ -86,7 +86,7 @@ describe('Home', () => {
 
     runMatchMedia((q) => q === motionQuery);
 
-    const contadores = (gsap.to as jest.Mock).mock.calls.filter(([alvo]) => (alvo as { n?: number })?.n === 0);
+    const contadores = (gsap.to as Mock).mock.calls.filter(([alvo]) => (alvo as { n?: number })?.n === 0);
     expect(contadores.length).toBeGreaterThan(0);
   });
 });
@@ -104,7 +104,7 @@ describe('About, Team, Faq e Contact', () => {
 
     runMatchMedia((q) => q === motionQuery);
 
-    expect((gsap.to as jest.Mock).mock.calls.length).toBeGreaterThan(0);
+    expect((gsap.to as Mock).mock.calls.length).toBeGreaterThan(0);
   });
 
   it('Team: um cartão por integrante, com LinkedIn e GitHub', () => {
@@ -236,7 +236,7 @@ describe('ContactForm (pedido de ajuda)', () => {
   });
 
   it('"Buscar Faculdades Próximas de Mim" abre uma nova aba', async () => {
-    const abrir = jest.spyOn(window, 'open').mockImplementation(() => null);
+    const abrir = vi.spyOn(window, 'open').mockImplementation(() => null);
     renderForm();
     await preencherBase({ sexo: 'masculino', idade: 30 });
 
@@ -429,7 +429,7 @@ describe('Login', () => {
     );
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('mostra o formulário administrativo e o link para voltar ao início', () => {
@@ -459,7 +459,7 @@ describe('Login', () => {
   });
 
   it('envia e-mail e senha para o login', async () => {
-    const login = jest.fn<AuthContextValue['login']>(async () => {});
+    const login = vi.fn<AuthContextValue['login']>(async () => {});
     renderLogin(login);
 
     await digitar('E-mail', 'ana@raizdobem.org');
@@ -472,7 +472,7 @@ describe('Login', () => {
 
   it('mostra "Validando..." e desabilita o botão durante o login', async () => {
     let concluir: () => void = () => {};
-    const login = jest.fn(() => new Promise<void>((res) => (concluir = res)));
+    const login = vi.fn(() => new Promise<void>((res) => (concluir = res)));
     renderLogin(login);
     await digitar('E-mail', 'ana@raizdobem.org');
     await digitar('Senha', 'Senha@123');
@@ -485,8 +485,8 @@ describe('Login', () => {
   });
 
   it('qualquer falha mostra a mensagem genérica de credenciais (sem vazar detalhes)', async () => {
-    const erro = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const login = jest.fn(async () => {
+    const erro = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const login = vi.fn(async () => {
       throw new Error('Usuário não existe no banco X');
     });
     renderLogin(login);
@@ -501,8 +501,8 @@ describe('Login', () => {
   });
 
   it('o aviso some ao tentar de novo', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    const login = jest.fn<AuthContextValue['login']>().mockRejectedValueOnce(new Error('x')).mockResolvedValueOnce();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const login = vi.fn<AuthContextValue['login']>().mockRejectedValueOnce(new Error('x')).mockResolvedValueOnce();
     renderLogin(login);
     await digitar('E-mail', 'ana@raizdobem.org');
     await digitar('Senha', 'errada1');
@@ -515,7 +515,7 @@ describe('Login', () => {
   });
 
   it('validações: e-mail e senha obrigatórios, formato e tamanho mínimo', async () => {
-    const login = jest.fn(async () => {});
+    const login = vi.fn(async () => {});
     renderLogin(login);
 
     fireEvent.submit(document.querySelector('form')!);

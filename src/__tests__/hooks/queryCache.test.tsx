@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { act, render, renderHook, screen, waitFor } from '../../test/rtl';
 import { createQueryClient, queryClient as clienteDoApp } from '../../lib/queryClient';
 import { useBeneficiarios } from '../../hooks/useBeneficiarios';

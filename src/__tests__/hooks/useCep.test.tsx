@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useEffect, type ReactNode } from 'react';
 import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';

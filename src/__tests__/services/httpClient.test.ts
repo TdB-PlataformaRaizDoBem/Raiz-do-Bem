@@ -1,14 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { fakeResponse } from '../../test/http';
 
-type FetchMock = jest.Mock<(url: string, init?: RequestInit) => Promise<Response>>;
+type FetchMock = Mock<(url: string, init?: RequestInit) => Promise<Response>>;
 
 // httpClient e tokenStore guardam estado em módulo: cada teste carrega cópias limpas.
 async function setup() {
-  jest.resetModules();
+  vi.resetModules();
   const http = await import('../../services/httpClient');
   const { tokenStore } = await import('../../services/tokenStore');
-  const fetchMock: FetchMock = jest.fn();
+  const fetchMock: FetchMock = vi.fn();
   globalThis.fetch = fetchMock as unknown as typeof fetch;
   return { http, tokenStore, fetchMock };
 }
@@ -23,7 +23,7 @@ describe('httpClient', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('safeFetch — cabeçalhos', () => {
@@ -64,7 +64,7 @@ describe('httpClient', () => {
   describe('safeFetch — 401 e renovação do token', () => {
     it('sem refresh token: limpa a sessão, avisa o handler e lança erro', async () => {
       const { http, tokenStore, fetchMock } = await setup();
-      const onUnauth = jest.fn();
+      const onUnauth = vi.fn();
       http.registerUnauthenticatedHandler(onUnauth);
       tokenStore.set('expirado');
       fetchMock.mockResolvedValue(fakeResponse({ status: 401 }));
@@ -80,7 +80,7 @@ describe('httpClient', () => {
 
     it('com refresh token: renova, repete a requisição com o novo token e devolve o resultado', async () => {
       const { http, tokenStore, fetchMock } = await setup();
-      const onUnauth = jest.fn();
+      const onUnauth = vi.fn();
       http.registerUnauthenticatedHandler(onUnauth);
       tokenStore.set('access-velho', 'refresh-1');
 
@@ -114,7 +114,7 @@ describe('httpClient', () => {
 
     it('refresh recusado pelo back: limpa tudo e desloga', async () => {
       const { http, tokenStore, fetchMock } = await setup();
-      const onUnauth = jest.fn();
+      const onUnauth = vi.fn();
       http.registerUnauthenticatedHandler(onUnauth);
       tokenStore.set('access-velho', 'refresh-vencido');
 
@@ -132,7 +132,7 @@ describe('httpClient', () => {
 
     it('não entra em loop: se o retry também der 401, desloga', async () => {
       const { http, tokenStore, fetchMock } = await setup();
-      const onUnauth = jest.fn();
+      const onUnauth = vi.fn();
       http.registerUnauthenticatedHandler(onUnauth);
       tokenStore.set('a', 'r');
 
@@ -151,7 +151,7 @@ describe('httpClient', () => {
 
     it('requisições simultâneas com 401 compartilham uma única renovação', async () => {
       const { http, tokenStore, fetchMock } = await setup();
-      http.registerUnauthenticatedHandler(jest.fn());
+      http.registerUnauthenticatedHandler(vi.fn());
       tokenStore.set('velho', 'refresh');
 
       fetchMock.mockImplementation(async (url, init) => {
@@ -205,7 +205,7 @@ describe('httpClient', () => {
   describe('publicFetch', () => {
     it('não envia Authorization nem trata 401 como logout', async () => {
       const { http, tokenStore, fetchMock } = await setup();
-      const onUnauth = jest.fn();
+      const onUnauth = vi.fn();
       http.registerUnauthenticatedHandler(onUnauth);
       tokenStore.set('token');
       fetchMock.mockResolvedValue(fakeResponse({ status: 401 }));
