@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 
+import { CONTROLADOR } from "../../domain/legal/organizacao";
+import { useCookieConsent } from "../../context/cookieConsent";
+
 import TdbLogo    from "../../assets/svgs/TDB_logo.svg";
 import IconFB     from "../../assets/svgs/ic_baseline-facebook.png";
 import IconX      from "../../assets/svgs/X.svg";
@@ -9,6 +12,7 @@ import IconYT     from "../../assets/svgs/mdi_youtube.png";
 
 const Footer = () => {
   const year = new Date().getFullYear();
+  const { reabrir } = useCookieConsent();
 
   const social_links = [
     { href: "https://www.facebook.com/turmadobem/?locale=pt_BR", icon: IconFB,     alt: "Facebook da Turma do Bem" },
@@ -37,11 +41,13 @@ const Footer = () => {
     },
   ];
 
-  const contact_emails = [
-    { label: "Presidente",               email: "turmadobem@tdb.org.br" },
-    { label: "Comunicação",              email: "comunicacao@tdb.org.br" },
-    { label: "Dúvidas, Críticas ou Sugestões", email: "faleconosco@tdb.org.br" },
+  const privacy_links = [
+    { label: "Política de Privacidade",        to: "/privacidade" },
+    { label: "Termo: Pedido de ajuda",         to: "/consentimento/pedido-de-ajuda" },
+    { label: "Termo: Dentista voluntário",     to: "/consentimento/voluntario" },
   ];
+
+  const contact_emails = CONTROLADOR.contatos.map((c) => ({ label: c.rotulo, email: c.email }));
 
   return (
     <footer aria-label="Rodapé" className="w-full bg-cream px-4 py-14 md:px-[80px]">
@@ -101,12 +107,40 @@ const Footer = () => {
               </div>
             ))}
 
+            {/* Privacidade (LGPD) */}
+            <div>
+              <span className="text-[1.1rem] font-bold block mb-4">Privacidade</span>
+              <nav aria-label="Privacidade e termos">
+                <ul className="space-y-2 list-none p-0">
+                  {privacy_links.map((link) => (
+                    <li key={link.to}>
+                      <Link
+                        to={link.to}
+                        className="text-gray-700 text-sm hover:text-darkgreen motion-safe:transition-colors duration-150 hover:underline"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <button
+                      type="button"
+                      onClick={reabrir}
+                      className="text-gray-700 text-sm hover:text-darkgreen motion-safe:transition-colors duration-150 hover:underline text-left"
+                    >
+                      Preferências de cookies
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+
             {/* Contato */}
             <div>
               <span className="text-[1.1rem] font-bold block mb-4">Contato</span>
-              <p className="text-sm text-gray-700 mb-1">Fone: 55 11 5084-7276</p>
+              <p className="text-sm text-gray-700 mb-1">Fone: {CONTROLADOR.telefone}</p>
               <p className="text-sm text-gray-700 max-w-[280px] leading-relaxed mb-4">
-                Rua Maurício Francisco Klabin, 449 — Vila Mariana, São Paulo/SP, 04120-020
+                {CONTROLADOR.endereco}
               </p>
               <ul className="space-y-3 list-none p-0">
                 {contact_emails.map((contact, idx) => (

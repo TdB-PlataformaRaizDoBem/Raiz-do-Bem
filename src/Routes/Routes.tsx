@@ -6,6 +6,15 @@ const Team = lazy(() => import("../pages/Team/Team"));
 const Faq = lazy(() => import("../pages/faq/Faq"));
 const Contact = lazy(() => import("../pages/contact/Contact"));
 const Voluntary = lazy(() => import("../pages/voluntary/Voluntary"));
+const PoliticaPrivacidade = lazy(() =>
+  import("../pages/legal/LegalDocumentPage").then((m) => ({ default: m.PoliticaPrivacidadePage })),
+);
+const TermoPedidoAjuda = lazy(() =>
+  import("../pages/legal/LegalDocumentPage").then((m) => ({ default: m.TermoPedidoAjudaPage })),
+);
+const TermoVoluntario = lazy(() =>
+  import("../pages/legal/LegalDocumentPage").then((m) => ({ default: m.TermoVoluntarioPage })),
+);
 
 export interface AppRoute {
   path: string;
@@ -51,5 +60,23 @@ export const routes: AppRoute[] = [
     element: <Voluntary />,
     title: "Seja Voluntário | Raiz do Bem",
     description: "Cadastre-se como dentista voluntário na plataforma Raiz do Bem e ajude a Turma do Bem a devolver sorrisos a quem mais precisa em todo o Brasil.",
+  },
+  {
+    path: "/privacidade",
+    element: <PoliticaPrivacidade />,
+    title: "Política de Privacidade | Raiz do Bem",
+    description: "Entenda quais dados a plataforma Raiz do Bem trata, para quê, com quem compartilha, por quanto tempo e como exercer seus direitos pela LGPD.",
+  },
+  {
+    path: "/consentimento/pedido-de-ajuda",
+    element: <TermoPedidoAjuda />,
+    title: "Termo de Consentimento — Pedido de ajuda | Raiz do Bem",
+    description: "Leia o termo de consentimento do pedido de ajuda: quais dados pedimos, para que usamos, como proteger menores de 18 anos e como revogar a autorização.",
+  },
+  {
+    path: "/consentimento/voluntario",
+    element: <TermoVoluntario />,
+    title: "Termo de Consentimento — Dentista voluntário | Raiz do Bem",
+    description: "Leia o termo de consentimento do cadastro de dentista voluntário: quais dados pedimos, para que usamos, com quem compartilhamos e como revogar a autorização.",
   },
 ];

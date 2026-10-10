@@ -75,7 +75,7 @@ export default defineConfig({
       },
     ],
     // Os testes assumem as URLs-padrão do código (sem .env): o Vite carregaria o .env local.
-    env: { VITE_API_BASE_URL: '', VITE_CHAT_API_URL: '', VITE_GEO_API_URL: 'http://localhost:8000' },
+    env: { VITE_API_BASE_URL: '', VITE_CHAT_API_URL: '', VITE_GEO_API_URL: 'http://localhost:8000', VITE_ENVIAR_CONSENTIMENTO: 'false' },
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],

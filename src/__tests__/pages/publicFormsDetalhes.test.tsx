@@ -34,8 +34,11 @@ const digitar = async (label: string | RegExp, valor: string) => {
 
 const anosAtras = (anos: number) => `${new Date().getFullYear() - anos}-06-15`;
 
+const marcar = (nome: RegExp) => userEvent.click(screen.getByRole('checkbox', { name: nome }));
+
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   vi.mocked(criarPedidoAjuda).mockReset().mockRejectedValue('quebrou');
   vi.mocked(registrarDentistaVoluntario).mockReset().mockRejectedValue('quebrou');
   installFetch().mockImplementation(async (url) => {
@@ -55,6 +58,9 @@ describe('ContactForm', () => {
     await digitar(/CEP/, '01001-000');
     await digitar(/Número/, '100');
     await digitar(/Descrição do Problema/, 'Preciso de atendimento para dor de dente forte.');
+    await marcar(/Li e concordo/);
+    await marcar(/dados sensíveis/);
+    if (idade < 18) await marcar(/responsável legal/);
   };
 
   it('falha que não é um Error mostra a mensagem padrão', async () => {
@@ -92,6 +98,7 @@ describe('VoluntaryForm', () => {
     await userEvent.selectOptions(screen.getByLabelText(/Especialidade/), '1');
     await digitar('CEP:', '01001-000');
     await digitar('Número:', '100');
+    await marcar(/Li e concordo/);
   };
 
   it('falha que não é um Error mostra a mensagem padrão', async () => {
