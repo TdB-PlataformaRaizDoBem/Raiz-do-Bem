@@ -1,3 +1,5 @@
+import type { RegistroConsentimento } from "../legal/consentimento";
+
 export interface CriarDentistaPayload {
   croDentista: string;
   cpf: string;
@@ -12,4 +14,6 @@ export interface CriarDentistaPayload {
     cep: string;
     numero: string;
   };
+  /** Comprovação do consentimento. Só é enviado com `VITE_ENVIAR_CONSENTIMENTO=true` (ver `consentimentoParaEnvio`). */
+  consentimento?: RegistroConsentimento;
 }

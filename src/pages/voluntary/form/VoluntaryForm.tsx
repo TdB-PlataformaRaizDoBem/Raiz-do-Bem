@@ -8,6 +8,10 @@ import { Button } from "../../../components/ui/Button";
 import { ToastNotificationContext } from "../../../components/context/NotificationContext";
 import { registrarDentistaVoluntario } from "../../../services/DentistaService";
 import { loadFormDraft, useFormDraft } from "../../../hooks/useFormDraft";
+import ConsentCheckbox from "../../../components/legal/ConsentCheckbox";
+import { ConsentSection, LegalLink } from "../../../components/legal/ConsentSection";
+import { consentimentoParaEnvio, criarRegistroConsentimento } from "../../../domain/legal/consentimento";
+import { CANAL_TITULAR, CONTROLADOR } from "../../../domain/legal/organizacao";
 
 const DRAFT_KEY = "raiz-do-bem:voluntary-form";
 const FORM_DEFAULTS: VoluntaryFormValues = {
@@ -21,10 +25,14 @@ const FORM_DEFAULTS: VoluntaryFormValues = {
   disponivel: "S",
   idEspecialidade: 0,
   endereco: { cep: "", numero: "" },
+  aceiteTermo: false,
 };
 
+/** Campos que nunca vão para o rascunho: identificador (CPF) e a autorização. */
+const DRAFT_OMIT = ["cpf", "aceiteTermo"] as const;
+
 const VoluntaryForm = () => {
-  const draft = loadFormDraft<VoluntaryFormValues>(DRAFT_KEY);
+  const draft = loadFormDraft<VoluntaryFormValues>(DRAFT_KEY, DRAFT_OMIT);
 
   const methods = useForm<VoluntaryFormValues>({
     mode: "onBlur",
@@ -36,7 +44,8 @@ const VoluntaryForm = () => {
     DRAFT_KEY,
     methods.watch,
     methods.formState.isDirty,
-  );;
+    DRAFT_OMIT,
+  );
 
   const onSubmit = async (data: VoluntaryFormValues) => {
     try {
@@ -54,6 +63,7 @@ const VoluntaryForm = () => {
           cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,
         },
+        ...consentimentoParaEnvio(criarRegistroConsentimento("voluntario", ["dados-cadastrais"])),
       });
 
       showNotification(
@@ -78,6 +88,35 @@ const VoluntaryForm = () => {
           className="w-full max-w-[1400px]"
         >
           <VoluntaryFormFields />
+
+          <div className="mt-[60px] px-4">
+            <ConsentSection
+              resumo={
+                <>
+                  <p>
+                    A <strong>{CONTROLADOR.nome}</strong> (CNPJ {CONTROLADOR.cnpj}) vai usar seus dados cadastrais e
+                    profissionais para validar o cadastro, entrar em contato e relacionar você a pessoas atendidas na sua
+                    região. O seu nome e o endereço e contato do consultório podem ser informados à pessoa encaminhada.
+                    Você pode pedir acesso, correção ou eliminação dos dados e revogar a autorização quando quiser,
+                    escrevendo para {CANAL_TITULAR}.
+                  </p>
+                </>
+              }
+            >
+              <ConsentCheckbox
+                {...methods.register("aceiteTermo", {
+                  required: "Para enviar, marque a autorização de uso dos dados.",
+                })}
+                error={methods.formState.errors.aceiteTermo?.message}
+              >
+                Li e concordo com o{" "}
+                <LegalLink to="/consentimento/voluntario">Termo de Consentimento</LegalLink> e a{" "}
+                <LegalLink to="/privacidade">Política de Privacidade</LegalLink>, e autorizo a Turma do Bem a usar os
+                dados deste formulário para validar meu cadastro, entrar em contato e me relacionar a pessoas atendidas
+                na minha região. *
+              </ConsentCheckbox>
+            </ConsentSection>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[60px] mt-[60px] w-full">
             <Link

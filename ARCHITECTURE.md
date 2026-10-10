@@ -11,8 +11,9 @@ Guia do front-end (SPA em React). Para instalar e rodar, veja o [README](README.
 5. [Autenticação e rotas](#autenticação-e-rotas)
 6. [Serviços externos](#serviços-externos)
 7. [Mapa de vulnerabilidade](#mapa-de-vulnerabilidade)
-8. [Testes](#testes)
-9. [Como adicionar uma funcionalidade](#como-adicionar-uma-funcionalidade)
+8. [Privacidade e LGPD](#privacidade-e-lgpd)
+9. [Testes](#testes)
+10. [Como adicionar uma funcionalidade](#como-adicionar-uma-funcionalidade)
 
 ---
 
@@ -76,7 +77,7 @@ Pastas de apoio: `src/utils/` (formatação, datas, CSV, geo), `src/lib/` (clien
 
 1. A pessoa abre **/contato** e preenche o formulário ([`ContactForm.tsx`](src/pages/contact/Form/ContactForm.tsx)).
 2. O formulário é gerenciado pelo **React Hook Form**. As regras de validação (obrigatórios, tamanhos, elegibilidade por idade e sexo via `validateAge`) são declaradas nos próprios campos. **Não há Zod** no projeto.
-3. O hook `useCep` completa rua, bairro e cidade pelo ViaCEP, e `useFormDraft` guarda um rascunho no `localStorage` para não perder o que foi digitado.
+3. O hook `useCep` completa rua, bairro e cidade pelo ViaCEP, e `useFormDraft` guarda um rascunho na `sessionStorage` (some ao fechar a aba) para não perder o que foi digitado. CPF, data de nascimento, relato, dados sensíveis e os aceites de consentimento nunca entram no rascunho. Antes de enviar, o formulário exige o checkbox de autorização (e a declaração do responsável legal para menores de 18).
 4. Ao enviar, a página limpa máscaras (CPF, telefone, CEP), converte o sexo para o enum da API e chama `criarPedidoAjuda()` ([`PedidoService.ts`](src/services/PedidoService.ts)).
 5. `PedidoService` faz `POST /pedido-ajuda` por meio de `safeFetch`. A API principal grava o pedido com status `PENDENTE`.
 6. Como a escrita foi bem-sucedida, o `httpClient` avisa o cache, que **invalida todas as queries** ([`lib/queryClient.ts`](src/lib/queryClient.ts)).
@@ -117,7 +118,8 @@ Não há store global (Redux, Zustand). O estado se divide em quatro tipos:
 | **Dados do servidor** | TanStack Query | pedidos, beneficiários, dentistas, colaboradores, atendimentos |
 | **Sessão** | `AuthContext` + `tokenStore` (localStorage) | usuário logado, tokens |
 | **Estado de tela** | `useState` local | modal aberto, aba ativa, item em foco |
-| **Preferências e rascunhos** | `localStorage` | rascunho de formulário, leitura em voz, cenário de voluntários do mapa |
+| **Rascunhos de formulário** | `sessionStorage` | texto digitado, sem dados sensíveis |
+| **Preferências** | `localStorage` | escolha de cookies (12 meses), leitura em voz, cenário de voluntários do mapa |
 
 ### Como o cache funciona
 
@@ -249,13 +251,21 @@ Decisões que valem conhecer:
 - **Cores com fonte única** em `src/styles/theme.css`, lidas em runtime por `useEscalaVulnerabilidade`.
 - **Estado ausente ≠ zero.** Um estado sem entrada no cenário não é simulado e mostra a vulnerabilidade real.
 
+## Privacidade e LGPD
+
+- **Dados do controlador** ficam em `src/domain/legal/organizacao.ts` (Turma do Bem, CNPJ, endereço, canal do titular). `ENCARREGADO` é `null` até a ONG indicar um; `DOCUMENTOS_VALIDADOS_PELA_ONG` mantém o aviso de projeto acadêmico nos textos.
+- **Documentos**: `/privacidade`, `/consentimento/pedido-de-ajuda` e `/consentimento/voluntario` (`src/pages/legal`), com versão e vigência em `consentimento.ts`.
+- **Consentimento nos formulários**: `ConsentSection` + `ConsentCheckbox` (desmarcados por padrão, obrigatórios). O pedido de ajuda tem aceite separado para dados sensíveis (art. 11) e declaração do responsável quando há menor de 18 anos (art. 14).
+- **Registro**: `criarRegistroConsentimento` monta documento, versão, itens e data/hora. O projeto é acadêmico e só de front: o aceite bloqueia o envio quando não marcado e o registro só vai à API se `VITE_ENVIAR_CONSENTIMENTO=true` (desligado por padrão, sem mudanças no back).
+- **Cookies**: `CookieBanner` (opt-in, recusar tão fácil quanto aceitar, nada pré-marcado). O Google Maps só carrega com consentimento ou clique explícito (`GoogleMapEmbed`); o YouTube usa fachada com `youtube-nocookie`.
+
 ## Testes
 
 - Executor único: **Vitest** com `jsdom` ([`vite.config.ts`](vite.config.ts)). Os testes importam `describe`, `it`, `expect` e `vi` de `vitest`.
 - Em [`src/__tests__/`](src/__tests__), espelhando as camadas, mais `src/domain/procedencia.test.ts` ao lado do código.
 - Utilitários em [`src/test/`](src/test): fábricas de dados, `fakeResponse`, JWT de teste, mock do GSAP, `QueryClient` isolado e `rtl.tsx` (`render`/`renderHook` com `QueryClientProvider`).
 - Serviços: `fetch` simulado. Hooks: `renderHook` com um `QueryClient` novo por teste.
-- Meta de cobertura: 92%, exigida por `npm test` (limiares em [`vite.config.ts`](vite.config.ts)). Hoje: 100% de linhas, statements e funções, e ~98,7% de ramos.
+- Meta de cobertura: 92%, exigida por `npm test` (limiares em [`vite.config.ts`](vite.config.ts)). Hoje: 100% de linhas, statements e funções, e ~98,7% de ramos (83 arquivos, 1658 testes).
 - Os ramos que faltam são guardas defensivas que a interface não deixa acionar (por exemplo `if (!el) return` em refs, ou botões já desabilitados) e proteções de SSR.
 - Ramos, quando possível, são testados pelo caminho real. Falhas que não vêm como `Error` só se provocam simulando a função de escrita do serviço (`vi.mock` parcial), porque o `fetch` sempre devolve `Error`.
 

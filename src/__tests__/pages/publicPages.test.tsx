@@ -50,11 +50,21 @@ const digitar = async (label: string | RegExp, valor: string) => {
 
 const anosAtras = (anos: number) => `${new Date().getFullYear() - anos}-06-15`;
 
+const marcar = (nome: RegExp) => userEvent.click(screen.getByRole('checkbox', { name: nome }));
+
+/** Marca as autorizações do pedido de ajuda; menores precisam também da declaração do responsável. */
+const autorizarPedido = async (idade: number) => {
+  await marcar(/Li e concordo/);
+  await marcar(/dados sensíveis/);
+  if (idade < 18) await marcar(/responsável legal/);
+};
+
 beforeEach(() => {
   resetGsapMock();
   Object.assign(document, { fonts: { ready: Promise.resolve() } });
   fetchMock = installFetch();
   localStorage.clear();
+  sessionStorage.clear();
 });
 
 /* ───────────── páginas institucionais ───────────── */
@@ -131,7 +141,9 @@ describe('About, Team, Faq e Contact', () => {
 
     expect(screen.getByRole('heading', { name: 'Solicitar Ajuda' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'turmadobem@tdb.org.br' })).toHaveAttribute('href', 'mailto:turmadobem@tdb.org.br');
-    expect(screen.getByTitle(/Mapa com a localização/)).toBeInTheDocument();
+    // O iframe do Google só carrega com permissão: sem ela, aparece o espaço reservado.
+    expect(screen.queryByTitle(/Mapa com a localização/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Carregar o mapa agora' })).toBeInTheDocument();
   });
 });
 
@@ -140,7 +152,7 @@ describe('About, Team, Faq e Contact', () => {
 describe('ContactForm (pedido de ajuda)', () => {
   const renderForm = () => render(comRouter(<ContactForm />));
 
-  const preencherBase = async (opts: { sexo: string; idade: number }) => {
+  const preencherBase = async (opts: { sexo: string; idade: number; autorizar?: boolean }) => {
     await digitar(/Nome Completo/, 'Maria da Silva');
     await digitar(/CPF/, '123.456.789-01');
     fireEvent.change(screen.getByLabelText(/Data de Nascimento/), { target: { value: anosAtras(opts.idade) } });
@@ -150,6 +162,7 @@ describe('ContactForm (pedido de ajuda)', () => {
     await digitar(/CEP/, '01001-000');
     await digitar(/Número/, '100');
     await digitar(/Descrição do Problema/, 'Preciso de atendimento para dor de dente forte.');
+    if (opts.autorizar !== false) await autorizarPedido(opts.idade);
   };
 
   it('menor de idade envia o pedido com os dados normalizados', async () => {
@@ -182,7 +195,8 @@ describe('ContactForm (pedido de ajuda)', () => {
     await screen.findByText('Pedido enviado com sucesso!');
 
     expect(screen.getByLabelText(/Nome Completo/)).toHaveValue('');
-    expect(localStorage.getItem('raiz-do-bem:contact-form')).toBeNull();
+    expect(sessionStorage.getItem('raiz-do-bem:contact-form')).toBeNull();
+    expect(screen.getByRole('checkbox', { name: /Li e concordo/ })).not.toBeChecked();
   });
 
   it.each([
@@ -280,7 +294,7 @@ describe('ContactForm (pedido de ajuda)', () => {
   });
 
   it('restaura o rascunho salvo ao abrir a página', () => {
-    localStorage.setItem('raiz-do-bem:contact-form', JSON.stringify({ nome: 'Rascunho Salvo', email: 'r@x.com' }));
+    sessionStorage.setItem('raiz-do-bem:contact-form', JSON.stringify({ nome: 'Rascunho Salvo', email: 'r@x.com' }));
 
     renderForm();
 
@@ -311,6 +325,7 @@ describe('Voluntary (cadastro público de dentista)', () => {
     await userEvent.selectOptions(screen.getByLabelText(/Especialidade/), '1');
     await digitar('CEP:', '01001-000');
     await digitar('Número:', '100');
+    await marcar(/Li e concordo/);
   };
 
   it('a página mostra a chamada e o formulário', () => {
@@ -402,7 +417,7 @@ describe('Voluntary (cadastro público de dentista)', () => {
 
   it('restaura o rascunho', () => {
     rotas();
-    localStorage.setItem('raiz-do-bem:voluntary-form', JSON.stringify({ nomeCompleto: 'Rascunho' }));
+    sessionStorage.setItem('raiz-do-bem:voluntary-form', JSON.stringify({ nomeCompleto: 'Rascunho' }));
 
     render(comRouter(<VoluntaryForm />));
 
@@ -534,8 +549,11 @@ describe('Login', () => {
 /* ───────────── tabela de rotas públicas ───────────── */
 
 describe('routes', () => {
-  it('define as 6 rotas públicas com título', () => {
-    expect(routes.map((r) => r.path)).toEqual(['/', '/sobre', '/integrantes', '/faq', '/contato', '/voluntario']);
+  it('define as 9 rotas públicas com título', () => {
+    expect(routes.map((r) => r.path)).toEqual([
+      '/', '/sobre', '/integrantes', '/faq', '/contato', '/voluntario',
+      '/privacidade', '/consentimento/pedido-de-ajuda', '/consentimento/voluntario',
+    ]);
     expect(routes.every((r) => r.title.endsWith('| Raiz do Bem'))).toBe(true);
     expect(routes.every((r) => r.element)).toBe(true);
   });

@@ -19,6 +19,8 @@ export interface VoluntaryFormValues {
     cep: string;
     numero: string;
   };
+  /** Autorização de uso dos dados (LGPD). Nasce desmarcada e nunca entra no rascunho. */
+  aceiteTermo: boolean;
 }
 
 const REGEX = {

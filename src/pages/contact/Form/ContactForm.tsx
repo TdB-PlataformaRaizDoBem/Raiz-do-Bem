@@ -8,6 +8,14 @@ import { ToastNotificationContext } from "../../../components/context/Notificati
 import { criarPedidoAjuda } from "../../../services/PedidoService";
 import type { SexoAPI } from "../../../domain/types/api-schema";
 import { loadFormDraft, useFormDraft } from "../../../hooks/useFormDraft";
+import ConsentCheckbox from "../../../components/legal/ConsentCheckbox";
+import { ConsentSection, LegalLink } from "../../../components/legal/ConsentSection";
+import {
+  consentimentoParaEnvio,
+  criarRegistroConsentimento,
+  type ItemConsentimento,
+} from "../../../domain/legal/consentimento";
+import { CANAL_TITULAR, CONTROLADOR } from "../../../domain/legal/organizacao";
 
 export interface ContactFormData {
   nome: string;
@@ -23,6 +31,11 @@ export interface ContactFormData {
     cep: string;
     numero: string;
   };
+
+  /** Autorizações (LGPD). Nascem desmarcadas e nunca entram no rascunho. */
+  aceiteTermo: boolean;
+  aceiteDadosSensiveis: boolean;
+  declaracaoResponsavel: boolean;
 }
 
 // Mapeia sexo do formulário para o enum da API
@@ -43,10 +56,24 @@ const FORM_DEFAULTS: ContactFormData = {
   violenciaDomestica: "",
   descricaoProblema: "",
   endereco: { cep: "", numero: "" },
+  aceiteTermo: false,
+  aceiteDadosSensiveis: false,
+  declaracaoResponsavel: false,
 };
 
+/** Campos que nunca vão para o rascunho: identificador (CPF), dados sensíveis e as autorizações. */
+const DRAFT_OMIT = [
+  "cpf",
+  "dataNascimento",
+  "violenciaDomestica",
+  "descricaoProblema",
+  "aceiteTermo",
+  "aceiteDadosSensiveis",
+  "declaracaoResponsavel",
+] as const;
+
 const ContactForm = () => {
-  const draft = loadFormDraft<ContactFormData>(DRAFT_KEY);
+  const draft = loadFormDraft<ContactFormData>(DRAFT_KEY, DRAFT_OMIT);
 
   const methods = useForm<ContactFormData>({
     mode: "onBlur",
@@ -59,12 +86,14 @@ const ContactForm = () => {
     formState: { errors, isSubmitting, isDirty },
   } = methods;
 
-  const { clearDraft } = useFormDraft(DRAFT_KEY, watch, isDirty);
+  const { clearDraft } = useFormDraft(DRAFT_KEY, watch, isDirty, DRAFT_OMIT);
 
   const dataNascimento = watch("dataNascimento");
   const sexo = watch("sexo");
   const violencia = watch("violenciaDomestica");
   const idade = dataNascimento ? validateAge(dataNascimento) : 0;
+  /** Menor de 18 anos: o consentimento precisa vir de pai, mãe ou responsável (art. 14 da LGPD). */
+  const menorDeIdade = !!dataNascimento && idade < 18;
 
   const isHomemAdulto = sexo === "masculino" && idade >= 18;
   const isMulherInativa =
@@ -79,6 +108,9 @@ const ContactForm = () => {
   const { showNotification } = React.useContext(ToastNotificationContext)!;
 
   const onSubmit = async (data: ContactFormData) => {
+    const itens: ItemConsentimento[] = ["dados-pessoais", "dados-sensiveis"];
+    if (menorDeIdade) itens.push("responsavel-legal");
+
     try {
       await criarPedidoAjuda({
         nome: data.nome,
@@ -92,6 +124,7 @@ const ContactForm = () => {
           cep: data.endereco.cep.replace(/\D/g, ""),
           numero: data.endereco.numero,
         },
+        ...consentimentoParaEnvio(criarRegistroConsentimento("pedido-de-ajuda", itens)),
       });
 
       showNotification("Pedido enviado com sucesso!", "success");
@@ -292,6 +325,67 @@ const ContactForm = () => {
             error={errors.descricaoProblema?.message}
           />
         </div>
+
+        <ConsentSection
+          tone="dark"
+          resumo={
+            <>
+              <p>
+                A <strong>{CONTROLADOR.nome}</strong> (CNPJ {CONTROLADOR.cnpj}) vai usar os dados deste formulário para
+                analisar o pedido, encaminhá-lo a um dentista voluntário e entrar em contato por telefone, WhatsApp ou
+                e-mail. Você pode pedir acesso, correção ou eliminação dos dados e revogar a autorização quando quiser,
+                escrevendo para {CANAL_TITULAR}.
+              </p>
+              <p className="mt-2">
+                Se a pessoa a ser atendida tem menos de 18 anos, o pedido deve ser feito por pai, mãe ou responsável. Se
+                você preenche por outra pessoa adulta, ela precisa ter autorizado.
+              </p>
+            </>
+          }
+        >
+          <ConsentCheckbox
+            tone="dark"
+            {...register("aceiteTermo", {
+              required: "Para enviar, marque a autorização de uso dos dados.",
+            })}
+            error={errors.aceiteTermo?.message}
+          >
+            Li e concordo com o{" "}
+            <LegalLink to="/consentimento/pedido-de-ajuda" tone="dark">
+              Termo de Consentimento
+            </LegalLink>{" "}
+            e a{" "}
+            <LegalLink to="/privacidade" tone="dark">
+              Política de Privacidade
+            </LegalLink>
+            , e autorizo a Turma do Bem a usar os dados deste formulário para analisar o pedido, encaminhá-lo a um
+            dentista voluntário e entrar em contato. *
+          </ConsentCheckbox>
+
+          <ConsentCheckbox
+            tone="dark"
+            {...register("aceiteDadosSensiveis", {
+              required: "Para enviar, marque a autorização para os dados sensíveis.",
+            })}
+            error={errors.aceiteDadosSensiveis?.message}
+          >
+            Autorizo, de forma específica, o uso dos dados sensíveis que informei: a descrição do problema de saúde
+            bucal e, se for o caso, a resposta sobre violência. *
+          </ConsentCheckbox>
+
+          {menorDeIdade && (
+            <ConsentCheckbox
+              tone="dark"
+              {...register("declaracaoResponsavel", {
+                validate: (marcado) => marcado || "Para enviar, confirme que você é o responsável legal.",
+              })}
+              error={errors.declaracaoResponsavel?.message}
+            >
+              Declaro ser pai, mãe ou responsável legal da pessoa menor de 18 anos cujos dados informei e dou este
+              consentimento em nome dela. *
+            </ConsentCheckbox>
+          )}
+        </ConsentSection>
 
         {mensagemErro && (
           <div role="alert" className="mt-4 p-5 bg-white/5 border border-white/20 rounded-xl animate-fadeIn">

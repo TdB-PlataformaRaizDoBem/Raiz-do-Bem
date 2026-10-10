@@ -1,4 +1,5 @@
 import ContactForm from "./Form/ContactForm";
+import { GoogleMapEmbed } from "../../components/legal/GoogleMapEmbed";
 import Dentinho from "../../assets/img/dentinhoContato.webp";
 
 const Contact = () => {
@@ -46,15 +47,7 @@ const Contact = () => {
 
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-[60px] items-center">
           <div className="animate-scale-in w-full lg:w-[500px] h-[300px] md:h-[450px] rounded-lg overflow-hidden shadow-lg">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.402206778434!2d-46.6341499!3d-23.5905244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce5a37456d68b9%3A0x6a6d6d8d6d6d6d6d!2sRua%20Maur%C3%ADcio%20Francisco%20Klabin%2C%20449!5e0!3m2!1spt-BR!2sbr!4v1"
-              title="Mapa com a localização da sede da Turma do Bem"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-            />
+            <GoogleMapEmbed />
           </div>
 
           <div className="flex flex-col gap-6 text-black font-sans">
