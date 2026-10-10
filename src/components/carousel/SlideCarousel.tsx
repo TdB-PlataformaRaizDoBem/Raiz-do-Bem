@@ -138,12 +138,14 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
               <img
                 src={panel.image}
                 alt={panel.imageAlt}
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-darkgreen/95 via-darkgreen/45 to-transparent" />
 
               <div className="relative z-10 h-full flex flex-col justify-end p-6 sm:p-8 md:p-10">
-                <p className="inline-block w-fit uppercase tracking-[0.25em] text-xs font-bold text-lightgreen mb-3 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <p className="inline-block w-fit uppercase tracking-[0.25em] text-xs font-bold text-mint mb-3 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   {panel.eyebrow}
                 </p>
                 <h3 className="font-fredoka font-bold text-white text-2xl sm:text-3xl md:text-4xl leading-[1.1] mb-3 text-balance">
@@ -179,7 +181,7 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
       </button>
 
       {/* Pontos */}
-      <div className="flex justify-center gap-3 mt-8">
+      <div className="flex justify-center gap-1 mt-8">
         {panels.map((panel, i) => (
           <button
             key={panel.eyebrow}
@@ -187,10 +189,16 @@ export function SlideCarousel({ panels }: SlideCarouselProps) {
             onClick={() => goTo(i)}
             aria-label={`Ir para o slide ${i + 1}: ${panel.eyebrow}`}
             aria-current={i === active}
-            className={`rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/60 ${
-              i === active ? "w-8 h-2.5 bg-orange" : "w-2.5 h-2.5 bg-darkgreen/20 hover:bg-darkgreen/40"
-            }`}
-          />
+            className="group flex h-6 min-w-6 items-center justify-center rounded-full px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkgreen/60"
+          >
+            {/* O botão tem 24 px de área clicável (WCAG 2.2, critério 2.5.8); o ponto visível continua pequeno. */}
+            <span
+              aria-hidden="true"
+              className={`block rounded-full transition-all duration-300 ${
+                i === active ? "w-8 h-2.5 bg-orange" : "w-2.5 h-2.5 bg-darkgreen/20 group-hover:bg-darkgreen/40"
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>

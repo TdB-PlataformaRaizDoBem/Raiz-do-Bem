@@ -133,7 +133,11 @@ const Footer = () => {
           <img
             src={TdbLogo}
             alt="Turma do Bem"
-            className="w-full max-w-[400px] opacity-80"
+            width={120}
+            height={60}
+            loading="lazy"
+            decoding="async"
+            className="w-full max-w-[400px] h-auto opacity-80"
           />
         </div>
 

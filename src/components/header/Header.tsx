@@ -53,7 +53,7 @@ export function Header() {
   `;
 
   const ctaStyle = `
-    bg-orange text-white text-shadow-contrast rounded-lg font-semibold
+    bg-orange-strong text-white text-shadow-contrast rounded-lg font-semibold
     transition-all duration-200 motion-safe:hover:-translate-y-0.5 active:scale-95
     hover:bg-[#e07c1c] px-[15px] py-[10px]
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50
@@ -76,6 +76,8 @@ export function Header() {
             <img
               src={TDB}
               alt="Turma do Bem"
+              width={120}
+              height={60}
               className="w-[100px] sm:w-[120px] h-auto block pb-4"
             />
           </NavLink>

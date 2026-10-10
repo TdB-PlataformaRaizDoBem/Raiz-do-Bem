@@ -306,9 +306,9 @@ describe('SlideCarousel', () => {
 /* ───────────── animações (GSAP simulado) ───────────── */
 
 describe('Counter', () => {
-  it('mostra o prefixo/sufixo e o valor inicial zerado', () => {
+  it('renderiza o valor final no HTML, com prefixo e sufixo, para leitores de tela e rastreadores', () => {
     render(<Counter value={1200} prefix="+" suffix=" mil" />);
-    expect(screen.getByText('+0 mil')).toBeInTheDocument();
+    expect(screen.getByText('+1.200 mil')).toBeInTheDocument();
   });
 
   it('com movimento permitido anima de 0 até o valor, formatando em pt-BR', () => {
@@ -316,6 +316,8 @@ describe('Counter', () => {
 
     runMatchMedia((q) => q === motionQuery);
 
+    // ao animar, o texto volta a zero antes da contagem
+    expect(screen.getByText('+0,0%')).toBeInTheDocument();
     expect(gsap.to).toHaveBeenCalledTimes(1);
     const [alvo, opcoes] = (gsap.to as Mock).mock.calls[0] as [{ n: number }, Record<string, unknown> & { onUpdate: () => void }];
     expect(alvo).toEqual({ n: 0 });
@@ -337,7 +339,7 @@ describe('Counter', () => {
 
   it('aplica a className', () => {
     render(<Counter value={1} className="grande" />);
-    expect(screen.getByText('0')).toHaveClass('grande');
+    expect(screen.getByText('1')).toHaveClass('grande');
   });
 });
 

@@ -1,5 +1,5 @@
 import VoluntaryForm from "./form/VoluntaryForm";
-import DentistaImg from "../../assets/img/dentistaConfiante.png"
+import DentistaImg from "../../assets/img/dentistaConfiante.webp"
 
 
 const Voluntary = () => {
@@ -17,7 +17,7 @@ const Voluntary = () => {
 
           <a
             href="#form-voluntario"
-            className="inline-block mt-12 lg:mt-20 w-[290px] h-[50px] bg-orange text-white text-shadow-contrast text-lg font-bold rounded-lg text-center leading-[50px] transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-darkgreen"
+            className="inline-block mt-12 lg:mt-20 w-[290px] h-[50px] bg-orange-strong text-white text-shadow-contrast text-lg font-bold rounded-lg text-center leading-[50px] transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-darkgreen"
           >
             Cadastre-se
           </a>

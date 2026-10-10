@@ -34,6 +34,9 @@ export function Counter({ value, prefix = "", suffix = "", decimals = 0, classNa
       const mm = gsap.matchMedia();
 
       mm.add(motionQuery, () => {
+        // O HTML nasce com o valor final (leitores de tela e rastreadores leem o número real);
+        // a contagem só zera o texto aqui, antes da primeira pintura, para animar de 0 até o valor.
+        el.textContent = `${prefix}${formatter.format(0)}${suffix}`;
         const counter = { n: 0 };
         gsap.to(counter, {
           n: value,
@@ -60,7 +63,7 @@ export function Counter({ value, prefix = "", suffix = "", decimals = 0, classNa
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {formatter.format(0)}
+      {formatter.format(value)}
       {suffix}
     </span>
   );

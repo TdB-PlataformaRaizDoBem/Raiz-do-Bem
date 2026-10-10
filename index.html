@@ -2,10 +2,40 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./public/TDB_logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="/TDB_logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Poppins:wght@100..900&display=swap" rel="stylesheet">
-    <title>Raiz do Bem</title>
+    <link rel="preload" href="/src/assets/fonts/fredoka-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Imagem do hero (LCP da Home): sem este preload ela só é pedida depois que o JS monta a página. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      imagesrcset="/src/assets/img/hero-dentista-exame-640.webp 640w, /src/assets/img/hero-dentista-exame-1024.webp 1024w, /src/assets/img/hero-dentista-exame-1600.webp 1600w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+    <title>Raiz do Bem | Plataforma da Turma do Bem</title>
+    <meta name="description" content="Raiz do Bem é a plataforma da Turma do Bem que conecta dentistas voluntários a crianças, jovens e mulheres em vulnerabilidade social que precisam de tratamento odontológico gratuito." />
+    <meta name="theme-color" content="#006a4e" />
+    <link rel="canonical" href="https://raiz-do-bem.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Raiz do Bem" />
+    <meta property="og:title" content="Raiz do Bem | Plataforma da Turma do Bem" />
+    <meta property="og:description" content="Conectamos dentistas voluntários a quem mais precisa de tratamento odontológico gratuito." />
+    <meta property="og:url" content="https://raiz-do-bem.vercel.app/" />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "NGO",
+        "name": "Turma do Bem",
+        "alternateName": "Raiz do Bem",
+        "url": "https://raiz-do-bem.vercel.app/",
+        "logo": "https://raiz-do-bem.vercel.app/TDB_logo.svg",
+        "sameAs": ["https://turmadobem.org.br/"]
+      }
+    </script>
     <style>
       /* VLibras — posicionado bottom-left para não sobrepor ações principais.
          z-index 900: acima do conteúdo normal, abaixo de modais (z-999). */
@@ -18,6 +48,10 @@
       }
       div[vw] .vw-plugin-wrapper {
         z-index: 900 !important;
+      }
+      /* A imagem do botão do VLibras é 450x120 exibida em 40x40; contain evita a distorção. */
+      img#vlibras-popup {
+        object-fit: contain !important;
       }
       /* Em desktop (sem bottomnav mobile), recua para bottom normal */
       @media (min-width: 1024px) {
@@ -37,9 +71,25 @@
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>
-      new window.VLibras.Widget('https://vlibras.gov.br/app');
+      /* VLibras carrega depois do evento load, em tempo ocioso: o script externo
+         bloqueava a renderização (~750 ms de atraso estimado no Lighthouse). */
+      window.addEventListener('load', function () {
+        var iniciar = function () {
+          var s = document.createElement('script');
+          s.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+          s.async = true;
+          s.onload = function () {
+            new window.VLibras.Widget('https://vlibras.gov.br/app');
+          };
+          document.body.appendChild(s);
+        };
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(iniciar, { timeout: 3000 });
+        } else {
+          window.setTimeout(iniciar, 1);
+        }
+      });
     </script>
   </body>
 </html>

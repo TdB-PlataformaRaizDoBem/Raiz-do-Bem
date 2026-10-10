@@ -15,7 +15,8 @@ import { AuthContext, type AuthContextValue } from '../../context/auth';
 import { UnreadContext } from '../../context/unread';
 import type { ConversationPreview } from '../../domain/entities/ConversationPreview';
 import type { MessageResponse } from '../../domain/entities/MessageResponse';
-import { AppLayout, AuthLayout, PublicLayout } from '../../layout/Layout';
+import { AuthLayout, PublicLayout } from '../../layout/Layout';
+import { AppLayout } from '../../layout/AppLayout';
 import ScrollToTop from '../../layout/ScrollToTop';
 import { fakeResponse, installFetch } from '../../test/http';
 

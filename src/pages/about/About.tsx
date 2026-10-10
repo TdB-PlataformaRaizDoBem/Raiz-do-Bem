@@ -11,17 +11,17 @@ import {
 
 import { Counter } from "../../components/animation/Counter";
 
-import DentinhoRegando from "../../assets/img/dentinhoRegando.png";
-import ImgAboutTdb     from "../../assets/img/img-about-tdb.png";
-import DentistaDoBem2  from "../../assets/img/dentistaDoBem2.png";
-import Apolonia2       from "../../assets/img/Apolonia2.png";
+import DentinhoRegando from "../../assets/img/dentinhoRegando.webp";
+import ImgAboutTdb     from "../../assets/img/img-about-tdb.webp";
+import DentistaDoBem2  from "../../assets/img/dentistaDoBem2.webp";
+import Apolonia2       from "../../assets/img/Apolonia2.webp";
 import Abstract2       from "../../assets/svgs/abstract2.svg";
 import Abstract3       from "../../assets/svgs/abstract3.svg";
 import UnionLeft       from "../../assets/svgs/Union2.svg";
 import UnionRight      from "../../assets/svgs/Union.svg";
 
 const About = () => {
-  const sectionLabel = "text-[10px] uppercase tracking-[0.2em] text-darkgreen/60 font-bold mb-2 block text-center";
+  const sectionLabel = "text-xs uppercase tracking-[0.2em] text-darkgreen font-bold mb-2 block text-center";
   const sectionTitle = "text-center font-fredoka text-3xl md:text-5xl lg:text-[4rem] font-bold";
   const containerMax = "max-w-[1240px] mx-auto";
 
@@ -31,7 +31,7 @@ const About = () => {
       {/* ── HERO ──────────────────────────────────────────────────────── */}
       <section className="flex flex-col lg:flex-row items-center justify-center py-20 lg:py-[136px] px-6 lg:px-[100px] gap-10">
         <div className="text-center lg:text-left max-w-2xl">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-lightgreen/70 font-bold mb-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-mint font-bold mb-3">
             Nossa Plataforma
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-[4rem] font-fredoka font-bold text-white leading-tight mb-3">
@@ -158,7 +158,7 @@ const About = () => {
             <img src={UnionRight} alt="" aria-hidden="true" className="hidden lg:block absolute z-0 pointer-events-none w-[356px] h-[356px] top-[-80px] right-[calc(50%-650px)]" />
 
             {/* Card Dentistas do Bem */}
-            <div className="bg-orange rounded-3xl w-full max-w-[560px] flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden">
+            <div className="bg-orange-strong rounded-3xl w-full max-w-[560px] flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden">
               <img
                 src={DentistaDoBem2}
                 alt="Dentistas do Bem"
@@ -177,7 +177,7 @@ const About = () => {
             </div>
 
             {/* Card Apolônias do Bem */}
-            <div className="bg-orange rounded-3xl w-full max-w-[560px] flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden">
+            <div className="bg-orange-strong rounded-3xl w-full max-w-[560px] flex flex-col relative p-6 pb-20 z-10 shadow-lg overflow-hidden">
               <img
                 src={Apolonia2}
                 alt="Apolônias do Bem"

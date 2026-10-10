@@ -90,7 +90,7 @@ export const StateRanking = ({ rankingEstado }: StateRankingProps) => {
                     <span
                       className={`
                         text-xs
-                        ${isFirst ? "text-lightgreen font-medium" : "text-gray"}
+                        ${isFirst ? "text-darkgreen font-bold" : "text-gray"}
                       `}
                     >
                       {item.percent.toFixed(1)}%

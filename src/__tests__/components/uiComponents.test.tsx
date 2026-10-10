@@ -68,7 +68,7 @@ describe('Button', () => {
   });
 
   it.each([
-    ['primary', 'bg-orange'],
+    ['primary', 'bg-orange-strong'],
     ['danger', 'bg-red-500'],
     ['secondary', 'bg-darkgreen'],
     ['outline', 'border-gray-300'],

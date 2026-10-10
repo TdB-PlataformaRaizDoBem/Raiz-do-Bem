@@ -1,5 +1,5 @@
 import { teamMembers } from "./TeamMembers";
-import DentinhoIntegrantes from "../../assets/img/dentinhoIntegrantes.png";
+import DentinhoIntegrantes from "../../assets/img/dentinhoIntegrantes.webp";
 import LinkedinIcon from "../../assets/svgs/mdi_linkedin_2.svg";
 import GithubIcon from "../../assets/svgs/mdi_github.svg";
 
@@ -15,7 +15,7 @@ const Team = () => {
           <div className="animate-rise-in pt-[80px] md:pt-[100px] text-center px-6">
             <h1
               id="integrantes"
-              className="font-fredoka font-bold text-white text-shadow-contrast text-5xl sm:text-6xl md:text-7xl lg:text-[6rem] leading-none"
+              className="font-fredoka font-bold text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.65),0_1px_12px_rgba(0,0,0,0.35)] text-5xl sm:text-6xl md:text-7xl lg:text-[6rem] leading-none"
             >
               Quem Faz Acontecer
             </h1>

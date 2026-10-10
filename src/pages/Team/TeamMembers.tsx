@@ -1,6 +1,6 @@
-import MemberMurilo from "../../assets/img/member-murilo.png";
-import MemberPaulo  from "../../assets/img/member-paulo-2.png";
-import MemberRenan  from "../../assets/img/member-renan.png";
+import MemberMurilo from "../../assets/img/member-murilo.webp";
+import MemberPaulo  from "../../assets/img/member-paulo-2.webp";
+import MemberRenan  from "../../assets/img/member-renan.webp";
 export interface TeamMember {
   name: string;
   rm: string;
