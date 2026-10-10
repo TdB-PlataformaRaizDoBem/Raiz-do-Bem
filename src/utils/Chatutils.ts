@@ -10,6 +10,15 @@ export function formatHora(isoDate: string): string {
   }
 }
 
+/** Data e hora com segundos (tooltip da bolha): desempata mensagens do mesmo minuto, que o "HH:MM" não distingue */
+export function formatDataHoraCompleta(isoDate: string): string {
+  try {
+    return new Date(isoDate).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "medium" });
+  } catch {
+    return "";
+  }
+}
+
 /** Trunca um texto longo para preview da sidebar */
 export function formatPreview(text: string | null, maxLen = 40): string {
   if (!text) return "…";

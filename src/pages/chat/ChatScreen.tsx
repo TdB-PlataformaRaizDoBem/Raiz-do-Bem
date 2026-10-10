@@ -9,6 +9,7 @@ import {
 import { normalizeTel } from "../../utils/Chatutils";
 import { ChatSidebar } from "../../components/chat/Chatsidebar";
 import { ChatWindow } from "../../components/chat/Chatwindow";
+import { useChatSummaryPanel } from "../../hooks/useChatSummaryPanel";
 import { useContactLookup } from "../../hooks/useContactLookup";
 import { useCurrentColaboradorId } from "../../hooks/useCurrentColaboradorId";
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
@@ -32,6 +33,7 @@ export default function ChatScreen() {
 
   const colaboradorId = useCurrentColaboradorId();
   const { contact } = useContactLookup(telefone);
+  const summary = useChatSummaryPanel(telefone);
 
   const [messages, setMessages] = useState<MessageResponse[]>([]);
   const [conversations, setConversations] = useState<ConversationPreview[]>([]);
@@ -179,6 +181,7 @@ export default function ChatScreen() {
         sending={sending}
         error={error}
         contact={contact}
+        summary={summary}
         onSend={handleSend}
         onClearError={() => setError(null)}
         onOpenSidebar={() => setSidebarOpen(true)}

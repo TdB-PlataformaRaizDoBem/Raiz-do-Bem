@@ -8,6 +8,7 @@ import {
 import { normalizeTel } from "../../utils/Chatutils";
 import { ChatWindow } from "../../components/chat/Chatwindow";
 import { ConversationItem } from "../../components/chat/Conversationitem";
+import { useChatSummaryPanel } from "../../hooks/useChatSummaryPanel";
 import { useUnread } from "../../hooks/useUnread";
 import { useContactLookup } from "../../hooks/useContactLookup";
 import { useCurrentColaboradorId } from "../../hooks/useCurrentColaboradorId";
@@ -33,6 +34,7 @@ export default function ConversasScreen() {
   const colaboradorId = useCurrentColaboradorId();
   const prevMsgIdsRef = useRef<Set<string>>(new Set());
   const { contact } = useContactLookup(selectedTel ?? "");
+  const summary = useChatSummaryPanel(selectedTel ?? "");
 
   const fetchHistory = useCallback(async () => {
     if (!selectedTel) return;
@@ -198,6 +200,7 @@ export default function ConversasScreen() {
           sending={sending}
           error={error}
           contact={contact}
+          summary={summary}
           onSend={handleSend}
           onClearError={() => setError(null)}
           onOpenSidebar={() => setSidebarOpen(true)}

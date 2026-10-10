@@ -25,8 +25,8 @@ export function createQueryClient(): QueryClient {
 /** Cliente único do app. */
 export const queryClient = createQueryClient();
 
-/** Endpoints que não alteram dados de domínio (chat e autenticação não invalidam o cache). */
-const NAO_INVALIDA = /\/(chat|auth)\//;
+/** Endpoints que não alteram dados de domínio (chat, resumo por IA e autenticação não invalidam o cache). */
+const NAO_INVALIDA = /\/(chat|chats|auth)\//;
 
 /**
  * Qualquer escrita bem-sucedida (POST/PUT/PATCH/DELETE) invalida o cache: as telas que estão
