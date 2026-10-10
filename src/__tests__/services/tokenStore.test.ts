@@ -9,7 +9,7 @@ async function loadStore() {
 
 describe('tokenStore', () => {
   beforeEach(() => {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
   });
 
   it('começa sem sessão', async () => {
@@ -27,11 +27,11 @@ describe('tokenStore', () => {
     expect(store.exists()).toBe(true);
   });
 
-  it('persiste na sessionStorage (sobrevive ao F5)', async () => {
+  it('persiste na localStorage (sobrevive ao F5)', async () => {
     const primeira = await loadStore();
     primeira.set('access', 'refresh');
 
-    // "F5": módulo recarregado, memória zerada, sessionStorage mantida
+    // "F5": módulo recarregado, memória zerada, localStorage mantida
     const aposReload = await loadStore();
     expect(aposReload.get()).toBe('access');
     expect(aposReload.getRefresh()).toBe('refresh');
@@ -50,24 +50,24 @@ describe('tokenStore', () => {
     store.set('access', 'refresh');
     store.set('access', null);
     expect(store.getRefresh()).toBeNull();
-    expect(window.sessionStorage.getItem('rdb.refreshToken')).toBeNull();
+    expect(window.localStorage.getItem('rdb.refreshToken')).toBeNull();
   });
 
-  it('clear apaga memória e sessionStorage', async () => {
+  it('clear apaga memória e localStorage', async () => {
     const store = await loadStore();
     store.set('access', 'refresh');
     store.clear();
 
     expect(store.get()).toBeNull();
     expect(store.getRefresh()).toBeNull();
-    expect(window.sessionStorage.getItem('rdb.accessToken')).toBeNull();
-    expect(window.sessionStorage.getItem('rdb.refreshToken')).toBeNull();
+    expect(window.localStorage.getItem('rdb.accessToken')).toBeNull();
+    expect(window.localStorage.getItem('rdb.refreshToken')).toBeNull();
 
     const aposReload = await loadStore();
     expect(aposReload.exists()).toBe(false);
   });
 
-  it('segue funcionando em memória se a sessionStorage estiver indisponível', async () => {
+  it('segue funcionando em memória se a localStorage estiver indisponível', async () => {
     const store = await loadStore();
     const getItem = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('bloqueado');

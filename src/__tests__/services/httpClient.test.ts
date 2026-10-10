@@ -19,7 +19,7 @@ function headersOf(fetchMock: FetchMock, call: number): Record<string, string> {
 
 describe('httpClient', () => {
   beforeEach(() => {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
   });
 
   afterEach(() => {

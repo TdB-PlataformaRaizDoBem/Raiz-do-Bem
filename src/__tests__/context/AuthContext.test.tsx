@@ -49,7 +49,7 @@ const refreshOk = (token: string) =>
 
 describe('AuthProvider', () => {
   beforeEach(() => {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
     tokenStore.clear();
     fetchMock = jest.fn();
     globalThis.fetch = fetchMock as unknown as typeof fetch;

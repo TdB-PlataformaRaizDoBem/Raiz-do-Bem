@@ -1,14 +1,14 @@
 /**
- * tokenStore.ts — Armazenamento dos tokens JWT na sessionStorage da aba.
+ * tokenStore.ts — Armazenamento dos tokens JWT na localStorage do navegador.
  *
- *   – Access token (8h) e refresh token (7d) sobrevivem ao F5, então o usuário
- *     continua logado ao recarregar a página.
- *   – São descartados ao fechar a aba/janela e não são compartilhados entre
- *     abas (diferente do localStorage, que persiste indefinidamente).
- *   – Mantém uma cópia em memória como fallback caso a sessionStorage esteja
+ *   – Access token (30min) e refresh token (7d) sobrevivem ao F5 e ao fechamento
+ *     do navegador, então o usuário continua logado até o refresh expirar ou
+ *     ele sair manualmente.
+ *   – São compartilhados entre abas do mesmo navegador.
+ *   – Mantém uma cópia em memória como fallback caso a localStorage esteja
  *     indisponível (modo privado restrito, storage bloqueado, etc.).
  *   – Risco conhecido: JS malicioso no mesmo origin (XSS) consegue ler a
- *     sessionStorage; mitigar com Content Security Policy no servidor.
+ *     localStorage; mitigar com Content Security Policy no servidor.
  *
  * Acesso restrito:
  *   – Apenas httpClient (Authorization header + renovação) e AuthContext
@@ -24,7 +24,7 @@ let _refreshToken: string | null = null;
 
 function readStorage(key: string): string | null {
   try {
-    return window.sessionStorage.getItem(key);
+    return window.localStorage.getItem(key);
   } catch {
     return null;
   }
@@ -33,9 +33,9 @@ function readStorage(key: string): string | null {
 function writeStorage(key: string, value: string | null): void {
   try {
     if (value === null) {
-      window.sessionStorage.removeItem(key);
+      window.localStorage.removeItem(key);
     } else {
-      window.sessionStorage.setItem(key, value);
+      window.localStorage.setItem(key, value);
     }
   } catch {
     // Storage indisponível: segue apenas com a cópia em memória.
