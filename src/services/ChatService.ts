@@ -1,3 +1,4 @@
+import type { ChatSummary } from "../domain/entities/ChatSummary";
 import type { ConversationPreview } from "../domain/entities/ConversationPreview";
 import type { MessageCreateRequest } from "../domain/entities/MessageCreateRequest";
 import type { MessageResponse } from "../domain/entities/MessageResponse";
@@ -63,5 +64,16 @@ export async function markAsRead(
 ): Promise<{ status: string; messagens_updated: number }> {
   const tel = encodeURIComponent(telefone);
   const res = await safeFetch(`${CHAT_API_URL}/chat/read/${tel}`, { method: "PUT" });
+  return handleResponse(res);
+}
+
+/**
+ * POST /api/chats/{tel}/summarize
+ * Pede à IA um resumo estruturado do histórico (necessidade, status e próximos passos).
+ * A conversa é identificada pelo telefone, o mesmo identificador do histórico.
+ */
+export async function summarizeChat(telefone: string): Promise<ChatSummary> {
+  const tel = encodeURIComponent(telefone);
+  const res = await safeFetch(`${CHAT_API_URL}/api/chats/${tel}/summarize`, { method: "POST" });
   return handleResponse(res);
 }

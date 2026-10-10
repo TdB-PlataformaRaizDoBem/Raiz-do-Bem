@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   avatarColor,
   avatarInitials,
   buildChatUrl,
   buildGlobalChatUrl,
+  formatDataHoraCompleta,
   formatHora,
   formatPreview,
   normalizeTel,
@@ -19,10 +20,27 @@ describe('formatHora', () => {
   });
 
   it('devolve "" quando o locale falha', () => {
-    const spy = jest.spyOn(Date.prototype, 'toLocaleTimeString').mockImplementation(() => {
+    const spy = vi.spyOn(Date.prototype, 'toLocaleTimeString').mockImplementation(() => {
       throw new Error('sem ICU');
     });
     expect(formatHora('2026-03-09T10:00:00')).toBe('');
+    spy.mockRestore();
+  });
+});
+
+describe('formatDataHoraCompleta', () => {
+  it('inclui os segundos, para distinguir mensagens do mesmo minuto', () => {
+    const a = formatDataHoraCompleta(new Date(2026, 2, 9, 14, 4, 21).toISOString());
+    const b = formatDataHoraCompleta(new Date(2026, 2, 9, 14, 4, 53).toISOString());
+    expect(a).toContain('14:04:21');
+    expect(b).toContain('14:04:53');
+  });
+
+  it('devolve "" quando o locale falha', () => {
+    const spy = vi.spyOn(Date.prototype, 'toLocaleString').mockImplementation(() => {
+      throw new Error('sem ICU');
+    });
+    expect(formatDataHoraCompleta('2026-03-09T10:00:00')).toBe('');
     spy.mockRestore();
   });
 });

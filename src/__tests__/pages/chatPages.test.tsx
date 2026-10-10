@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
@@ -79,7 +79,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 /* ───────────── ChatScreen (/chat/:telefone) ───────────── */
@@ -187,17 +187,17 @@ describe('ChatScreen', () => {
   });
 
   it('atualiza a cada 5 segundos e marca como lido quando chega mensagem nova de entrada', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     renderChat();
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(10);
+      await vi.advanceTimersByTimeAsync(10);
     });
     const leiturasIniciais = chamadas('/chat/read/', 'PUT').length;
     const buscasIniciais = chamadas('/chat/history').length;
 
     historico = [...historico, mensagem('m9', { text: 'Chegou agora' })];
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(5000);
+      await vi.advanceTimersByTimeAsync(5000);
     });
 
     expect(chamadas('/chat/history').length).toBeGreaterThan(buscasIniciais);
@@ -206,16 +206,16 @@ describe('ChatScreen', () => {
   });
 
   it('mensagem nova que é de saída não dispara marcação de leitura', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     renderChat();
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(10);
+      await vi.advanceTimersByTimeAsync(10);
     });
     const leituras = chamadas('/chat/read/', 'PUT').length;
 
     historico = [...historico, mensagem('m9', { direction: 'saida' })];
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(5000);
+      await vi.advanceTimersByTimeAsync(5000);
     });
 
     expect(chamadas('/chat/read/', 'PUT').length).toBe(leituras);
@@ -235,16 +235,16 @@ describe('ChatScreen', () => {
   });
 
   it('para o polling ao desmontar', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     const { unmount } = renderChat();
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(10);
+      await vi.advanceTimersByTimeAsync(10);
     });
 
     unmount();
     const total = fetchMock.mock.calls.length;
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(20000);
+      await vi.advanceTimersByTimeAsync(20000);
     });
 
     expect(fetchMock.mock.calls.length).toBe(total);
@@ -254,7 +254,7 @@ describe('ChatScreen', () => {
 /* ───────────── ConversasScreen (/chat?phone=) ───────────── */
 
 describe('ConversasScreen', () => {
-  const refresh = jest.fn(async () => {});
+  const refresh = vi.fn(async () => {});
 
   const renderConversas = (rota = '/admin/chat') =>
     render(
@@ -277,6 +277,13 @@ describe('ConversasScreen', () => {
     expect(screen.getByText('2 conversas ativas')).toBeInTheDocument();
     expect(screen.queryByPlaceholderText('Digite uma mensagem')).not.toBeInTheDocument();
     expect(fetchMock.mock.calls.filter(([u]) => u.includes('/chat/history'))).toHaveLength(0);
+  });
+
+  it('conversa aberta oferece o resumo por IA ao lado do histórico', async () => {
+    renderConversas('/admin/chat?phone=%2B5511987654321');
+
+    expect(await screen.findByRole('button', { name: 'Resumo do atendimento por IA' })).toBeInTheDocument();
+    expect(await screen.findByText('mensagem m1')).toBeInTheDocument();
   });
 
   it('sem conversas mostra o estado vazio da lista', () => {
@@ -369,16 +376,16 @@ describe('ConversasScreen', () => {
   });
 
   it('atualiza o histórico a cada 5s e marca como lido ao chegar mensagem nova', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     renderConversas('/admin/chat?phone=11987654321');
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(10);
+      await vi.advanceTimersByTimeAsync(10);
     });
     refresh.mockClear();
 
     historico = [...historico, mensagem('m9', { text: 'Nova entrada' })];
     await act(async () => {
-      await jest.advanceTimersByTimeAsync(5000);
+      await vi.advanceTimersByTimeAsync(5000);
     });
 
     expect(screen.getByText('Nova entrada')).toBeInTheDocument();

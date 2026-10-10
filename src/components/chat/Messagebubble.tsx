@@ -1,5 +1,5 @@
 import type { MessageResponse } from "../../domain/entities/MessageResponse";
-import { formatHora } from "../../utils/Chatutils";
+import { formatDataHoraCompleta, formatHora } from "../../utils/Chatutils";
 
 interface MessageBubbleProps {
   msg: MessageResponse;
@@ -12,7 +12,7 @@ export function MessageBubble({ msg }: MessageBubbleProps) {
     <div className={`flex ${isSaida ? "justify-end" : "justify-start"} mb-1`}>
       <div
         className={`
-          relative max-w-[75%] md:max-w-[62%] px-3 pt-2 pb-6 shadow-sm
+          max-w-[75%] md:max-w-[62%] min-w-0 px-3 pt-2 pb-1.5 shadow-sm
           text-sm leading-relaxed break-words
           ${
             isSaida
@@ -22,16 +22,16 @@ export function MessageBubble({ msg }: MessageBubbleProps) {
         `}
       >
         {/* Texto da mensagem */}
-        <p className="whitespace-pre-wrap">{msg.text ?? ""}</p>
+        <p className="whitespace-pre-wrap [overflow-wrap:anywhere]">{msg.text ?? ""}</p>
 
-        {/* Rodapé interno da bolha */}
+        {/* Rodapé da bolha: no fluxo (não absoluto) para a largura da bolha sempre comportar hora, #colaborador e ✓✓ */}
         <div
           className={`
-            absolute bottom-1.5 flex items-center gap-1 text-[10px] text-[#8696a0]
-            ${isSaida ? "right-2.5" : "left-2.5"}
+            mt-1 flex items-center gap-1 whitespace-nowrap text-[10px] text-[#8696a0]
+            ${isSaida ? "justify-end" : "justify-start"}
           `}
         >
-          <span>{formatHora(msg.date_time)}</span>
+          <span title={formatDataHoraCompleta(msg.date_time)}>{formatHora(msg.date_time)}</span>
 
           {/* Auditoria: só aparece em mensagens de saída com colaborador */}
           {isSaida && msg.id_colaborador != null && (

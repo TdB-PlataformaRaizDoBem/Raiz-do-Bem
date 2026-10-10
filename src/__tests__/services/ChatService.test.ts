@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   getActiveConversations,
   getChatHistory,
   markAsRead,
   sendMessage,
+  summarizeChat,
 } from '../../services/ChatService';
 import { bodyOf, fakeResponse, installFetch, type FetchMock } from '../../test/http';
 
@@ -101,6 +102,32 @@ describe('ChatService', () => {
       expect(fetchMock.mock.calls[0][0]).toBe(`${BASE}/chat/read/%2B5511987654321`);
       expect(fetchMock.mock.calls[0][1]?.method).toBe('PUT');
       expect(res.messagens_updated).toBe(3);
+    });
+  });
+  describe('summarizeChat', () => {
+    it('faz POST /api/chats/{tel}/summarize com telefone codificado', async () => {
+      const resumo = {
+        tel_client: '+5511977776666',
+        necessidade_principal: 'Cesta básica',
+        status_atual: 'Aguardando documentos',
+        proximos_passos: 'Agendar retirada',
+        messages_used: 35,
+      };
+      fetchMock.mockResolvedValue(fakeResponse({ status: 200, body: resumo }));
+
+      const res = await summarizeChat('+5511977776666');
+
+      expect(fetchMock.mock.calls[0][0]).toBe(`${BASE}/api/chats/%2B5511977776666/summarize`);
+      expect(fetchMock.mock.calls[0][1]?.method).toBe('POST');
+      expect(res).toEqual(resumo);
+    });
+
+    it('propaga a mensagem amigável quando o provedor de IA falha (502)', async () => {
+      fetchMock.mockResolvedValue(
+        fakeResponse({ status: 502, body: { detail: 'Não foi possível gerar o resumo agora.' } }),
+      );
+
+      await expect(summarizeChat('+55')).rejects.toThrow('Não foi possível gerar o resumo agora.');
     });
   });
 });

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState, type ReactNode } from 'react';
@@ -24,7 +24,7 @@ function Local() {
   return <p data-testid="local">{pathname + search}</p>;
 }
 
-const auth = (role: 'ADMIN' | 'COLABORADOR' | null, logout = jest.fn()): AuthContextValue => ({
+const auth = (role: 'ADMIN' | 'COLABORADOR' | null, logout = vi.fn()): AuthContextValue => ({
   user: role ? { email: 'u@x.com', nome: 'Usuária Teste', role, exp: 9999999999 } : null,
   isLoading: false,
   isAuthenticated: !!role,
@@ -147,8 +147,8 @@ describe('Footer', () => {
 /* ───────────── Menu / Sidebar ───────────── */
 
 describe('Menu_Data', () => {
-  it('admin tem 7 itens e coordenador 6, todos com rota do seu painel', () => {
-    expect(Menu_Data.admin).toHaveLength(7);
+  it('admin tem 8 itens e coordenador 6, todos com rota do seu painel', () => {
+    expect(Menu_Data.admin).toHaveLength(8);
     expect(Menu_Data.coordenador).toHaveLength(6);
     expect(Menu_Data.admin.every((i) => i.path.startsWith('/admin/'))).toBe(true);
     expect(Menu_Data.coordenador.every((i) => i.path.startsWith('/coord/'))).toBe(true);
@@ -163,9 +163,9 @@ describe('Menu_Data', () => {
 });
 
 describe('Sidebar', () => {
-  const renderSidebar = (role: 'ADMIN' | 'COLABORADOR' | null, opts: { collapsed?: boolean; unread?: number; logout?: jest.Mock } = {}) => {
-    const setCollapsed = jest.fn();
-    const logout = opts.logout ?? jest.fn();
+  const renderSidebar = (role: 'ADMIN' | 'COLABORADOR' | null, opts: { collapsed?: boolean; unread?: number; logout?: Mock } = {}) => {
+    const setCollapsed = vi.fn();
+    const logout = opts.logout ?? vi.fn();
     render(
       <AuthContext.Provider value={auth(role, logout)}>
         <UnreadContext.Provider value={{ totalUnread: opts.unread ?? 0, conversations: [], refresh: async () => {} }}>
@@ -183,7 +183,7 @@ describe('Sidebar', () => {
     expect(screen.getByText('Usuária Teste')).toBeInTheDocument();
     expect(screen.getByText('u@x.com')).toBeInTheDocument();
     const nav = screen.getByRole('navigation', { name: 'Navegação principal' });
-    expect(within(nav).getAllByRole('link')).toHaveLength(7);
+    expect(within(nav).getAllByRole('link')).toHaveLength(8);
     expect(within(nav).getByRole('link', { name: /Colaboradores/ })).toHaveAttribute('href', '/admin/colaboradores');
   });
 
@@ -349,7 +349,7 @@ describe('layouts', () => {
 
 describe('ScrollToTop', () => {
   it('rola para o topo ao montar e a cada mudança de rota', async () => {
-    const scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
     render(
       <MemoryRouter initialEntries={['/a']}>
         <ScrollToTop />
@@ -421,7 +421,7 @@ describe('ConversationItem', () => {
   });
 
   it('destaca a conversa ativa e dispara onClick', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     render(<ConversationItem conversation={conversa({ text: null })} isActive onClick={onClick} />);
 
     expect(screen.getByRole('button')).toHaveClass('bg-[#f0f2f5]');
@@ -458,7 +458,7 @@ describe('MessageBubble', () => {
 
 describe('ChatSidebar', () => {
   const renderSidebar = (props: Partial<React.ComponentProps<typeof ChatSidebar>> = {}) => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     window.history.pushState({}, '', '/admin/chat');
     render(
       comRota(
@@ -518,9 +518,9 @@ describe('ChatWindow', () => {
     loading: false,
     sending: false,
     error: null as string | null,
-    onSend: jest.fn<(texto: string) => Promise<void>>(async () => {}),
-    onClearError: jest.fn(),
-    onOpenSidebar: jest.fn(),
+    onSend: vi.fn<(texto: string) => Promise<void>>(async () => {}),
+    onClearError: vi.fn(),
+    onOpenSidebar: vi.fn(),
   });
 
   const renderar = (o: Partial<ReturnType<typeof baseProps>> & { contact?: React.ComponentProps<typeof ChatWindow>['contact'] } = {}) => {
