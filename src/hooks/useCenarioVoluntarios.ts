@@ -1,27 +1,11 @@
 /**
- * Cenário de dentistas voluntários, estado a estado.
- *
- * -------------------------------------------------------------------------
- * POR QUE PERSISTIR
- * -------------------------------------------------------------------------
- * Montar o cenário das 27 UFs é um trabalho de vários minutos. Perder isso num
- * F5 acidental, ou ao navegar para outra tela do admin e voltar, tornaria a
- * ferramenta inutilizável na prática. O cenário fica em `localStorage`, com
- * chave versionada — se o formato mudar numa versão futura, a entrada antiga é
- * descartada em vez de quebrar a tela.
- *
- * -------------------------------------------------------------------------
- * O QUE SIGNIFICA UM ESTADO AUSENTE
- * -------------------------------------------------------------------------
- * Ausente ≠ zero. Um estado sem entrada no cenário NÃO é simulado: o mapa
- * mostra a vulnerabilidade real dele, sem desconto. É essa distinção que
- * permite olhar o mapa e saber, de relance, o que já foi planejado e o que
- * ainda está sendo exibido como realmente é.
+ * Cenário de dentistas voluntários por UF, persistido em `localStorage` (chave versionada).
+ * UF ausente não é zero: não é simulada e mostra a vulnerabilidade real.
  */
 
 import { useCallback, useMemo, useState } from "react";
 
-/** Versionada: mudar o formato invalida o que estava salvo, sem quebrar. */
+/** Versionada: mudar o formato descarta o que estava salvo. */
 const CHAVE_ARMAZENAMENTO = "raiz-do-bem:cenario-voluntarios:v1";
 
 export type CenarioVoluntarios = Record<string, number>;
@@ -58,13 +42,7 @@ function salvarNoArmazenamento(cenario: CenarioVoluntarios): void {
   }
 }
 
-/**
- * Serializa para o formato aceito pela API: `MA:900,SP:4200`.
- *
- * Compacto de propósito — cabe na query string, é legível no /docs e entra
- * inteiro na chave de cache do serviço, o que faz voltar a um cenário já
- * consultado ser instantâneo.
- */
+/** Formato da API: `MA:900,SP:4200`. */
 export function serializarCenario(cenario: CenarioVoluntarios): string {
   const partes = Object.entries(cenario)
     .filter(([, quantidade]) => quantidade > 0)
@@ -90,6 +68,7 @@ export interface UseCenarioVoluntarios {
   quantidadeDe: (uf: string) => number;
 }
 
+/** Cenário de voluntários por UF; `definir(uf, 0)` remove a entrada. */
 export function useCenarioVoluntarios(): UseCenarioVoluntarios {
   // Inicializador preguiçoso: lê o armazenamento uma vez, na montagem, e não a
   // cada render.

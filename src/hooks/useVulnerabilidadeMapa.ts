@@ -1,22 +1,6 @@
 /**
- * Carga das 27 UFs, unindo indicadores e geometria oficial.
- *
- * Um único nível geográfico. Não há navegação hierárquica: o mapa sempre mostra
- * o Brasil inteiro, e clicar num estado apenas o seleciona no painel. A base
- * municipal cobria 1,1% dos 5.570 municípios, e servi-la dava aparência de
- * cobertura que o dado não tinha.
- *
- * A geometria e os indicadores viajam por caminhos diferentes de propósito
- * (ver MalhaGeograficaService) e são unidos aqui, por código IBGE. Os
- * indicadores vêm sem geometria — poucos KB por cenário simulado — e a malha é
- * baixada uma vez por sessão, preferencialmente do próprio vulnerabilidade-api.
- *
- * POR QUE NÃO USA `useAsync`
- * `useAsync` zera `data` ao entrar em loading — correto para tabelas, ruim para
- * mapa: causaria um flash de tela vazia a cada mudança no simulador. Aqui o
- * resultado anterior permanece até o novo chegar, e `loading` é DERIVADO da
- * comparação entre o cenário pedido e o já carregado. Sem `setState` síncrono
- * em efeito e sem leitura de ref durante o render.
+ * Carga das 27 UFs, unindo indicadores (API) e malha geográfica por código IBGE.
+ * Não usa `useAsync`: o resultado anterior fica na tela até o novo chegar, sem flash de mapa vazio.
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -60,10 +44,7 @@ export interface UseVulnerabilidadeMapa {
   selecionar: (props: VulnerabilidadePropertiesAPI | null) => void;
 }
 
-/**
- * @param cenarioVoluntarios string `MA:900,SP:4200` — vazia quando nada foi
- * declarado. Entra na chave de identidade: mudar o cenário recarrega.
- */
+/** Carrega as 27 UFs para o cenário informado (`MA:900,SP:4200`) e controla a seleção. */
 export function useVulnerabilidadeMapa(
   cenarioVoluntarios: string,
 ): UseVulnerabilidadeMapa {

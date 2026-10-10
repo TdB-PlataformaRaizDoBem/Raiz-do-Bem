@@ -19,17 +19,7 @@ export type DesignacaoTab =
 
 export type AtendimentoTab = Exclude<DesignacaoTab, "PENDENTE">;
 
-/**
- * Beneficiários pendentes de designação.
- *
- * Um beneficiário é considerado "pendente" quando seu nomeCompleto NÃO
- * aparece em nenhum registro de Atendimento (campo `beneficiario` do
- * AtendimentoDTO — que vem como string, justamente o nome completo).
- *
- * Usa as listas de beneficiários e de atendimentos que já estão em cache, e o cruzamento
- * é feito no front comparando nomes normalizados (trim + lower). Se os atendimentos não
- * puderem ser carregados, todos os beneficiários contam como pendentes.
- */
+/** Beneficiários cujo nome ainda não aparece em nenhum atendimento. */
 export const useDesignacaoPendentes = () => {
   const beneficiarios = useQuery({ queryKey: queryKeys.beneficiarios, queryFn: getBeneficiariosCompletos });
   const atendimentos = useQuery({ queryKey: queryKeys.atendimentos, queryFn: getAtendimentos });
@@ -62,15 +52,7 @@ export const useDesignacaoPendentes = () => {
   };
 };
 
-/**
- * Atendimentos, filtrados conforme a aba.
- *
- * - EM_ATENDIMENTO: dataFim === "NÃO FINALIZADO" (encerrado === false)
- * - CONCLUIDO: dataFim diferente de "NÃO FINALIZADO" e não-nulo
- * - TODOS: sem filtro
- *
- * As três abas leem a mesma lista em cache: trocar de aba não faz nova requisição.
- */
+/** Atendimentos da aba: EM_ATENDIMENTO (`dataFim` "NÃO FINALIZADO"), CONCLUIDO ou TODOS. */
 function filtrarPorAba(api: AtendimentoAPI[], tab: AtendimentoTab): AtendimentoViewModel[] {
   const lista = mapAtendimentos(api);
 

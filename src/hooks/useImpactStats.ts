@@ -50,7 +50,7 @@ function calcularImpacto(lista: BeneficiarioViewModel[]): ImpactStats {
   };
 }
 
-// Lê a mesma lista de beneficiários da tela de Beneficiários (uma única requisição).
+/** Impacto social: totais por programa, ranking por UF e horas estimadas (6 h Dentista do Bem, 20 h Apolônias). */
 export const useImpactStats = (): ImpactStats => {
   const { data } = useQuery({
     queryKey: queryKeys.beneficiarios,

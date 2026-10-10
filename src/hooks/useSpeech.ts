@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const isSupported =
   typeof window !== "undefined" && "speechSynthesis" in window;
 
+/** Síntese de voz do navegador (pt-BR); uma fala por vez. */
 export function useSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);

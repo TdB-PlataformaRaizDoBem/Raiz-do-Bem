@@ -51,6 +51,7 @@ function getRecognitionClass(): SpeechRecognitionCtor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
+/** Busca por voz (pt-BR): uma frase por vez, entregue em `onResult`. */
 export function useVoiceSearch(onResult: (text: string) => void) {
   const isSupported = !!getRecognitionClass();
   const [listening, setListening] = useState(false);

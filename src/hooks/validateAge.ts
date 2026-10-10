@@ -1,3 +1,4 @@
+/** Idade em anos completos a partir de `YYYY-MM-DD` (não valida; vazio = 0). */
 export const validateAge = (dataNascimento: string): number => {
   if (!dataNascimento) return 0;
 

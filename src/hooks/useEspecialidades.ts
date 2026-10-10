@@ -3,7 +3,7 @@ import type { EspecialidadeAPI } from "../domain/entities/EspecialidadeAPI";
 import { queryKeys } from "./queryKeys";
 import { useDomainQuery } from "./useDomainQuery";
 
-// Dado de referência: muda raramente, então fica 10 minutos em cache.
+/** Especialidades odontológicas (dado de referência, `staleTime` de 10 min). */
 export const useEspecialidades = () =>
   useDomainQuery<EspecialidadeAPI[]>({
     queryKey: queryKeys.especialidades,

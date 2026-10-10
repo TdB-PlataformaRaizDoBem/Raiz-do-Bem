@@ -19,8 +19,8 @@ type Options<TRaw, TData> = {
 };
 
 /**
- * Casca fina sobre `useQuery` que mantém o formato antigo dos hooks de domínio
- * (`data`, `loading`, `error`, `refetch`), para as telas não precisarem mudar.
+ * `useQuery` no formato `data/loading/error/refetch`. `loading` só vale sem dado em cache;
+ * falha ao atualizar mantém os dados antigos.
  */
 export function useDomainQuery<TRaw, TData = TRaw>(options: Options<TRaw, TData>): DomainQueryState<TData> {
   const query = useQuery(options);

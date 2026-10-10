@@ -8,6 +8,7 @@ export const useDentistas = () =>
     queryFn: getDentistasCompletos,
   });
 
+/** Dentista por CPF. */
 export const useDentista = (cpf: string) =>
   useDomainQuery<DentistaCompleto | null>({
     queryKey: queryKeys.dentista(cpf),

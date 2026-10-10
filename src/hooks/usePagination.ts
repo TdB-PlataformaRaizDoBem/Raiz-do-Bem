@@ -2,13 +2,7 @@ import { useMemo, useState } from "react";
 
 export const DEFAULT_PAGE_SIZE = 12;
 
-/**
- * Paginação no cliente sobre uma lista já carregada/filtrada.
- *
- * @param items     Itens (já filtrados) a paginar
- * @param pageSize  Itens por página
- * @param resetKey  Quando muda (ex.: busca/filtros), volta para a página 1
- */
+/** Paginação no cliente; `resetKey` volta à página 1 e a página nunca passa da última. */
 export function usePagination<T>(
   items: T[],
   pageSize: number = DEFAULT_PAGE_SIZE,

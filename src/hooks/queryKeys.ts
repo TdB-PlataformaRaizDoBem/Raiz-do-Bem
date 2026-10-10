@@ -1,8 +1,4 @@
-/**
- * Chaves do cache. Quem usa a mesma chave compartilha a mesma requisição:
- * por exemplo, o dashboard, a tela de beneficiários e a busca de contatos do chat
- * leem todos de `["beneficiarios"]` e disparam apenas um GET /beneficiario.
- */
+/** Chaves do cache: mesma chave = mesma requisição compartilhada. */
 export const queryKeys = {
   beneficiarios: ["beneficiarios"] as const,
   beneficiario: (cpf: string) => ["beneficiarios", cpf] as const,

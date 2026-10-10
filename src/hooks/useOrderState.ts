@@ -26,8 +26,7 @@ function calcularStats(lista: PedidoViewModel[]): OrderStats {
   return { pendentes: pendentes.length, aprovados, negados, total: lista.length, pedidosCriticos };
 }
 
-// Lê a mesma lista de pedidos da tela de Pedidos de Ajuda: os 3 gráficos do dashboard
-// fazem uma única requisição, e o cálculo é refeito só quando a lista muda.
+/** Contagem de pedidos por status e os 10 pendentes mais antigos. */
 export const useOrderStats = (): OrderStats => {
   const { data } = useQuery({
     queryKey: queryKeys.pedidos,

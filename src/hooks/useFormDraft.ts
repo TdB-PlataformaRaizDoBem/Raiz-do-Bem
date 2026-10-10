@@ -3,6 +3,7 @@ import type { FieldValues, UseFormWatch } from "react-hook-form";
 
 const DEBOUNCE_MS = 1000;
 
+/** Lê o rascunho salvo por `useFormDraft`; `null` se não há ou o storage falha. */
 export function loadFormDraft<T extends FieldValues>(
   key: string,
 ): Partial<T> | null {
@@ -14,6 +15,7 @@ export function loadFormDraft<T extends FieldValues>(
   }
 }
 
+/** Salva rascunho no `localStorage` (debounce de 1 s) e avisa ao sair com alterações. Chame `clearDraft` após enviar. */
 export function useFormDraft<T extends FieldValues>(
   key: string,
   watch: UseFormWatch<T>,

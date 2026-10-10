@@ -1,9 +1,4 @@
-/**
- * Configurações de filtro específicas por página.
- *
- * Cada função retorna um PageFilterConfig<T> pronto para ser passado ao
- * useSmartFilter. O predicate une busca por texto + todos os filtros ativos.
- */
+/** Configs de filtro por página, para `useSmartFilter`. */
 
 import type { PageFilterConfig } from "../components/UserManagement/FilterConfig";
 import { normalizeText } from "./useSmartFilter";

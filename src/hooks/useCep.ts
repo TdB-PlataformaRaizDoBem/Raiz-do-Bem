@@ -12,6 +12,7 @@ type ViaCepResponse = {
   erro?: boolean;
 };
 
+/** Preenche rua/bairro/cidade/uf via ViaCEP quando o CEP tem 8 dígitos. Exige `<FormProvider>`. */
 export function useCep<T extends FieldValues>(cep: string, prefix: string = "") {
   const { setValue, setError, clearErrors } = useFormContext<T>();
   const { request, loading } = useFetch<ViaCepResponse>();

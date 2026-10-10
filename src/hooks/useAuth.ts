@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { AuthContext, type AuthContextValue } from '../context/auth';
 
+/** Sessão do usuário (JWT) e ações de login/logout. Exige `<AuthProvider>`. */
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
   if (!ctx) {

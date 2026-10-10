@@ -1,14 +1,6 @@
 /**
- * Escala de cores e vocabulário do mapa coroplético.
- *
- * FONTE ÚNICA DA VERDADE: as cores vivem em `src/styles/theme.css`, no bloco
- * `@theme` do Tailwind v4. Este hook as LÊ em runtime via `getComputedStyle`
- * em vez de repetir hexadecimais em TypeScript — o Leaflet pinta SVG por
- * `style()` e precisa de hex, e paleta duplicada sempre diverge com o tempo.
- *
- * Também concentra o VOCABULÁRIO exibido na tela. Os nomes técnicos das faixas
- * ("muito_alta") nunca chegam ao usuário: quem lê o painel é gestor, não
- * cientista de dados.
+ * Escala de cores e rótulos do mapa. As cores vêm de `src/styles/theme.css`, lidas em runtime
+ * (o Leaflet precisa de hex); nomes técnicos de faixa nunca chegam à tela.
  */
 
 import { useMemo } from "react";
@@ -35,11 +27,7 @@ export interface DegrauEscala {
   token: string;
 }
 
-/**
- * Cortes idênticos aos de `classificar_faixa` no back-end.
- * O front NUNCA reclassifica: a `faixa` vem pronta da API e estes limites
- * servem apenas para desenhar a legenda.
- */
+/** Mesmos cortes de `classificar_faixa` no back-end; só desenham a legenda (o front não reclassifica). */
 const DEGRAUS: Array<
   Pick<DegrauEscala, "faixa" | "min" | "max" | "token" | "rotulo" | "significado">
 > = [
@@ -96,6 +84,7 @@ const FALLBACK: Record<string, string> = {
   "canvas-line": "#dde3ea",
 };
 
+/** Lê `--color-<token>` do tema; usa reserva se o CSS não carregou. */
 export function lerCorDoTema(token: string): string {
   if (typeof document === "undefined") return FALLBACK[token] ?? "#cccccc";
   const valor = getComputedStyle(document.documentElement)
@@ -124,7 +113,7 @@ function paraRgb(hex: string): [number, number, number] {
   ];
 }
 
-/** Luminância relativa. Base de todo cálculo de contraste do painel. */
+/** Luminância relativa. */
 export function luminanciaRelativa(hex: string): number {
   const canais = paraRgb(hex).map((valor) => {
     const v = valor / 255;
@@ -133,7 +122,7 @@ export function luminanciaRelativa(hex: string): number {
   return 0.2126 * canais[0] + 0.7152 * canais[1] + 0.0722 * canais[2];
 }
 
-/** Razão de contraste entre duas cores (1 a 21). */
+/** Razão de contraste (1 a 21). */
 export function razaoContraste(corA: string, corB: string): number {
   const a = luminanciaRelativa(corA);
   const b = luminanciaRelativa(corB);
@@ -147,13 +136,7 @@ function paraHex(rgb: [number, number, number]): string {
     .join("")}`;
 }
 
-/**
- * Escurece a cor em passos até atingir o contraste mínimo contra `fundo`.
- *
- * Preserva o matiz — o texto do badge continua sendo "a mesma cor" da faixa,
- * só que legível. Multiplicar os canais é uma aproximação suficiente para
- * este uso e evita trazer uma dependência de espaço de cor.
- */
+/** Escurece a cor até atingir o contraste mínimo contra `fundo`, preservando o matiz. */
 export function escurecerAteContraste(
   cor: string,
   fundo = "#ffffff",
@@ -225,6 +208,7 @@ export interface EscalaVulnerabilidade {
   canvas: { fundo: string; suave: string; linha: string };
 }
 
+/** Degraus, cores (texto com contraste ≥ 4,5:1) e rótulos da escala do mapa. */
 export function useEscalaVulnerabilidade(): EscalaVulnerabilidade {
   return useMemo(() => {
     const degraus: DegrauEscala[] = DEGRAUS.map((d) => {
