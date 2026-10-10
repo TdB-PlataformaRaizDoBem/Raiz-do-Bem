@@ -42,7 +42,7 @@ const tokenColaborador = () => makeJwt({ nome: 'Colab Teste', groups: ['COLABORA
 beforeEach(() => {
   resetGsapMock();
   Object.assign(document, { fonts: { ready: Promise.resolve() } });
-  window.sessionStorage.clear();
+  window.localStorage.clear();
   tokenStore.clear();
   queryClient.clear(); // o App usa o cache único do módulo: limpa entre os testes
   localStorage.clear();

@@ -5,7 +5,7 @@ const AUTH_PATH = '/auth';
 
 /**
  * O token retornado deve ser:
- *   Armazenado na sessionStorage via tokenStore.set(token, refreshToken)
+ *   Armazenado na localStorage via tokenStore.set(token, refreshToken)
  *   Decodificado via extractAuthUser(token) para popular o AuthUser
  */
 export async function loginRequest(

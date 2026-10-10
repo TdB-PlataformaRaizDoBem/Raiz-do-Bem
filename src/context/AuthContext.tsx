@@ -76,7 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!token) return;
 
       const payload = decodeJwtPayload(token);
-      if (payload && isTokenExpired(payload)) {
+      // Renova com antecedência (2 min antes do exp) para evitar um 401 desnecessário.
+      if (payload && isTokenExpired(payload, -120)) {
         if (await refreshAccessToken()) {
           const renovado = extractAuthUser(tokenStore.get() ?? '');
           if (renovado) {
