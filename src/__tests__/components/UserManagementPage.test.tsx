@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { UserManagementPage } from '../../components/UserManagement/UserManagementPage';
+import { useDesktopViewport } from '../../test/viewport';
 import type { PageFilterConfig } from '../../components/UserManagement/FilterConfig';
 
 interface Item {
@@ -109,7 +110,21 @@ describe('UserManagementPage — listagem', () => {
   });
 });
 
-describe('UserManagementPage — cards e tabela', () => {
+describe('UserManagementPage — mobile/tablet', () => {
+  it('abaixo de 1280px não há alternância e a tabela nunca aparece, mesmo com "table" salvo', () => {
+    localStorage.setItem('raiz-do-bem:view-mode', 'table');
+
+    renderPage(comTabela);
+
+    expect(screen.queryByRole('group', { name: 'Modo de visualização' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'card Pessoa 01' })).toBeInTheDocument();
+  });
+});
+
+describe('UserManagementPage — cards e tabela (desktop)', () => {
+  useDesktopViewport();
+
   it('sem renderTableRow não existe alternância de visualização', () => {
     renderPage();
     expect(screen.queryByRole('group', { name: 'Modo de visualização' })).not.toBeInTheDocument();

@@ -14,6 +14,7 @@ import { Beneficiarios } from '../../pages/gerenciaBeneficiarios/Beneficiarios';
 import { Dentistas } from '../../pages/gerenciaDentistas/Dentistas';
 import Reports from '../../pages/reports/Reports';
 import { beneficiarioApi, colaboradorApi, dentistaApi, pedidoApi } from '../../test/factories';
+import { useDesktopViewport } from '../../test/viewport';
 import { fakeResponse, installFetch, routeFetch, type FetchMock } from '../../test/http';
 
 let fetchMock: FetchMock;
@@ -36,6 +37,9 @@ function renderPagina(ui: ReactNode, role: 'ADMIN' | 'COLABORADOR' = 'ADMIN', ro
     </AuthContext.Provider>,
   );
 }
+
+// A visualização em tabela só existe em desktop (>= 1024px).
+useDesktopViewport();
 
 beforeEach(() => {
   fetchMock = installFetch();

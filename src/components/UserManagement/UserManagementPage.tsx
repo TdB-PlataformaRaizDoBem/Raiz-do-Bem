@@ -8,6 +8,7 @@ import { Modal } from "../ui/Modal";
 import { useSearchParams } from "react-router-dom";
 import { useSmartFilter } from "../../hooks/useSmartFilter";
 import { usePagination } from "../../hooks/usePagination";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { Pagination } from "../ui/Pagination";
 import type { PageFilterConfig, FilterGroup } from "./FilterConfig";
 
@@ -328,10 +329,14 @@ export function UserManagementPage<T>({
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = React.useState(false);
 
-  const showToggle = !!renderTableRow && !!tableHeaders;
-  const [viewMode, setViewMode] = React.useState<ViewMode>(
-    showToggle ? getInitialViewMode() : "cards",
+  // Tabela só em desktop (>= xl, quando o menu lateral deixa espaço suficiente); em mobile/tablet sempre cards.
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
+  const hasTable = !!renderTableRow && !!tableHeaders;
+  const showToggle = hasTable && isDesktop;
+  const [savedViewMode, setViewMode] = React.useState<ViewMode>(
+    hasTable ? getInitialViewMode() : "cards",
   );
+  const viewMode: ViewMode = showToggle ? savedViewMode : "cards";
 
   const handleViewModeChange = React.useCallback((mode: ViewMode) => {
     setViewMode(mode);
