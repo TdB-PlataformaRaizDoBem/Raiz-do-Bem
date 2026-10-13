@@ -45,6 +45,9 @@ const SEXO_API_MAP: Record<string, SexoAPI> = {
   outros: "O",
 };
 
+/** Tamanho máximo do relato exibido e validado no formulário. */
+const DESCRICAO_MAX = 500;
+
 const DRAFT_KEY = "raiz-do-bem:contact-form";
 const FORM_DEFAULTS: ContactFormData = {
   nome: "",
@@ -89,6 +92,7 @@ const ContactForm = () => {
   const { clearDraft } = useFormDraft(DRAFT_KEY, watch, isDirty, DRAFT_OMIT);
 
   const dataNascimento = watch("dataNascimento");
+  const totalDescricao = watch("descricaoProblema")?.length ?? 0;
   const sexo = watch("sexo");
   const violencia = watch("violenciaDomestica");
   const idade = dataNascimento ? validateAge(dataNascimento) : 0;
@@ -315,11 +319,17 @@ const ContactForm = () => {
             errorClassName="text-white"
             placeholder="Conte-nos o que está sentindo..."
             rows={4}
+            maxLength={DESCRICAO_MAX}
+            caracteres={totalDescricao}
             {...register("descricaoProblema", {
               required: "Descrição é obrigatória",
               minLength: {
                 value: 20,
                 message: "Mínimo de 20 caracteres",
+              },
+              maxLength: {
+                value: DESCRICAO_MAX,
+                message: `Máximo de ${DESCRICAO_MAX} caracteres`,
               },
             })}
             error={errors.descricaoProblema?.message}

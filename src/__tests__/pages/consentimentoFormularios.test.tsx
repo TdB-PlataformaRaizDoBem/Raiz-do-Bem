@@ -275,3 +275,28 @@ describe('Voluntário: consentimento (LGPD)', () => {
     expect(rascunho).not.toHaveProperty('aceiteTermo');
   });
 });
+
+describe('Pedido de ajuda: limite de 500 caracteres na descrição', () => {
+  it('mostra o máximo e a contagem ao vivo', async () => {
+    render(comRouter(<ContactForm />));
+    expect(screen.getByText('Máximo de 500 caracteres')).toBeInTheDocument();
+    expect(screen.getByTestId('descricaoProblema-contagem')).toHaveTextContent('0/500');
+
+    await userEvent.type(screen.getByLabelText(/Descrição do Problema/), 'dor de dente');
+    expect(screen.getByTestId('descricaoProblema-contagem')).toHaveTextContent('12/500');
+  });
+
+  it('o campo não aceita digitar além de 500', () => {
+    render(comRouter(<ContactForm />));
+    expect(screen.getByLabelText(/Descrição do Problema/)).toHaveAttribute('maxlength', '500');
+  });
+
+  it('texto colado acima de 500 mostra o erro e não envia', async () => {
+    render(comRouter(<ContactForm />));
+    const campo = screen.getByLabelText(/Descrição do Problema/);
+    fireEvent.change(campo, { target: { value: 'a'.repeat(501) } });
+    expect(screen.getByTestId('descricaoProblema-contagem')).toHaveTextContent('501/500');
+    fireEvent.blur(campo);
+    expect(await screen.findByText('Máximo de 500 caracteres', { selector: 'p' })).toBeInTheDocument();
+  });
+});

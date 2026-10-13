@@ -526,3 +526,25 @@ describe('botões "Editar Dados"', () => {
     expect(onUpdated).not.toHaveBeenCalled();
   });
 });
+
+describe('TextArea: limite e contador', () => {
+  it('sem maxLength não mostra contador', () => {
+    render(<TextArea label="Descrição" name="descricao" caracteres={3} />);
+    expect(screen.queryByText(/Máximo de/)).not.toBeInTheDocument();
+  });
+
+  it('com maxLength mostra o máximo e a contagem atual', () => {
+    render(<TextArea label="Descrição" name="descricao" maxLength={500} caracteres={42} />);
+    expect(screen.getByText('Máximo de 500 caracteres')).toBeInTheDocument();
+    expect(screen.getByTestId('descricao-contagem')).toHaveTextContent('42/500');
+    expect(screen.getByLabelText('Descrição')).toHaveAttribute('aria-describedby', 'descricao-contador');
+  });
+
+  it('assume 0 sem contagem e destaca ao chegar no limite', () => {
+    const { rerender } = render(<TextArea label="Descrição" name="descricao" maxLength={5} />);
+    expect(screen.getByTestId('descricao-contagem')).toHaveTextContent('0/5');
+    rerender(<TextArea label="Descrição" name="descricao" maxLength={5} caracteres={5} error="Erro" />);
+    expect(screen.getByTestId('descricao-contagem')).toHaveClass('font-bold');
+    expect(screen.getByLabelText('Descrição')).toHaveAttribute('aria-describedby', 'descricao-error descricao-contador');
+  });
+});

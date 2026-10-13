@@ -5,6 +5,8 @@ type TextAreaProps = React.ComponentProps<'textarea'> & {
   error?: string | null;
   labelClassName?: string;
   errorClassName?: string;
+  /** Quantos caracteres já foram digitados. Com `maxLength`, mostra o contador "atual/máximo" ao vivo. */
+  caracteres?: number;
 };
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
@@ -14,12 +16,18 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       error,
       labelClassName = "text-white",
       errorClassName = "text-white",
+      caracteres,
       className,
       ...rest
     },
     ref
   ) => {
     const errorId = error ? `${rest.name}-error` : undefined;
+    const limite = rest.maxLength;
+    const contadorId = limite ? `${rest.name}-contador` : undefined;
+    const atual = caracteres ?? 0;
+    const noLimite = limite !== undefined && atual >= limite;
+    const describedBy = [errorId, contadorId].filter(Boolean).join(" ") || undefined;
     const baseStyleTextarea = `
       border 
       border-gray-200
@@ -53,9 +61,18 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           id={rest.name}
           ref={ref}
           aria-invalid={!!error}
-          aria-describedby={errorId}
+          aria-describedby={describedBy}
           className={baseStyleTextarea}
         />
+
+        {limite !== undefined && (
+          <div className={`mt-1 flex justify-between gap-2 text-xs ${labelClassName}`}>
+            <span id={contadorId}>Máximo de {limite} caracteres</span>
+            <span aria-hidden="true" data-testid={`${rest.name}-contagem`} className={noLimite ? "font-bold" : ""}>
+              {atual}/{limite}
+            </span>
+          </div>
+        )}
 
         {error && (
           <p id={errorId} role="alert" className={`text-sm mt-1 ${errorClassName}`}>
