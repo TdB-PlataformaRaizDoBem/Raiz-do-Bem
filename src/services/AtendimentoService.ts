@@ -1,7 +1,7 @@
 import type { AtendimentoAPI } from "../domain/entities/AtendimentoAPI";
 import { handleResponse, assertOk, safeFetch } from "./httpClient";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/atendimento`;
 
 function jsonHeaders(): HeadersInit {

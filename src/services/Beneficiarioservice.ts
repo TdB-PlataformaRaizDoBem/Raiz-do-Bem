@@ -8,7 +8,7 @@ import {
 } from "../domain/mappers/Beneficiariomapper.ts";
 import { handleResponse, assertOk, safeFetch } from "./httpClient";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/beneficiario`;
 
 function jsonHeaders(): HeadersInit {

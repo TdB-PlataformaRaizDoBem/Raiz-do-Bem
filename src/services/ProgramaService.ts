@@ -1,7 +1,7 @@
 import type { ProgramaSocialAPI } from "../domain/types/api-schema";
 import { handleResponse, safeFetch } from "./httpClient";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/programas-sociais`;
 
 /**

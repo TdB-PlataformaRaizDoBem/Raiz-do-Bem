@@ -1,7 +1,7 @@
 import type { LoginResponseDTO } from '../domain/types/auth';
 import { tokenStore } from './tokenStore';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+const BASE_URL = import.meta.env.API_BASE_URL ?? '';
 
 const STATUS_MESSAGES: Partial<Record<number, string>> = {
   400: 'Requisição inválida. Verifique os dados enviados.',

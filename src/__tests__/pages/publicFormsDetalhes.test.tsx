@@ -48,16 +48,16 @@ beforeEach(() => {
 });
 
 describe('ContactForm', () => {
-  it('descrição do problema mostra contador e limita a 300 caracteres', () => {
+  it('descrição do problema mostra contador e limita a 500 caracteres', () => {
     render(comRouter(<ContactForm />));
     const campo = screen.getByLabelText(/Descrição do Problema/);
 
-    expect(campo).toHaveAttribute('maxlength', '300');
-    expect(screen.getByText('0/300 caracteres')).toBeInTheDocument();
+    expect(campo).toHaveAttribute('maxlength', '500');
+    expect(screen.getByTestId('descricaoProblema-contagem')).toHaveTextContent('0/500');
 
     fireEvent.change(campo, { target: { value: 'a'.repeat(42) } });
 
-    expect(screen.getByText('42/300 caracteres')).toBeInTheDocument();
+    expect(screen.getByTestId('descricaoProblema-contagem')).toHaveTextContent('42/500');
   });
 
   const preencherBase = async (sexo: string, idade: number) => {

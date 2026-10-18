@@ -132,7 +132,7 @@ npm run dev                   # http://localhost:5173
 
 | Variável | Serviço | Valor local padrão |
 |---|---|---|
-| `VITE_API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
+| `API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
 | `VITE_CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
 | `VITE_GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
 
@@ -140,7 +140,7 @@ npm run dev                   # http://localhost:5173
 
 | Variável | Serviço | Valor local padrão |
 |---|---|---|
-| `VITE_API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
+| `API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
 | `VITE_CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
 | `VITE_GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
 

@@ -46,6 +46,8 @@ function preloadHomeChunk(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Além do padrão VITE_, expõe API_BASE_URL ao cliente (import.meta.env.API_BASE_URL).
+  envPrefix: ['VITE_', 'API_BASE_URL'],
   plugins: [
     react(),
     tailwindcss(),
@@ -75,7 +77,7 @@ export default defineConfig({
       },
     ],
     // Os testes assumem as URLs-padrão do código (sem .env): o Vite carregaria o .env local.
-    env: { VITE_API_BASE_URL: '', VITE_CHAT_API_URL: '', VITE_GEO_API_URL: 'http://localhost:8000', VITE_ENVIAR_CONSENTIMENTO: 'false' },
+    env: { API_BASE_URL: '', VITE_CHAT_API_URL: '', VITE_GEO_API_URL: 'http://localhost:8000', VITE_ENVIAR_CONSENTIMENTO: 'false' },
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],

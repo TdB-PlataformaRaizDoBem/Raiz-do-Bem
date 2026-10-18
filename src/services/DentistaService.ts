@@ -8,7 +8,7 @@ import {
 import type { AtualizarDentistaPayload } from "../domain/entities/AtualizarDentista";
 import { handleResponse, assertOk, safeFetch, publicFetch } from "./httpClient";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/dentista`;
 
 function jsonHeaders(): HeadersInit {

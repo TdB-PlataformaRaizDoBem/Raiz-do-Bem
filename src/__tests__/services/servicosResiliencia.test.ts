@@ -88,8 +88,8 @@ describe('httpClient — publicFetch e URLs', () => {
     expect(fetchMock.mock.calls[0][1]?.headers).toEqual({});
   });
 
-  it('sem VITE_API_BASE_URL as URLs ficam relativas', async () => {
-    vi.stubEnv('VITE_API_BASE_URL', undefined as unknown as string);
+  it('sem API_BASE_URL as URLs ficam relativas', async () => {
+    vi.stubEnv('API_BASE_URL', undefined as unknown as string);
     const { http, fetchMock } = await carregarHttp();
     fetchMock.mockResolvedValue(fakeResponse({ status: 200 }));
 
@@ -114,7 +114,7 @@ describe('serviços — URL base padrão quando a variável de ambiente não exi
   let fetchMock: FetchMock;
 
   beforeEach(() => {
-    vi.stubEnv('VITE_API_BASE_URL', undefined as unknown as string);
+    vi.stubEnv('API_BASE_URL', undefined as unknown as string);
     fetchMock = installFetch();
     fetchMock.mockImplementation(async () => fakeResponse({ status: 200, body: [] }));
   });

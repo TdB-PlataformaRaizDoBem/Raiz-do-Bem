@@ -30,7 +30,7 @@ flowchart LR
         UI --> H --> S
     end
 
-    S -->|"JWT · VITE_API_BASE_URL"| API["API principal<br/>(Java, :8080)<br/>pedidos, beneficiários, dentistas,<br/>colaboradores, atendimentos, auth"]
+    S -->|"JWT · API_BASE_URL"| API["API principal<br/>(Java, :8080)<br/>pedidos, beneficiários, dentistas,<br/>colaboradores, atendimentos, auth"]
     S -->|"JWT · VITE_CHAT_API_URL"| CHAT["ms-sandbox-menager<br/>(FastAPI, :8000)<br/>chat WhatsApp"]
     S -->|"JWT · VITE_GEO_API_URL"| GEO["vulnerabilidade-api<br/>(FastAPI)<br/>mapa de vulnerabilidade"]
     S -.->|"sem token"| VIACEP["ViaCEP"]
@@ -207,7 +207,7 @@ Páginas pesadas (login, admin, mapa) são carregadas com `lazy()`. O Leaflet s�
 
 | Serviço | Variável de ambiente | Uso | Documentação |
 |---|---|---|---|
-| API principal (Java) | `VITE_API_BASE_URL` | Todo o domínio e a autenticação | Repositório separado, não está neste workspace |
+| API principal (Java) | `API_BASE_URL` | Todo o domínio e a autenticação | Repositório separado, não está neste workspace |
 | `ms-sandbox-menager` | `VITE_CHAT_API_URL` | Chat WhatsApp: histórico, envio, não lidas e resumo por IA (`/api/chats/{tel}/summarize`) | `ARCHITECTURE.md` daquele projeto |
 | `vulnerabilidade-api` | `VITE_GEO_API_URL` | Indicadores e malha das 27 UFs | `ARCHITECTURE.md` daquele projeto |
 | ViaCEP | — | Autopreenchimento de endereço | Sem token |

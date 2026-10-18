@@ -6,7 +6,7 @@ import {
 } from "../domain/mappers/ColaboradorMapper";
 import { assertOk, handleResponse, safeFetch } from "./httpClient";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/colaborador`;
 
 function jsonHeaders(): HeadersInit {
