@@ -9,7 +9,7 @@
  * com duas diferenças justificadas:
  *
  * 1. BASE URL PRÓPRIA. Este back-end é um microsserviço analítico separado da
- *    API principal (Java, :8080). Por isso `VITE_GEO_API_URL`. Como `safeFetch`
+ *    API principal (Java, :8080). Por isso `GEO_API_URL`. Como `safeFetch`
  *    só prefixa quando o path não começa com "http", passar a URL absoluta
  *    funciona sem alterar o httpClient.
  *
@@ -40,7 +40,7 @@ import type {
 import { handleResponse, safeFetch } from "./httpClient";
 
 const GEO_BASE_URL =
-  import.meta.env.VITE_GEO_API_URL ?? "http://localhost:8000";
+  import.meta.env.GEO_API_URL ?? "http://localhost:8000";
 
 /**
  * Segmento do recurso na API. Trocar para "demanda" — caso as rotas do FastAPI

@@ -127,8 +127,8 @@ describe('serviços — URL base padrão quando a variável de ambiente não exi
     expect(fetchMock.mock.calls[0][0]).toBe(caminho);
   });
 
-  it('a API geográfica cai em http://localhost:8000 quando VITE_GEO_API_URL não existe', async () => {
-    vi.stubEnv('VITE_GEO_API_URL', undefined as unknown as string);
+  it('a API geográfica cai em http://localhost:8000 quando GEO_API_URL não existe', async () => {
+    vi.stubEnv('GEO_API_URL', undefined as unknown as string);
     fetchMock.mockImplementation(async () => fakeResponse({ status: 200, body: { status: 'ok' } }));
     const { getSaudeGeoApi } = await import('../../services/VulnerabilidadeService');
 

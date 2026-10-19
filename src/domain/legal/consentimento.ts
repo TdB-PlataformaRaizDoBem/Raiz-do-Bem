@@ -28,12 +28,12 @@ export function criarRegistroConsentimento(
 }
 
 /**
- * O registro só vai no corpo da requisição quando `VITE_ENVIAR_CONSENTIMENTO=true`.
+ * O registro só vai no corpo da requisição quando `ENVIAR_CONSENTIMENTO=true`.
  * Mantenha desligado até a API principal aceitar o campo `consentimento`: enviar um campo
  * desconhecido a um back que não o espera pode derrubar o cadastro.
  */
 export function consentimentoParaEnvio(
   registro: RegistroConsentimento,
 ): { consentimento?: RegistroConsentimento } {
-  return import.meta.env.VITE_ENVIAR_CONSENTIMENTO === "true" ? { consentimento: registro } : {};
+  return import.meta.env.ENVIAR_CONSENTIMENTO === "true" ? { consentimento: registro } : {};
 }

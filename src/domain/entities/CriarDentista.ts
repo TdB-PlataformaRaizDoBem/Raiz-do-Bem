@@ -14,6 +14,6 @@ export interface CriarDentistaPayload {
     cep: string;
     numero: string;
   };
-  /** Comprovação do consentimento. Só é enviado com `VITE_ENVIAR_CONSENTIMENTO=true` (ver `consentimentoParaEnvio`). */
+  /** Comprovação do consentimento. Só é enviado com `ENVIAR_CONSENTIMENTO=true` (ver `consentimentoParaEnvio`). */
   consentimento?: RegistroConsentimento;
 }

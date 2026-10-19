@@ -131,8 +131,8 @@ describe('Pedido de ajuda: consentimento (LGPD)', () => {
     expect(corpoEnviado()).not.toHaveProperty('consentimento');
   });
 
-  it('com VITE_ENVIAR_CONSENTIMENTO=true, envia o registro com versão, data e itens (menor inclui o responsável)', async () => {
-    vi.stubEnv('VITE_ENVIAR_CONSENTIMENTO', 'true');
+  it('com ENVIAR_CONSENTIMENTO=true, envia o registro com versão, data e itens (menor inclui o responsável)', async () => {
+    vi.stubEnv('ENVIAR_CONSENTIMENTO', 'true');
     render(comRouter(<ContactForm />));
     await preencher(10);
     await userEvent.click(caixa(/Li e concordo/));
@@ -245,8 +245,8 @@ describe('Voluntário: consentimento (LGPD)', () => {
     expect(caixa(/Li e concordo/)).not.toBeChecked();
   });
 
-  it('com VITE_ENVIAR_CONSENTIMENTO=true, envia o registro do termo de voluntário', async () => {
-    vi.stubEnv('VITE_ENVIAR_CONSENTIMENTO', 'true');
+  it('com ENVIAR_CONSENTIMENTO=true, envia o registro do termo de voluntário', async () => {
+    vi.stubEnv('ENVIAR_CONSENTIMENTO', 'true');
     render(comRouter(<VoluntaryForm />));
     await preencher();
     await userEvent.click(caixa(/Li e concordo/));

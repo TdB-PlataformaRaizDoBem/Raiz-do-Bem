@@ -4,7 +4,7 @@ import type { MessageCreateRequest } from "../domain/entities/MessageCreateReque
 import type { MessageResponse } from "../domain/entities/MessageResponse";
 import { handleResponse, safeFetch } from "./httpClient";
 
-const CHAT_API_URL = (import.meta.env.VITE_CHAT_API_URL || "http://localhost:8000").replace(/\/$/, "");
+const CHAT_API_URL = (import.meta.env.CHAT_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 /**
  * GET /chat/history/{tel}?skip=0&limit=20

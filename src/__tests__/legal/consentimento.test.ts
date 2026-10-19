@@ -39,8 +39,8 @@ describe('consentimentoParaEnvio', () => {
     expect(consentimentoParaEnvio(registro)).toEqual({});
   });
 
-  it('envia o registro quando VITE_ENVIAR_CONSENTIMENTO=true', () => {
-    vi.stubEnv('VITE_ENVIAR_CONSENTIMENTO', 'true');
+  it('envia o registro quando ENVIAR_CONSENTIMENTO=true', () => {
+    vi.stubEnv('ENVIAR_CONSENTIMENTO', 'true');
 
     expect(consentimentoParaEnvio(registro)).toEqual({ consentimento: registro });
   });

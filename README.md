@@ -133,16 +133,16 @@ npm run dev                   # http://localhost:5173
 | Variável | Serviço | Valor local padrão |
 |---|---|---|
 | `API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
-| `VITE_CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
-| `VITE_GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
+| `CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
+| `GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
 
 > As duas APIs em FastAPI usam a porta 8000 por padrão. Para rodá-las juntas, suba uma em outra porta (`uvicorn app.main:app --port 8001`) e ajuste a variável. Sem a API principal no ar, login e telas internas não funcionam.
 
 | Variável | Serviço | Valor local padrão |
 |---|---|---|
 | `API_BASE_URL` | API principal (domínio e autenticação) | `http://localhost:8080` |
-| `VITE_CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
-| `VITE_GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
+| `CHAT_API_URL` | Chat WhatsApp (`ms-sandbox-menager`) | `http://localhost:8000` |
+| `GEO_API_URL` | Mapa de vulnerabilidade (`vulnerabilidade-api`) | `http://localhost:8000` |
 
 > As duas APIs em FastAPI usam a porta 8000 por padrão. Para rodá-las juntas, suba uma delas em outra porta (`uvicorn app.main:app --port 8001`) e ajuste a variável correspondente. Sem a API principal no ar, o login e as telas internas não funcionam.
 

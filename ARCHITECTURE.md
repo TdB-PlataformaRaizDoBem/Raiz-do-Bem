@@ -31,8 +31,8 @@ flowchart LR
     end
 
     S -->|"JWT · API_BASE_URL"| API["API principal<br/>(Java, :8080)<br/>pedidos, beneficiários, dentistas,<br/>colaboradores, atendimentos, auth"]
-    S -->|"JWT · VITE_CHAT_API_URL"| CHAT["ms-sandbox-menager<br/>(FastAPI, :8000)<br/>chat WhatsApp"]
-    S -->|"JWT · VITE_GEO_API_URL"| GEO["vulnerabilidade-api<br/>(FastAPI)<br/>mapa de vulnerabilidade"]
+    S -->|"JWT · CHAT_API_URL"| CHAT["ms-sandbox-menager<br/>(FastAPI, :8000)<br/>chat WhatsApp"]
+    S -->|"JWT · GEO_API_URL"| GEO["vulnerabilidade-api<br/>(FastAPI)<br/>mapa de vulnerabilidade"]
     S -.->|"sem token"| VIACEP["ViaCEP"]
     S -.->|"fallback da malha"| IBGE["API de Malhas do IBGE"]
 
@@ -208,8 +208,8 @@ Páginas pesadas (login, admin, mapa) são carregadas com `lazy()`. O Leaflet s�
 | Serviço | Variável de ambiente | Uso | Documentação |
 |---|---|---|---|
 | API principal (Java) | `API_BASE_URL` | Todo o domínio e a autenticação | Repositório separado, não está neste workspace |
-| `ms-sandbox-menager` | `VITE_CHAT_API_URL` | Chat WhatsApp: histórico, envio, não lidas e resumo por IA (`/api/chats/{tel}/summarize`) | `ARCHITECTURE.md` daquele projeto |
-| `vulnerabilidade-api` | `VITE_GEO_API_URL` | Indicadores e malha das 27 UFs | `ARCHITECTURE.md` daquele projeto |
+| `ms-sandbox-menager` | `CHAT_API_URL` | Chat WhatsApp: histórico, envio, não lidas e resumo por IA (`/api/chats/{tel}/summarize`) | `ARCHITECTURE.md` daquele projeto |
+| `vulnerabilidade-api` | `GEO_API_URL` | Indicadores e malha das 27 UFs | `ARCHITECTURE.md` daquele projeto |
 | ViaCEP | — | Autopreenchimento de endereço | Sem token |
 | API de Malhas do IBGE | — | Fallback da malha do mapa, direto do navegador | — |
 
@@ -256,7 +256,7 @@ Decisões que valem conhecer:
 - **Dados do controlador** ficam em `src/domain/legal/organizacao.ts` (Turma do Bem, CNPJ, endereço, canal do titular). `ENCARREGADO` é `null` até a ONG indicar um; `DOCUMENTOS_VALIDADOS_PELA_ONG` mantém o aviso de projeto acadêmico nos textos.
 - **Documentos**: `/privacidade`, `/consentimento/pedido-de-ajuda` e `/consentimento/voluntario` (`src/pages/legal`), com versão e vigência em `consentimento.ts`.
 - **Consentimento nos formulários**: `ConsentSection` + `ConsentCheckbox` (desmarcados por padrão, obrigatórios). O pedido de ajuda tem aceite separado para dados sensíveis (art. 11) e declaração do responsável quando há menor de 18 anos (art. 14).
-- **Registro**: `criarRegistroConsentimento` monta documento, versão, itens e data/hora. O projeto é acadêmico e só de front: o aceite bloqueia o envio quando não marcado e o registro só vai à API se `VITE_ENVIAR_CONSENTIMENTO=true` (desligado por padrão, sem mudanças no back).
+- **Registro**: `criarRegistroConsentimento` monta documento, versão, itens e data/hora. O projeto é acadêmico e só de front: o aceite bloqueia o envio quando não marcado e o registro só vai à API se `ENVIAR_CONSENTIMENTO=true` (desligado por padrão, sem mudanças no back).
 - **Cookies**: `CookieBanner` (opt-in, recusar tão fácil quanto aceitar, nada pré-marcado). O Google Maps só carrega com consentimento ou clique explícito (`GoogleMapEmbed`); o YouTube usa fachada com `youtube-nocookie`.
 
 ## Testes
