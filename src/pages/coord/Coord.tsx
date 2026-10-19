@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import { Beneficiarios } from "../gerenciaBeneficiarios/Beneficiarios";
@@ -7,6 +8,8 @@ import { Designacao } from "../designacao/Designacao";
 import ChatScreen from "../chat/ChatScreen";
 import ConversasScreen from "../conversas/ConversasScreen";
 
+const Ajuda = lazy(() => import("../ajuda/Ajuda"));
+
 const Coord = () => {
   return (
     <Routes>
@@ -15,6 +18,7 @@ const Coord = () => {
       <Route path="dentistas" element={<Dentistas />} />
       <Route path="solicitacoes" element={<PedidosAjuda />} />
       <Route path="atendimento" element={<Designacao />} />
+      <Route path="ajuda" element={<Ajuda />} />
       <Route path="chat" element={<ConversasScreen />} />
       <Route path="chat/:telefone" element={<ChatScreen />} />
     </Routes>

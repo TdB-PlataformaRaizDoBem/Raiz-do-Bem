@@ -14,6 +14,8 @@ const titles: Record<string, string> = {
   "/admin/atendimento": "Gerenciar Atendimentos",
   "/coord/atendimento": "Gerenciar Atendimentos",
   "/admin/mapa": "Mapa de Vulnerabilidade",
+  "/admin/ajuda": "Como Usar a Plataforma",
+  "/coord/ajuda": "Como Usar a Plataforma",
 };
 
 const UserHeader = () => {
