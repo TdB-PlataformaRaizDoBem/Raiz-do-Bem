@@ -628,14 +628,18 @@ describe('UserHeader', () => {
     );
 
   it.each([
-    ['/admin/dashboard', 'Dashboard', 'admin'],
-    ['/coord/dentistas', 'Gerenciar Dentistas', 'coord'],
-    ['/admin/colaboradores', 'Gerenciar Colaboradores', 'admin'],
-    ['/admin/atendimento', 'Gerenciar Atendimentos', 'admin'],
-    ['/coord/solicitacoes', 'Pedidos de Ajuda', 'coord'],
-    ['/admin/beneficiarios', 'Gerenciar Beneficiários', 'admin'],
-    ['/admin/ajuda', 'Como Usar a Plataforma', 'admin'],
-    ['/coord/ajuda', 'Como Usar a Plataforma', 'coord'],
+    ['/admin/dashboard', 'Dashboard', 'Administração'],
+    ['/coord/dentistas', 'Gerenciar Dentistas', 'Coordenação'],
+    ['/admin/colaboradores', 'Gerenciar Colaboradores', 'Administração'],
+    ['/admin/atendimento', 'Gerenciar Atendimentos', 'Administração'],
+    ['/coord/solicitacoes', 'Pedidos de Ajuda', 'Coordenação'],
+    ['/admin/beneficiarios', 'Gerenciar Beneficiários', 'Administração'],
+    ['/admin/mapa', 'Mapa de Vulnerabilidade', 'Administração'],
+    ['/admin/ajuda', 'Como Usar a Plataforma', 'Administração'],
+    ['/coord/ajuda', 'Como Usar a Plataforma', 'Coordenação'],
+    // a barra final e as maiúsculas não mudam a página aberta
+    ['/admin/dashboard/', 'Dashboard', 'Administração'],
+    ['/Coord/Ajuda', 'Como Usar a Plataforma', 'Coordenação'],
   ])('%s → "%s"', (path, titulo, contexto) => {
     renderEm(path);
 
@@ -643,10 +647,13 @@ describe('UserHeader', () => {
     expect(screen.getByText(`Raiz do Bem / ${contexto}`)).toBeInTheDocument();
   });
 
-  it('rota desconhecida mostra "Página Não Encontrada"', () => {
-    renderEm('/admin/xyz');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página Não Encontrada');
-  });
+  it.each(['/admin/xyz', '/coord/mapa', '/admin', '/admin/dashboard/extra', '/admin/constructor'])(
+    'rota que não existe (%s) mostra "Página Não Encontrada"',
+    (path) => {
+      renderEm(path);
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página Não Encontrada');
+    },
+  );
 
   it('na raiz usa o contexto "Plataforma"', () => {
     renderEm('/');

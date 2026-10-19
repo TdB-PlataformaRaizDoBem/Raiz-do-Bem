@@ -1,33 +1,14 @@
-import React from "react";
 import { useLocation } from "react-router-dom";
-
-const titles: Record<string, string> = {
-  "/admin/dashboard": "Dashboard",
-  "/coord/dashboard": "Dashboard",
-  "/admin/colaboradores": "Gerenciar Colaboradores",
-  "/admin/dentistas": "Gerenciar Dentistas",
-  "/coord/dentistas": "Gerenciar Dentistas",
-  "/admin/beneficiarios": "Gerenciar Beneficiários",
-  "/coord/beneficiarios": "Gerenciar Beneficiários",
-  "/admin/solicitacoes": "Pedidos de Ajuda",
-  "/coord/solicitacoes": "Pedidos de Ajuda",
-  "/admin/atendimento": "Gerenciar Atendimentos",
-  "/coord/atendimento": "Gerenciar Atendimentos",
-  "/admin/mapa": "Mapa de Vulnerabilidade",
-  "/admin/ajuda": "Como Usar a Plataforma",
-  "/coord/ajuda": "Como Usar a Plataforma",
-};
+import { TITULO_NAO_ENCONTRADA, tituloDaPaginaInterna } from "../../Routes/titulos";
 
 const UserHeader = () => {
-  const [title, setTitle] = React.useState<string>("");
   const location = useLocation();
+  // Mesmo nome usado na aba do navegador (Routes/titulos.ts), sem esperar um render a mais.
+  const title = tituloDaPaginaInterna(location.pathname) ?? TITULO_NAO_ENCONTRADA;
 
-  React.useEffect(() => {
-    const currentTitle = titles[location.pathname] || "Página Não Encontrada";
-    setTitle(currentTitle);
-  }, [location.pathname]);
-
-  const context = location.pathname.split("/")[1] || "Plataforma";
+  // "admin" e "coord" são nomes de endereço; quem usa a plataforma lê o nome da área.
+  const area = location.pathname.split("/")[1]?.toLowerCase();
+  const context = area === "admin" ? "Administração" : area === "coord" ? "Coordenação" : "Plataforma";
 
   return (
     <header className="mb-8 lg:mb-10">
@@ -40,6 +21,7 @@ const UserHeader = () => {
         text-3xl md:text-4xl lg:text-5xl xl:text-6xl
         leading-none
         relative
+        [word-spacing:0.12em]
       ">
         {title}
       </h1>

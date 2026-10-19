@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 const Dashboard = lazy(() => import("../dashboard/Dashboard"));
 const Colaborador = lazy(() => import("./Colaborador"));
@@ -10,6 +10,9 @@ const Designacao = lazy(() => import("../designacao/Designacao").then((m) => ({ 
 const ConversasScreen = lazy(() => import("../conversas/ConversasScreen"));
 const ChatScreen = lazy(() => import("../chat/ChatScreen"));
 const Ajuda = lazy(() => import("../ajuda/Ajuda"));
+const PaginaNaoEncontrada = lazy(() =>
+  import("../naoEncontrada/NaoEncontrada").then((m) => ({ default: m.PaginaInternaNaoEncontrada })),
+);
 
 // Exclusivo do perfil ADMIN. A rota /admin/* já está sob
 // <ProtectedRoutes allowedRoles={['ADMIN']}> em App.tsx, então nenhum
@@ -20,6 +23,7 @@ const MapaVulnerabilidade = lazy(() => import("../vulnerabilidade/MapaVulnerabil
 const Admin = () => {
   return (
     <Routes>
+      <Route index element={<Navigate to="dashboard" replace />} />
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="mapa" element={<MapaVulnerabilidade />} />
       <Route path="colaboradores" element={<Colaborador />} />
@@ -30,6 +34,7 @@ const Admin = () => {
       <Route path="ajuda" element={<Ajuda />} />
       <Route path="chat" element={<ConversasScreen />} />
       <Route path="chat/:telefone" element={<ChatScreen />} />
+      <Route path="*" element={<PaginaNaoEncontrada voltarPara="/admin/dashboard" />} />
     </Routes>
   );
 };

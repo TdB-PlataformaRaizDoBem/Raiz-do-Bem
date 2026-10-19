@@ -165,7 +165,7 @@ export const BlocoAjuda = ({ bloco }: { bloco: Bloco }) => {
       // No celular a tabela vira uma lista: cada linha é um bloco e, quando há mais de duas colunas, o nome da coluna aparece antes do valor.
       const rotular = bloco.colunas.length > 2;
       return (
-        <div className="my-5 overflow-hidden rounded-xl border border-gray-200">
+        <div className="my-5 overflow-x-auto rounded-xl border border-gray-200">
           <table role="table" className="w-full text-left text-sm max-sm:block">
             <caption className="sr-only">{bloco.legenda}</caption>
             <thead role="rowgroup" className="bg-cream/60 max-sm:sr-only">

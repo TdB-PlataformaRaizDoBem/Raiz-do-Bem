@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
 import { queryClient } from '../../lib/queryClient';
@@ -80,11 +80,136 @@ describe('App — rotas públicas', () => {
     expect(document.title).toBe(titulo);
   });
 
-  it('rota inexistente não muda o título', async () => {
+  it('rota inexistente não herda o título da página anterior', async () => {
+    document.title = 'Sobre | Raiz do Bem';
     irPara('/nao-existe');
     render(<App />);
 
-    await waitFor(() => expect(document.title).toBe('Raiz do Bem'));
+    await waitFor(() => expect(document.title).toBe('Página Não Encontrada | Raiz do Bem'));
+  });
+
+  it('endereço público que não existe mostra o aviso com cabeçalho e rodapé (não uma tela em branco) e leva ao início', async () => {
+    irPara('/nao-existe');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('link', { name: 'Ir para o início' }));
+
+    expect(window.location.pathname).toBe('/');
+    await waitFor(() => expect(document.title).toBe('Home | Raiz do Bem'));
+  });
+
+  it('a descrição da página volta ao padrão quando se sai de uma página pública', async () => {
+    const meta = document.createElement('meta');
+    meta.name = 'description';
+    meta.content = 'descrição qualquer';
+    document.head.appendChild(meta);
+    try {
+      irPara('/sobre');
+      const { unmount } = render(<App />);
+      await waitFor(() => expect(meta.content).toMatch(/origem, a jornada e os princípios/));
+      unmount();
+
+      irPara('/auth/login');
+      render(<App />);
+      await waitFor(() => expect(meta.content).toMatch(/^Raiz do Bem é a plataforma da Turma do Bem/));
+    } finally {
+      meta.remove();
+    }
+  });
+});
+
+describe('App — título da aba fora das páginas públicas', () => {
+  it('login: a aba mostra "Login", mesmo vindo de uma página pública', async () => {
+    irPara('/sobre');
+    render(<App />);
+    await waitFor(() => expect(document.title).toBe('Sobre | Raiz do Bem'));
+
+    // o mesmo caminho de quem clica em "Entrar" no cabeçalho: troca de rota sem recarregar a página
+    act(() => {
+      window.history.pushState({}, '', '/auth/login');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+
+    expect(await screen.findByRole('heading', { name: 'Login Administrativo' })).toBeInTheDocument();
+    expect(document.title).toBe('Login | Raiz do Bem');
+  });
+
+  it('acesso negado tem título próprio', async () => {
+    tokenStore.set(tokenColaborador(), 'refresh');
+    irPara('/admin/dashboard');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'Acesso Negado' })).toBeInTheDocument();
+    expect(document.title).toBe('Acesso Negado | Raiz do Bem');
+  });
+
+  it('cada página da área logada troca o título da aba ao navegar pelo menu', async () => {
+    tokenStore.set(tokenAdmin(), 'refresh');
+    irPara('/admin/dashboard');
+    render(<App />);
+    await screen.findByText('Resumo de Impacto');
+    expect(document.title).toBe('Dashboard | Raiz do Bem');
+
+    await userEvent.click(within(menuLateral()).getByRole('link', { name: /Dentistas/ }));
+    await screen.findByText('Dr. João');
+    expect(document.title).toBe('Gerenciar Dentistas | Raiz do Bem');
+
+    await userEvent.click(within(menuLateral()).getByRole('link', { name: /Mapa de Vulnerabilidade/ }));
+    await waitFor(() => expect(document.title).toBe('Mapa de Vulnerabilidade | Raiz do Bem'));
+
+    await userEvent.click(screen.getByRole('link', { name: 'Como usar a plataforma' }));
+    await waitFor(() => expect(document.title).toBe('Como Usar a Plataforma | Raiz do Bem'));
+  });
+
+  it('o coordenador vê o título da página da sua área', async () => {
+    tokenStore.set(tokenColaborador(), 'refresh');
+    irPara('/coord/atendimento');
+    render(<App />);
+
+    await waitFor(() => expect(document.title).toBe('Gerenciar Atendimentos | Raiz do Bem'));
+  });
+
+  it('endereço que não existe dentro da área logada avisa na aba, no cabeçalho e no conteúdo, com caminho de volta', async () => {
+    tokenStore.set(tokenAdmin(), 'refresh');
+    irPara('/admin/xyz');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Página Não Encontrada' })).toBeInTheDocument();
+    expect(document.title).toBe('Página Não Encontrada | Raiz do Bem');
+    expect(screen.getByText(/Não encontramos esta página/)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('link', { name: 'Voltar ao Dashboard' }));
+
+    expect(await screen.findByText('Resumo de Impacto')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/admin/dashboard');
+    expect(document.title).toBe('Dashboard | Raiz do Bem');
+  });
+
+  it('o coordenador não tem o mapa: /coord/mapa avisa e volta ao dashboard dele', async () => {
+    tokenStore.set(tokenColaborador(), 'refresh');
+    irPara('/coord/mapa');
+    render(<App />);
+
+    expect(await screen.findByText(/Não encontramos esta página/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Voltar ao Dashboard' })).toHaveAttribute('href', '/coord/dashboard');
+  });
+
+  it.each([
+    ['/admin', '/admin/dashboard', tokenAdmin],
+    ['/admin/', '/admin/dashboard', tokenAdmin],
+    ['/coord', '/coord/dashboard', tokenColaborador],
+  ])('abrir só "%s" leva ao dashboard em vez de uma página vazia', async (inicio, destino, token) => {
+    tokenStore.set(token(), 'refresh');
+    irPara(inicio);
+    render(<App />);
+
+    expect(await screen.findByText('Resumo de Impacto')).toBeInTheDocument();
+    expect(window.location.pathname).toBe(destino);
+    expect(document.title).toBe('Dashboard | Raiz do Bem');
   });
 });
 

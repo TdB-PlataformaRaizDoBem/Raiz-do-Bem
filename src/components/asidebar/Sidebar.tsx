@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { AJUDA_ITEM, Menu_Data } from "./MenuData";
+import { AJUDA_ITEM, Menu_Data, type MenuItem } from "./MenuData";
 import { useUnread } from "../../hooks/useUnread";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -28,6 +28,11 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
   const menuLinks = Menu_Data[roleKey] || [];
   const ajudaPath = `${roleKey === "admin" ? "/admin" : "/coord"}/${AJUDA_ITEM.path}`;
   const mostrarRotulos = !isCollapsed || isMobileOpen;
+  const recolhida = !mostrarRotulos;
+
+  // Menu recolhido mostra só o ícone: o nome precisa ir no atributo, junto com o aviso de mensagens novas.
+  const nomeDoLink = (item: MenuItem) =>
+    item.hasBadge && totalUnread > 0 ? `${item.label}, ${totalUnread} não lidas` : item.label;
 
   return (
     <>
@@ -36,21 +41,23 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
         className={`
           fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-[1001] flex flex-col
           ${isCollapsed ? "w-24" : "w-[300px]"}
-          ${isMobileOpen ? "translate-x-0 w-full" : "-translate-x-full lg:translate-x-0"}
+          ${isMobileOpen ? "translate-x-0 w-full" : "-translate-x-full max-lg:invisible lg:translate-x-0"}
         `}
       >
-        <div className="flex flex-col h-full p-6 lg:p-8">
+        {/* Recolhida, a coluna tem 96px: com o padding normal (32px de cada lado) sobrariam 32px
+            para ícones de 52px e eles seriam cortados. */}
+        <div className={`flex flex-col h-full ${recolhida ? "p-6 lg:px-4 lg:py-8" : "p-6 lg:p-8"}`}>
           {/* Header da Sidebar Antiga — Avatar + Botão Collapse */}
           <div
-            className={`flex items-center justify-between mb-10 ${isCollapsed ? "flex-col gap-4" : ""}`}
+            className={`flex items-center justify-between mb-10 [@media(max-height:820px)]:mb-5 ${isCollapsed ? "flex-col gap-4" : ""}`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="w-10 h-10 bg-darkgreen text-white rounded-lg flex items-center justify-center font-bold shrink-0">
                 {initials}
               </div>
-              {(!isCollapsed || isMobileOpen) && (
-                <div className="flex flex-col overflow-hidden">
-                  <span className="font-bold text-sm text-black truncate">
+              {mostrarRotulos && (
+                <div className="flex min-w-0 flex-col" title={userEmail ? `${userName} — ${userEmail}` : userName}>
+                  <span className="font-bold text-sm leading-tight text-black break-words line-clamp-2">
                     {userName}
                   </span>
                   <p className="text-[11px] text-gray-500 truncate">
@@ -85,24 +92,29 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
           </div>
 
           {/* Navegação Principal */}
-          <nav aria-label="Navegação principal" className="flex-1 overflow-y-auto flex flex-col">
+          <nav aria-label="Navegação principal" className="-mx-1 flex flex-1 flex-col overflow-y-auto px-1">
             <ul
-              className={`${isMobileOpen ? "grid grid-cols-1 min-[404px]:grid-cols-2 gap-6 mt-10 pb-20" : "space-y-2 mt-8"}`}
+              className={`${isMobileOpen ? "grid grid-cols-1 min-[404px]:grid-cols-2 gap-6 mt-10 pb-20" : "space-y-2 mt-8 [@media(max-height:820px)]:mt-3 [@media(max-height:820px)]:space-y-1"}`}
             >
               {menuLinks.map((item) => (
                 <li key={item.label}>
                   <NavLink
                     to={item.path}
                     onClick={() => setIsMobileOpen(false)}
+                    // Sem o texto na tela, o ícone sozinho não diz para onde o link leva.
+                    title={recolhida ? item.label : undefined}
+                    aria-label={recolhida ? nomeDoLink(item) : undefined}
                     className={({ isActive }) => `
                       flex items-center rounded-lg font-medium transition-all group
                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50
-                      ${isCollapsed && !isMobileOpen ? "justify-center p-3" : "gap-4 p-3"}
+                      ${recolhida ? "justify-center p-3" : "gap-4 p-3"}
                       ${isMobileOpen ? "flex-col text-center justify-center bg-gray-50" : ""}
                       ${
-                        isActive && !isCollapsed
-                          ? "bg-orange/10 text-orange border-r-4 border-orange rounded-r-none"
-                          : "text-black hover:bg-gray-100"
+                        !isActive
+                          ? "text-black hover:bg-gray-100"
+                          : recolhida
+                            ? "bg-orange/10 text-orange"
+                            : "bg-orange/10 text-orange border-r-4 border-orange rounded-r-none"
                       }
                     `}
                   >
@@ -119,8 +131,9 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
                         </span>
                       )}
                     </div>
-                    {(!isCollapsed || isMobileOpen) && (
-                      <span className="text-sm whitespace-nowrap overflow-hidden italic">
+                    {mostrarRotulos && (
+                      // Pode quebrar em duas linhas ("Mapa de / Vulnerabilidade") em vez de ser cortado.
+                      <span className="min-w-0 text-sm italic leading-snug break-words">
                         {item.label}
                       </span>
                     )}
@@ -144,23 +157,24 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
               `}
             >
               <img src={AJUDA_ITEM.icon} className="min-h-7 min-w-7 shrink-0" alt="" aria-hidden="true" />
-              {mostrarRotulos && <span className="text-sm whitespace-nowrap">{AJUDA_ITEM.label}</span>}
+              {mostrarRotulos && <span className="min-w-0 text-sm leading-snug">{AJUDA_ITEM.label}</span>}
             </NavLink>
 
             <button
               onClick={logout}
               aria-label="Sair da conta"
-              className={`flex items-center ${isCollapsed && !isMobileOpen ? "justify-center" : "gap-4"} w-full p-3 text-black hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50`}
+              title={recolhida ? "Sair da conta" : undefined}
+              className={`flex items-center ${recolhida ? "justify-center" : "gap-4"} w-full p-3 text-black hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50`}
             >
               <img src={Logout} className="min-h-7 min-w-7 shrink-0" alt="" aria-hidden="true" />
-              {(!isCollapsed || isMobileOpen) && <span>Sair da Conta</span>}
+              {mostrarRotulos && <span>Sair da Conta</span>}
             </button>
           </div>
         </div>
       </aside>
 
       {/* Menu Mobile no Bottom Fixo Estilizado Antigo */}
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full h-[85px] bg-[#f5f4f3] border-t-2 border-gray-200 rounded-t-[20px] z-40 px-6">
+      <nav aria-label="Atalhos do menu" className="lg:hidden fixed bottom-0 left-0 w-full h-[85px] bg-[#f5f4f3] border-t-2 border-gray-200 rounded-t-[20px] z-40 px-6">
         <ul className="flex items-center justify-between h-full max-w-md mx-auto">
           {menuLinks.slice(0, 2).map((item) => (
             <li key={item.label}>

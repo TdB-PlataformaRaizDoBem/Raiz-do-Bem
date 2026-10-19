@@ -106,15 +106,15 @@ const Ajuda = () => {
         </div>
       </section>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)] xl:gap-12">
+      <div className="grid items-start gap-8 xl:grid-cols-[280px_minmax(0,1fr)] xl:gap-12">
         {/* Índice */}
-        <div id="indice" className="scroll-mt-6 lg:sticky lg:top-6 print:hidden">
+        <div id="indice" className="scroll-mt-6 xl:sticky xl:top-6 print:hidden">
           <button
             type="button"
             onClick={() => setIndiceAberto((a) => !a)}
             aria-expanded={indiceAberto}
             aria-controls="ajuda-indice"
-            className="flex w-full items-center justify-between rounded-xl border border-gray-300 bg-white px-4 py-3 text-left font-semibold text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange lg:hidden"
+            className="flex w-full items-center justify-between rounded-xl border border-gray-300 bg-white px-4 py-3 text-left font-semibold text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange xl:hidden"
           >
             Índice do guia
             <span aria-hidden="true" className="text-xl leading-none text-darkgreen">
@@ -125,9 +125,9 @@ const Ajuda = () => {
           <nav
             id="ajuda-indice"
             aria-label="Índice do guia"
-            className={`${indiceAberto ? "block" : "hidden"} mt-2 rounded-xl border border-gray-200 bg-white p-3 lg:mt-0 lg:block lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto`}
+            className={`${indiceAberto ? "block" : "hidden"} mt-2 rounded-xl border border-gray-200 bg-white p-3 xl:mt-0 xl:block xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto`}
           >
-            <p className="hidden px-2 pb-2 text-xs font-bold uppercase tracking-widest text-gray lg:block">Neste guia</p>
+            <p className="hidden px-2 pb-2 text-xs font-bold uppercase tracking-widest text-gray xl:block">Neste guia</p>
             {secoes.length === 0 ? (
               <p className="px-2 py-2 text-sm text-gray">Nenhum tópico corresponde à busca.</p>
             ) : (
@@ -250,7 +250,7 @@ const SecaoGuia = ({ secao, onVoltarAoIndice }: { secao: Secao; onVoltarAoIndice
       <a
         href="#indice"
         onClick={onVoltarAoIndice}
-        className="mt-6 inline-block text-sm font-semibold text-darkgreen underline underline-offset-4 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange lg:hidden print:hidden"
+        className="mt-6 inline-block text-sm font-semibold text-darkgreen underline underline-offset-4 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange xl:hidden print:hidden"
       >
         ↑ Voltar ao índice
       </a>
