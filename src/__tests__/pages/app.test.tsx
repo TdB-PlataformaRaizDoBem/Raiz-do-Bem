@@ -133,6 +133,39 @@ describe('App — autenticação e permissões', () => {
     expect(screen.queryByRole('link', { name: /Colaboradores/ })).not.toBeInTheDocument();
   });
 
+  it('ADMIN abre o guia "Como usar a plataforma" pelo menu lateral e vê todos os tópicos', async () => {
+    tokenStore.set(tokenAdmin(), 'refresh');
+    irPara('/admin/dashboard');
+    render(<App />);
+
+    await userEvent.click(await screen.findByRole('link', { name: 'Como usar a plataforma' }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: /Bem-vindo\(a\) à plataforma Raiz do Bem/ })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/admin/ajuda');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Como Usar a Plataforma');
+    expect(screen.getByRole('heading', { level: 2, name: 'Colaboradores' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Mapa de Vulnerabilidade' })).toBeInTheDocument();
+  });
+
+  it('COLABORADOR abre o guia em /coord/ajuda, sem os tópicos de administrador', async () => {
+    tokenStore.set(tokenColaborador(), 'refresh');
+    irPara('/coord/ajuda');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 2, name: /Bem-vindo\(a\) à plataforma Raiz do Bem/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Pedidos de Ajuda' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 2, name: 'Mapa de Vulnerabilidade' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Somente administradores')).not.toBeInTheDocument();
+  });
+
+  it('COLABORADOR não abre /admin/ajuda (vai para o 403)', async () => {
+    tokenStore.set(tokenColaborador(), 'refresh');
+    irPara('/admin/ajuda');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'Acesso Negado' })).toBeInTheDocument();
+  });
+
   it('ADMIN também acessa /coord', async () => {
     tokenStore.set(tokenAdmin(), 'refresh');
     irPara('/coord/dashboard');

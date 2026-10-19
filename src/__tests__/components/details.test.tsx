@@ -634,6 +634,8 @@ describe('UserHeader', () => {
     ['/admin/atendimento', 'Gerenciar Atendimentos', 'admin'],
     ['/coord/solicitacoes', 'Pedidos de Ajuda', 'coord'],
     ['/admin/beneficiarios', 'Gerenciar Beneficiários', 'admin'],
+    ['/admin/ajuda', 'Como Usar a Plataforma', 'admin'],
+    ['/coord/ajuda', 'Como Usar a Plataforma', 'coord'],
   ])('%s → "%s"', (path, titulo, contexto) => {
     renderEm(path);
 

@@ -9,6 +9,7 @@ const PedidosAjuda = lazy(() => import("../pedidosAjuda/pedidosAjuda").then((m) 
 const Designacao = lazy(() => import("../designacao/Designacao").then((m) => ({ default: m.Designacao })));
 const ConversasScreen = lazy(() => import("../conversas/ConversasScreen"));
 const ChatScreen = lazy(() => import("../chat/ChatScreen"));
+const Ajuda = lazy(() => import("../ajuda/Ajuda"));
 
 // Exclusivo do perfil ADMIN. A rota /admin/* já está sob
 // <ProtectedRoutes allowedRoles={['ADMIN']}> em App.tsx, então nenhum
@@ -26,6 +27,7 @@ const Admin = () => {
       <Route path="dentistas" element={<Dentistas />} />
       <Route path="solicitacoes" element={<PedidosAjuda />} />
       <Route path="atendimento" element={<Designacao />} />
+      <Route path="ajuda" element={<Ajuda />} />
       <Route path="chat" element={<ConversasScreen />} />
       <Route path="chat/:telefone" element={<ChatScreen />} />
     </Routes>

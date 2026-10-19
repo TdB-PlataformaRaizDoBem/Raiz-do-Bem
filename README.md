@@ -207,12 +207,21 @@ O login (`/auth/login`) usa a API principal e devolve um JWT; o perfil vem do to
 | Beneficiários e dentistas: listar, criar e editar | ✔ | ✔ |
 | Atendimento: designar e encerrar | ✔ | ✔ |
 | Conversas por WhatsApp | ✔ | ✔ |
+| Guia **Como usar a plataforma** (passo a passo com imagens e busca) | ✔ | ✔ |
 | Excluir beneficiários e dentistas | — | ✔ |
 | Exportar CSV | — | ✔ |
 | Gestão de colaboradores | — | ✔ |
 | Mapa de vulnerabilidade social | — | ✔ |
 
 As contas de acesso são criadas na API principal por um administrador (**Colaboradores → Novo**); não há contas de teste embutidas no front-end.
+
+#### 📘 Guia “Como usar a plataforma”
+
+Página para quem acabou de entrar na equipe: linguagem simples, dividida em tópicos, com busca, atalhos, índice e imagens da própria plataforma (clique para ampliar). Fica logo acima de **Sair da Conta** no menu lateral (`/admin/ajuda` e `/coord/ajuda`); quem é coordenador não vê os tópicos exclusivos de administrador.
+
+- **Texto:** tudo está em [`src/pages/ajuda/ajudaData.ts`](src/pages/ajuda/ajudaData.ts). Para corrigir um texto ou incluir um tópico, basta editar esse arquivo; a página (`Ajuda.tsx`) não muda.
+- **Imagens:** ficam em [`src/assets/ajuda/`](src/assets/ajuda). Têm números azuis desenhados em cima, e a lista `marcas` de cada figura explica cada número. Quando uma tela mudar, tire a imagem de novo, mantenha o nome do arquivo e confira se os números continuam batendo com a legenda.
+- **Dados das imagens:** pessoas, e-mails e CPFs que aparecem nas imagens são fictícios.
 
 ---
 

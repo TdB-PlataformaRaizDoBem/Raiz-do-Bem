@@ -196,10 +196,25 @@ Sub-rotas internas (em [`Admin.tsx`](src/pages/admin/Admin.tsx) e [`Coord.tsx`](
 | `dentistas` | Dentistas | ✔ | ✔ |
 | `atendimento` | Designação e atendimentos | ✔ | ✔ |
 | `chat`, `chat/:telefone` | Conversas WhatsApp (com resumo por IA) | ✔ | ✔ |
+| `ajuda` | Guia "Como usar a plataforma" | ✔ | ✔ |
 | `colaboradores` | Gestão de colaboradores | ✔ | — |
 | `mapa` | Mapa de vulnerabilidade | ✔ | — |
 
-Os menus ([`MenuData.tsx`](src/components/asidebar/MenuData.tsx)) já omitem o que o perfil não acessa. Telas compartilhadas, como Dentistas e Beneficiários, escondem ações restritas a `ADMIN` verificando `user.role`.
+Os menus ([`MenuData.tsx`](src/components/asidebar/MenuData.tsx)) já omitem o que o perfil não acessa. Telas compartilhadas, como Dentistas e Beneficiários, escondem ações restritas a `ADMIN` verificando `user.role`. O link do guia (`AJUDA_ITEM`) não faz parte de `Menu_Data`: a `Sidebar` o desenha no rodapé, logo acima de "Sair da Conta", apontando para `/admin/ajuda` ou `/coord/ajuda` conforme o perfil.
+
+### Guia "Como usar a plataforma"
+
+Página de documentação para novos colaboradores, em [`src/pages/ajuda`](src/pages/ajuda). O conteúdo é **dado**, não JSX:
+
+| Arquivo | Papel |
+|---|---|
+| `ajudaData.ts` | Tópicos (`SECOES`), atalhos (`ATALHOS`) e figuras. Cada tópico tem `perfil: "todos" \| "admin"`: colaboradores só veem os de `"todos"` |
+| `Ajuda.tsx` | Boas-vindas, busca, atalhos, índice fixo (vira botão no celular) e destaque do tópico visível |
+| `BlocoAjuda.tsx` | Desenha cada tipo de bloco (texto, passos, figura, tabela, dúvidas…). Tabelas viram lista empilhada no celular |
+| `Lightbox.tsx` | Imagem ampliada (Esc ou clique fora fecham; no celular a imagem larga rola para os lados) |
+| `busca.ts`, `texto.tsx` | Busca sem acento e com todas as palavras; `**negrito**` nos textos |
+
+As imagens ficam em `src/assets/ajuda/` e carregam sob demanda (`loading="lazy"`); a página inteira é um chunk `lazy()`. Os testes (`src/__tests__/pages/ajuda.test.tsx`) conferem que todo atalho aponta para um tópico existente, que as figuras são numeradas em sequência e têm texto alternativo, e que o texto não usa termos técnicos.
 
 Páginas pesadas (login, admin, mapa) são carregadas com `lazy()`. O Leaflet só é baixado quando `/admin/mapa` é aberto.
 

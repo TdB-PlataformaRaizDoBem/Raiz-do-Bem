@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Menu_Data } from "./MenuData";
+import { AJUDA_ITEM, Menu_Data } from "./MenuData";
 import { useUnread } from "../../hooks/useUnread";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -26,6 +26,8 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
   const userEmail = user?.email ?? "";
 
   const menuLinks = Menu_Data[roleKey] || [];
+  const ajudaPath = `${roleKey === "admin" ? "/admin" : "/coord"}/${AJUDA_ITEM.path}`;
+  const mostrarRotulos = !isCollapsed || isMobileOpen;
 
   return (
     <>
@@ -128,8 +130,22 @@ const Sidebar = ({ isCollapsed, setCollapsed }: SidebarProps) => {
             </ul>
           </nav>
 
-          {/* Footer — Acessibilidade + Logout */}
+          {/* Footer — Ajuda + Logout */}
           <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col gap-1">
+            <NavLink
+              to={ajudaPath}
+              onClick={() => setIsMobileOpen(false)}
+              title={AJUDA_ITEM.label}
+              aria-label={mostrarRotulos ? undefined : AJUDA_ITEM.label}
+              className={({ isActive }) => `
+                flex items-center ${mostrarRotulos ? "gap-4" : "justify-center"} w-full p-3 rounded-lg font-medium transition-colors
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50
+                ${isActive ? "bg-orange/10 text-orange" : "text-black hover:bg-gray-100"}
+              `}
+            >
+              <img src={AJUDA_ITEM.icon} className="min-h-7 min-w-7 shrink-0" alt="" aria-hidden="true" />
+              {mostrarRotulos && <span className="text-sm whitespace-nowrap">{AJUDA_ITEM.label}</span>}
+            </NavLink>
 
             <button
               onClick={logout}

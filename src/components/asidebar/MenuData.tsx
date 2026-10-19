@@ -6,6 +6,7 @@ import solicitacoes from "../../assets/svgs/pedidosAjuda.svg";
 import forward from "../../assets/svgs/forward.svg";
 import comunicacao from "../../assets/svgs/comunicacao.svg";
 import mapaRegiao from "../../assets/svgs/dentistasRegiao.svg";
+import ajuda from "../../assets/svgs/ajuda.svg";
 
 export interface MenuItem {
   label: string;
@@ -13,6 +14,16 @@ export interface MenuItem {
   path: string;
   hasBadge?: boolean;
 }
+
+/**
+ * Link fixo no rodapé do menu, logo acima do "Sair da Conta". Existe para os dois perfis;
+ * o caminho completo é `/admin/ajuda` ou `/coord/ajuda`.
+ */
+export const AJUDA_ITEM: MenuItem = {
+  label: "Como usar a plataforma",
+  icon: ajuda,
+  path: "ajuda",
+};
 
 export const Menu_Data: Record<"admin" | "coordenador", MenuItem[]> = {
   admin: [

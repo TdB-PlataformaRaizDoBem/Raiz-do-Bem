@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { useState, type ReactNode } from 'react';
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/asidebar/Sidebar';
-import { Menu_Data } from '../../components/asidebar/MenuData';
+import { AJUDA_ITEM, Menu_Data } from '../../components/asidebar/MenuData';
 import { ChatSidebar } from '../../components/chat/Chatsidebar';
 import { ChatWindow } from '../../components/chat/Chatwindow';
 import { ConversationItem } from '../../components/chat/Conversationitem';
@@ -155,6 +155,11 @@ describe('Menu_Data', () => {
     expect(Menu_Data.coordenador.every((i) => i.path.startsWith('/coord/'))).toBe(true);
   });
 
+  it('o item "Como usar a plataforma" não entra nos menus por perfil: fica à parte, perto do "Sair"', () => {
+    expect(AJUDA_ITEM).toMatchObject({ label: 'Como usar a plataforma', path: 'ajuda' });
+    expect([...Menu_Data.admin, ...Menu_Data.coordenador].some((i) => i.label === AJUDA_ITEM.label)).toBe(false);
+  });
+
   it('só "Conversas" tem badge de não lidas', () => {
     expect([...Menu_Data.admin, ...Menu_Data.coordenador].filter((i) => i.hasBadge).map((i) => i.label)).toEqual([
       'Conversas',
@@ -229,6 +234,58 @@ describe('Sidebar', () => {
     expect(screen.queryByText('Usuária Teste')).not.toBeInTheDocument();
     expect(screen.queryByText('Colaboradores')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Expandir menu lateral' })).toBeInTheDocument();
+  });
+
+  it('"Como usar a plataforma" fica logo antes de "Sair da Conta" e leva ao guia do perfil', () => {
+    renderSidebar('ADMIN');
+
+    const ajuda = screen.getByRole('link', { name: 'Como usar a plataforma' });
+    const sair = screen.getByRole('button', { name: 'Sair da conta' });
+    expect(ajuda).toHaveAttribute('href', '/admin/ajuda');
+    expect(ajuda.nextElementSibling).toBe(sair);
+    expect(ajuda.parentElement).toBe(sair.parentElement);
+    // fica fora do menu principal (rodapé da barra lateral)
+    expect(within(screen.getByRole('navigation', { name: 'Navegação principal' })).queryByRole('link', { name: 'Como usar a plataforma' })).not.toBeInTheDocument();
+  });
+
+  it('coordenador também vê o guia, na rota /coord', () => {
+    renderSidebar('COLABORADOR');
+
+    expect(screen.getByRole('link', { name: 'Como usar a plataforma' })).toHaveAttribute('href', '/coord/ajuda');
+  });
+
+  it('recolhida: o guia vira só o ícone, mas continua com nome acessível e dica ao passar o mouse', () => {
+    renderSidebar('ADMIN', { collapsed: true });
+
+    const ajuda = screen.getByRole('link', { name: 'Como usar a plataforma' });
+    expect(ajuda).toHaveAttribute('aria-label', 'Como usar a plataforma');
+    expect(ajuda).toHaveAttribute('title', 'Como usar a plataforma');
+    expect(ajuda).not.toHaveTextContent('Como usar a plataforma');
+  });
+
+  it('no menu mobile aberto o guia volta a mostrar o nome e clicar nele navega e fecha o painel', async () => {
+    renderSidebar('ADMIN', { collapsed: true });
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir Menu Lateral' }));
+
+    const ajuda = screen.getByRole('link', { name: 'Como usar a plataforma' });
+    expect(ajuda).toHaveTextContent('Como usar a plataforma');
+    expect(ajuda).not.toHaveAttribute('aria-label');
+
+    await userEvent.click(ajuda);
+
+    expect(screen.getByTestId('local')).toHaveTextContent('/admin/ajuda');
+  });
+
+  it('na página do guia o link aparece destacado', () => {
+    render(
+      <AuthContext.Provider value={auth('ADMIN')}>
+        <UnreadContext.Provider value={{ totalUnread: 0, conversations: [], refresh: async () => {} }}>
+          {comRota(<Sidebar isCollapsed={false} setCollapsed={() => {}} />, '/admin/ajuda')}
+        </UnreadContext.Provider>
+      </AuthContext.Provider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Como usar a plataforma' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('Sair da conta chama logout', async () => {
