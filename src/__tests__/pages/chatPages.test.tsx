@@ -329,9 +329,7 @@ describe('ConversasScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Fechar barra lateral' }));
     expect(document.querySelector('.backdrop-blur-\\[1px\\]')).toBeNull();
 
-    const botoes = screen.getAllByRole('button');
-    const hamburguer = botoes.find((b) => b.className.includes('md:hidden') && !b.getAttribute('aria-label'));
-    await userEvent.click(hamburguer!);
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir lista de conversas' }));
     expect(document.querySelector('.backdrop-blur-\\[1px\\]')).toBeInTheDocument();
   });
 

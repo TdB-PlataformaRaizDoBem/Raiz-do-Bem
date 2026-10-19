@@ -4,7 +4,7 @@ import UserCard from "../../components/userCard/UserCard";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { AsyncEstado } from "../../components/ui/AsyncEstado";
-import { getUser } from "../../hooks/useUser";
+import { useUser } from "../../hooks/useUser";
 import { useNotification } from "../../hooks/useNotification";
 import { usePedidos } from "../../hooks/usePedidos";
 import {
@@ -77,7 +77,7 @@ const usePedidoActions = (refetch: () => void) => {
 };
 
 export const PedidosAjuda = () => {
-  const loggedUser = getUser();
+  const loggedUser = useUser();
   const isCoord = loggedUser?.role === "COLABORADOR";
   const { data: pedidos, loading, error, refetch } = usePedidos();
   const {

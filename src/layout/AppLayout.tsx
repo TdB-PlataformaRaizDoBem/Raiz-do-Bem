@@ -19,7 +19,7 @@ export const AppLayout = () => {
         <Sidebar isCollapsed={isCollapsed} setCollapsed={setIsCollapsed} />
         <main
           className={`
-            flex-1 transition-all duration-300 relative
+            min-w-0 flex-1 transition-all duration-300 relative
             ${isCollapsed ? "lg:ml-24" : "lg:ml-75"}
             max-lg:ml-0
             ${isChatRoute

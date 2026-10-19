@@ -208,10 +208,12 @@ export default function ConversasScreen() {
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center bg-[#f0f2f5]">
           <button
+            type="button"
             onClick={() => setSidebarOpen(true)}
-            className="md:hidden mb-6 p-3 rounded-full bg-white shadow-md text-[#54656f]"
+            aria-label="Abrir lista de conversas"
+            className="md:hidden mb-6 p-3 rounded-full bg-white shadow-md text-[#54656f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>

@@ -10,6 +10,7 @@ import {
 import { routes, type AppRoute } from './Routes/Routes';
 import { AuthLayout, PublicLayout } from './layout/Layout';
 import { ProtectedRoutes } from './Routes/ProtectedRoutes';
+import { DESCRICAO_PADRAO, NOME_DO_SITE, tituloDaAba } from './Routes/titulos';
 import ScrollToTop from './layout/ScrollToTop';
 import { NotificationProvider } from './components/context/NotificationProvider';
 import { AuthProvider } from './context/AuthContext';
@@ -23,21 +24,26 @@ const Login     = lazy(() => import('./pages/login/Login'));
 const Admin     = lazy(() => import('./pages/admin/Admin'));
 const Coord     = lazy(() => import('./pages/coord/Coord'));
 const Forbidden = lazy(() => import('./pages/forbidden/Forbidden'));
+const NaoEncontrada = lazy(() => import('./pages/naoEncontrada/NaoEncontrada'));
 
 const AppRoutes = () => {
   const location = useLocation();
 
+  // A aba do navegador sempre acompanha a página aberta: pública (título em Routes.tsx) ou
+  // qualquer outra (login, 403, área logada, rota inexistente — ver Routes/titulos.ts).
   React.useEffect(() => {
     const matches = matchRoutes(routes, location);
+    const descricao = document.querySelector('meta[name="description"]');
+
     if (matches) {
       const lastMatch = matches[matches.length - 1].route as AppRoute;
-      document.title = lastMatch.title || 'Raiz do Bem';
-      if (lastMatch.description) {
-        document
-          .querySelector('meta[name="description"]')
-          ?.setAttribute('content', lastMatch.description);
-      }
+      document.title = lastMatch.title || NOME_DO_SITE;
+      if (lastMatch.description) descricao?.setAttribute('content', lastMatch.description);
+      return;
     }
+
+    document.title = tituloDaAba(location.pathname);
+    descricao?.setAttribute('content', DESCRICAO_PADRAO);
   }, [location]);
 
   return (
@@ -49,6 +55,8 @@ const AppRoutes = () => {
           {routes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
+          {/* Endereço que não existe: aviso com o cabeçalho e o rodapé do site, em vez de tela em branco */}
+          <Route path="*" element={<NaoEncontrada />} />
         </Route>
 
         {/* Autenticação */}

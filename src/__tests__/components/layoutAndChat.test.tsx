@@ -236,6 +236,68 @@ describe('Sidebar', () => {
     expect(screen.getByRole('button', { name: 'Expandir menu lateral' })).toBeInTheDocument();
   });
 
+  it('recolhida: todo ícone do menu tem nome acessível e dica, e o aviso de mensagens novas vai junto', () => {
+    renderSidebar('ADMIN', { collapsed: true, unread: 3 });
+
+    const links = within(screen.getByRole('navigation', { name: 'Navegação principal' })).getAllByRole('link');
+    expect(links).toHaveLength(8);
+    links.forEach((link) => expect(link).toHaveAccessibleName());
+    expect(links.map((l) => l.getAttribute('title'))).toContain('Mapa de Vulnerabilidade');
+    const menu = screen.getByRole('navigation', { name: 'Navegação principal' });
+    expect(within(menu).getByRole('link', { name: 'Conversas, 3 não lidas' })).toHaveAttribute('href', '/admin/chat');
+    expect(within(menu).getByRole('link', { name: 'Dentistas' })).toHaveAttribute('title', 'Dentistas');
+    expect(screen.getByRole('button', { name: 'Sair da conta' })).toHaveAttribute('title', 'Sair da conta');
+  });
+
+  it('recolhida: a página atual continua destacada (só o ícone não diz onde a pessoa está)', () => {
+    renderSidebar('ADMIN', { collapsed: true });
+
+    const menu = screen.getByRole('navigation', { name: 'Navegação principal' });
+    const atual = within(menu).getByRole('link', { name: 'Painel Geral' });
+    expect(atual).toHaveAttribute('aria-current', 'page');
+    expect(atual).toHaveClass('bg-orange/10', 'text-orange');
+    expect(within(menu).getByRole('link', { name: 'Dentistas' })).not.toHaveClass('bg-orange/10');
+  });
+
+  it('recolhida: a coluna usa menos margem lateral, senão os ícones de 52px são cortados nos 32px que sobram', () => {
+    renderSidebar('ADMIN', { collapsed: true });
+    expect(screen.getByRole('complementary', { name: 'Menu lateral' }).firstElementChild).toHaveClass('lg:px-4');
+  });
+
+  it('expandida: rótulos longos quebram de linha em vez de ficarem cortados, e não repetem o nome em dica', () => {
+    renderSidebar('ADMIN');
+
+    const rotulo = screen.getByText('Mapa de Vulnerabilidade');
+    expect(rotulo).not.toHaveClass('whitespace-nowrap');
+    expect(rotulo).not.toHaveClass('overflow-hidden');
+    expect(rotulo.closest('a')).not.toHaveAttribute('title');
+    expect(rotulo.closest('a')).not.toHaveAttribute('aria-label');
+  });
+
+  it('nome comprido do usuário quebra de linha e o nome completo aparece como dica', () => {
+    render(
+      <AuthContext.Provider value={{ ...auth('ADMIN'), user: { ...auth('ADMIN').user!, nome: 'Marina Albuquerque Teixeira de Souza' } }}>
+        <UnreadContext.Provider value={{ totalUnread: 0, conversations: [], refresh: async () => {} }}>
+          {comRota(<Sidebar isCollapsed={false} setCollapsed={() => {}} />)}
+        </UnreadContext.Provider>
+      </AuthContext.Provider>,
+    );
+
+    const nome = screen.getByText('Marina Albuquerque Teixeira de Souza');
+    expect(nome).not.toHaveClass('truncate');
+    expect(nome.parentElement).toHaveAttribute('title', 'Marina Albuquerque Teixeira de Souza — u@x.com');
+  });
+
+  it('menu mobile fechado sai da ordem de tabulação; aberto, volta', async () => {
+    renderSidebar('ADMIN');
+    const lateral = screen.getByRole('complementary', { name: 'Menu lateral' });
+    expect(lateral).toHaveClass('max-lg:invisible');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir Menu Lateral' }));
+
+    expect(lateral).not.toHaveClass('max-lg:invisible');
+  });
+
   it('"Como usar a plataforma" fica logo antes de "Sair da Conta" e leva ao guia do perfil', () => {
     renderSidebar('ADMIN');
 
