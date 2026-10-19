@@ -7,6 +7,7 @@ import {
   type BeneficiarioViewModel,
 } from "../domain/mappers/Beneficiariomapper.ts";
 import { handleResponse, assertOk, safeFetch } from "./httpClient";
+import { buscarPagina, buscarTodos, TAMANHO_PAGINA_PADRAO, type Pagina } from "./paginacao";
 
 const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/beneficiario`;
@@ -16,20 +17,23 @@ function jsonHeaders(): HeadersInit {
 }
 
 /**
- * GET /beneficiario
+ * GET /beneficiario?pagina=&size= — uma página de beneficiários e o total.
+ */
+export async function getBeneficiariosPaginados(
+  pagina = 0,
+  tamanho = TAMANHO_PAGINA_PADRAO,
+): Promise<Pagina<BeneficiarioViewModel>> {
+  const p = await buscarPagina<BeneficiarioAPI>(ENDPOINT, pagina, tamanho);
+  return { ...p, itens: mapBeneficiarios(p.itens) };
+}
+
+/**
+ * GET /beneficiario — percorre todas as páginas (telas que filtram em memória).
  */
 export async function getBeneficiariosCompletos(): Promise<
   BeneficiarioViewModel[]
 > {
-  const res = await safeFetch(ENDPOINT);
-
-  if (res.status === 404 || res.status === 204) {
-    return [];
-  }
-
-  const data = await handleResponse<BeneficiarioAPI[]>(res);
-  
-  return mapBeneficiarios(data ?? []);
+  return mapBeneficiarios(await buscarTodos<BeneficiarioAPI>(ENDPOINT));
 }
 
 export async function getBeneficiarioCompleto(

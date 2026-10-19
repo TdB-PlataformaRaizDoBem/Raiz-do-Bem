@@ -7,6 +7,7 @@ import {
 } from "../domain/mappers/DentistaMapper";
 import type { AtualizarDentistaPayload } from "../domain/entities/AtualizarDentista";
 import { handleResponse, assertOk, safeFetch, publicFetch } from "./httpClient";
+import { buscarPagina, buscarTodos, TAMANHO_PAGINA_PADRAO, type Pagina } from "./paginacao";
 
 const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/dentista`;
@@ -16,19 +17,21 @@ function jsonHeaders(): HeadersInit {
 }
 
 /**
- * GET /dentista
+ * GET /dentista?pagina=&size= — uma página de dentistas e o total.
+ */
+export async function getDentistasPaginados(
+  pagina = 0,
+  tamanho = TAMANHO_PAGINA_PADRAO,
+): Promise<Pagina<DentistaViewModel>> {
+  const p = await buscarPagina<DentistaAPI>(ENDPOINT, pagina, tamanho);
+  return { ...p, itens: mapDentistas(p.itens) };
+}
+
+/**
+ * GET /dentista — percorre todas as páginas (telas que filtram em memória).
  */
 export async function getDentistasCompletos(): Promise<DentistaViewModel[]> {
-  const res = await safeFetch(ENDPOINT);
-  
-  // Se o backend disser que não encontrou registros (404), tratamos como lista vazia amigavelmente
-  if (res.status === 404 || res.status === 204) {
-    return [];
-  }
-
-  const data = await handleResponse<DentistaAPI[]>(res);
-  
-  return mapDentistas(data ?? []);
+  return mapDentistas(await buscarTodos<DentistaAPI>(ENDPOINT));
 }
 
 export async function getDentistaCompleto(

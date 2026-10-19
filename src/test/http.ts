@@ -38,10 +38,16 @@ export function fakeResponse({
 
 export type FetchMock = Mock<(url: string, init?: RequestInit) => Promise<Response>>;
 
-/** Instala um fetch falso global e o devolve para configurar respostas/inspecionar chamadas. */
+/**
+ * Instala um fetch falso global e o devolve para configurar respostas/inspecionar chamadas.
+ * Os parâmetros de paginação (`?pagina=0&size=100`) são removidos antes de chegar ao mock, para os
+ * testes de telas e hooks continuarem roteando por `/dentista`, `/pedido-ajuda` etc. A paginação em
+ * si é testada em paginacao.test.ts, que usa `vi.fn` direto.
+ */
 export function installFetch(): FetchMock {
   const mock: FetchMock = vi.fn();
-  globalThis.fetch = mock as unknown as typeof fetch;
+  globalThis.fetch = vi.fn((url: string, init?: RequestInit) =>
+    mock(String(url).replace(/\?pagina=\d+&size=\d+$/, ''), init)) as unknown as typeof fetch;
   return mock;
 }
 

@@ -5,6 +5,7 @@ import {
   type ColaboradorViewModel,
 } from "../domain/mappers/ColaboradorMapper";
 import { assertOk, handleResponse, safeFetch } from "./httpClient";
+import { buscarPagina, buscarTodos, TAMANHO_PAGINA_PADRAO, type Pagina } from "./paginacao";
 
 const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/colaborador`;
@@ -14,20 +15,23 @@ function jsonHeaders(): HeadersInit {
 }
 
 /**
- * GET /colaborador
+ * GET /colaborador?pagina=&size= — uma página de colaboradores e o total.
+ */
+export async function getColaboradoresPaginados(
+  pagina = 0,
+  tamanho = TAMANHO_PAGINA_PADRAO,
+): Promise<Pagina<ColaboradorViewModel>> {
+  const p = await buscarPagina<ColaboradorAPI>(ENDPOINT, pagina, tamanho);
+  return { ...p, itens: mapColaboradores(p.itens) };
+}
+
+/**
+ * GET /colaborador — percorre todas as páginas (telas que filtram em memória).
  */
 export async function getColaboradoresCompletos(): Promise<
   ColaboradorViewModel[]
 > {
-  const res = await safeFetch(ENDPOINT);
-
-  if (res.status === 404 || res.status === 204) {
-    return [];
-  }
-
-  const data = await handleResponse<ColaboradorAPI[]>(res);
-  
-  return mapColaboradores(data ?? []);
+  return mapColaboradores(await buscarTodos<ColaboradorAPI>(ENDPOINT));
 }
 
 export async function getColaboradorCompleto(

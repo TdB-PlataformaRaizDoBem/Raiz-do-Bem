@@ -7,6 +7,7 @@ import {
 } from "../domain/mappers/PedidoMapper";
 import type { StatusPedidoAPI } from "../domain/types/api-schema";
 import { handleResponse, safeFetch } from "./httpClient";
+import { buscarPagina, buscarTodos, TAMANHO_PAGINA_PADRAO, type Pagina } from "./paginacao";
 
 const BASE_URL = import.meta.env.API_BASE_URL ?? "";
 const ENDPOINT = `${BASE_URL}/pedido-ajuda`;
@@ -16,22 +17,22 @@ function jsonHeaders(): HeadersInit {
 }
 
 /**
- * GET /pedido-ajuda
- * Retorna todos os pedidos mapeados para ViewModel.
- * Alterado para retornar um array vazio caso o backend responda com 404 ou 204 (Lista sem registros)
+ * GET /pedido-ajuda?pagina=&size= — uma página de pedidos e o total.
+ */
+export async function getPedidosPaginados(
+  pagina = 0,
+  tamanho = TAMANHO_PAGINA_PADRAO,
+): Promise<Pagina<PedidoViewModel>> {
+  const p = await buscarPagina<PedidoAjudaAPI>(ENDPOINT, pagina, tamanho);
+  return { ...p, itens: mapPedidos(p.itens) };
+}
+
+/**
+ * GET /pedido-ajuda — percorre todas as páginas e devolve os pedidos mapeados para ViewModel.
+ * Lista sem registros (404/204) vira array vazio.
  */
 export async function getPedidosCompletos(): Promise<PedidoViewModel[]> {
-  const res = await safeFetch(ENDPOINT);
-
-  // Se o backend disser que não encontrou registros (404 ou 204), tratamos como lista vazia amigavelmente
-  if (res.status === 404 || res.status === 204) {
-    return [];
-  }
-
-  const data = await handleResponse<PedidoAjudaAPI[]>(res);
-  
-  // Garante que se o data vier nulo ou indefinido, não quebre o mapPedidos
-  return mapPedidos(data ?? []);
+  return mapPedidos(await buscarTodos<PedidoAjudaAPI>(ENDPOINT));
 }
 
 /**
