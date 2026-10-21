@@ -10,9 +10,16 @@ import {
   VoarPara,
   type AlvoVoo,
 } from '../../components/vulnerabilityMap/ChoroplethLayer';
-import type { VulnerabilidadePropertiesAPI } from '../../domain/entities/VulnerabilidadeGeoAPI';
+import type {
+  IndicadoresOficiaisAPI,
+} from '../../domain/entities/VulnerabilidadeGeoAPI';
+import type { VulnerabilidadePropertiesComAtencao } from '../../domain/mappers/VulnerabilidadeMapper';
 import { useEscalaVulnerabilidade } from '../../hooks/useEscalaVulnerabilidade';
 import { propsUF } from '../../test/vulnerabilidadeFixtures';
+
+type SobrescreverFeicao = Partial<Omit<VulnerabilidadePropertiesComAtencao, 'indicadores'>> & {
+  indicadores?: Partial<IndicadoresOficiaisAPI> | null;
+};
 
 const { mapa, geojson, montagens } = vi.hoisted(() => ({
   mapa: {
@@ -203,12 +210,14 @@ describe('VoarPara', () => {
 
 const GEOJSON = { type: 'FeatureCollection', features: [] } as GeoJsonObject;
 
-const feicao = (props: Partial<VulnerabilidadePropertiesAPI> = {}): Feature =>
-  ({
+const feicao = (props: SobrescreverFeicao = {}): Feature => {
+  const { faixa_atencao = 'alta', indice_atencao = 0.62, ...resto } = props;
+  return {
     type: 'Feature',
     geometry: null,
-    properties: propsUF({ demanda_atendimentos_prevista: 200_000, ...props }),
-  }) as unknown as Feature;
+    properties: { ...propsUF(resto), faixa_atencao, indice_atencao },
+  } as unknown as Feature;
+};
 
 type Estilo = (f?: Feature) => L.PathOptions;
 type PorFeicao = (f: Feature, layer: L.Layer) => void;
@@ -285,7 +294,7 @@ describe('ChoroplethLayer — estilo', () => {
   it('feição normal: cor da faixa, semitransparente, linha branca fina e juntas arredondadas', () => {
     const { estilo } = renderCamada();
 
-    expect(estilo(feicao({ faixa: 'alta' }))).toEqual({
+    expect(estilo(feicao({ faixa_atencao: 'alta' }))).toEqual({
       fillColor: escala.degrauPorFaixa('alta').cor,
       fillOpacity: 0.55,
       color: '#ffffff',
@@ -294,6 +303,17 @@ describe('ChoroplethLayer — estilo', () => {
       lineJoin: 'round',
       lineCap: 'round',
       bubblingMouseEvents: false,
+    });
+  });
+
+  it('UF sem renda válida (faixa_atencao null) é desenhada em cinza, nunca na cor do pior quintil', () => {
+    const { estilo } = renderCamada();
+
+    expect(estilo(feicao({ codigo_ibge: '21', faixa_atencao: null }))).toEqual({
+      fillColor: '#eeeeee',
+      fillOpacity: 0.3,
+      color: '#ffffff',
+      weight: 1,
     });
   });
 
@@ -307,27 +327,31 @@ describe('ChoroplethLayer — estilo', () => {
   it('com uma faixa destacada, as outras esmaecem', () => {
     const { estilo } = renderCamada({ faixaDestacada: 'alta' });
 
-    expect(estilo(feicao({ faixa: 'baixa' }))).toMatchObject({ fillOpacity: 0.12, opacity: 0.25 });
-    expect(estilo(feicao({ faixa: 'alta' }))).toMatchObject({ fillOpacity: 0.55, opacity: 1 });
+    expect(estilo(feicao({ faixa_atencao: 'baixa' }))).toMatchObject({ fillOpacity: 0.12, opacity: 0.25 });
+    expect(estilo(feicao({ faixa_atencao: 'alta' }))).toMatchObject({ fillOpacity: 0.55, opacity: 1 });
   });
 });
 
 describe('ChoroplethLayer — tooltip', () => {
-  const montar = (props: Partial<VulnerabilidadePropertiesAPI> = {}, permiteAprofundar = false) => {
+  const montar = (props: SobrescreverFeicao = {}, permiteAprofundar = false) => {
     const { aoCriar } = renderCamada({ permiteAprofundar });
     const { camada } = camadaFalsa();
     aoCriar(feicao(props), camada as unknown as L.Layer);
     return { camada, tooltip: elementoDe(camada.bindTooltip) };
   };
 
-  it('mostra nome, índice com a faixa, moradores e demanda estimada', () => {
-    const { tooltip } = montar({ nome_qualificado: 'Maranhão (MA)', score_vulnerabilidade: 0.62, populacao: 6_776_699, faixa: 'alta' });
+  it('mostra nome, renda com a faixa e moradores — nunca score nem demanda', () => {
+    const { tooltip } = montar({
+      nome_qualificado: 'Maranhão (MA)',
+      populacao: 6_776_699,
+      indicadores: { renda_media: 872 },
+      faixa_atencao: 'alta',
+    });
 
     expect(tooltip.textContent).toContain('Maranhão (MA)');
-    expect(tooltip.textContent).toContain('Índice de atenção 62% · Atenção alta');
+    expect(tooltip.textContent).toMatch(/Renda per capita R\$\s*872.*Atenção alta/);
     expect(tooltip.textContent).toContain('6,8 mi moradores');
-    expect(tooltip.textContent).toContain('200 mil atendimentos/ano estimados');
-    expect(tooltip.textContent).toContain('IBGE 21 · quanto maior o índice, maior a lacuna de atendimento');
+    expect(tooltip.textContent).toContain('IBGE 21 · cor por ranking relativo de renda — menor renda, maior atenção');
   });
 
   it('sem nome qualificado usa o nome', () => {
@@ -336,10 +360,17 @@ describe('ChoroplethLayer — tooltip', () => {
     expect(tooltip.querySelector('strong')?.textContent).toBe('Maranhão');
   });
 
-  it('sem demanda prevista não fala em atendimentos', () => {
-    const { tooltip } = montar({ demanda_atendimentos_prevista: null });
+  it('sem população oficial avisa que está indisponível, em vez de mostrar zero', () => {
+    const { tooltip } = montar({ populacao: undefined });
 
-    expect(tooltip.textContent).not.toContain('atendimentos/ano');
+    expect(tooltip.textContent).toContain('População indisponível nesta consulta');
+    expect(tooltip.textContent).not.toContain('0 moradores');
+  });
+
+  it('sem renda oficial (indicadores ausentes) avisa em vez de inventar um valor', () => {
+    const { tooltip } = montar({ indicadores: null, faixa_atencao: null });
+
+    expect(tooltip.textContent).toContain('Sem renda oficial disponível');
   });
 
   it('a dica muda conforme o clique navega ou abre o detalhe', () => {
@@ -372,32 +403,37 @@ describe('ChoroplethLayer — tooltip', () => {
 });
 
 describe('ChoroplethLayer — popup', () => {
-  const montar = (props: Partial<VulnerabilidadePropertiesAPI> = {}, permiteAprofundar = false) => {
+  const montar = (props: SobrescreverFeicao = {}, permiteAprofundar = false) => {
     const { aoCriar } = renderCamada({ permiteAprofundar });
     const { camada } = camadaFalsa();
     aoCriar(feicao(props), camada as unknown as L.Layer);
     return camada;
   };
 
-  it('no último nível o clique abre um popup com o resumo da região', () => {
-    const camada = montar({ nome_qualificado: 'Maranhão (MA)', score_vulnerabilidade: 0.62, populacao: 6_776_699, faixa: 'alta' });
+  it('no último nível o clique abre um popup com renda, fonte, ano e população', () => {
+    const camada = montar({
+      nome_qualificado: 'Maranhão (MA)',
+      populacao: 6_776_699,
+      indicadores: { renda_media: 872, renda_media_ano: 2024 },
+      faixa_atencao: 'alta',
+    });
 
     const popup = elementoDe(camada.bindPopup);
     expect(popup.textContent).toContain('Maranhão (MA)');
     expect(popup.textContent).toContain('Código IBGE 21');
-    expect(popup.textContent).toContain('62%');
+    expect(popup.textContent).toMatch(/R\$\s*872/);
     expect(popup.textContent).toContain('Atenção alta');
-    expect(popup.textContent).toContain('Priorizar mutirões');
-    expect(popup.textContent).toContain('Estimativa de 200 mil atendimentos odontológicos por ano para 6,8 mi moradores');
+    expect(popup.textContent).toContain('ibge:pnad-continua-2024-rendimento-domiciliar-per-capita (2024)');
+    expect(popup.textContent).toContain('6,8 mi moradores');
     expect(camada.bindPopup.mock.calls[0][1]).toMatchObject({ closeButton: true, maxWidth: 280, autoPan: true });
   });
 
-  it('sem nome qualificado usa o nome, e sem demanda omite a estimativa', () => {
-    const camada = montar({ nome_qualificado: undefined, nome: 'Maranhão', demanda_atendimentos_prevista: null });
+  it('sem nome qualificado usa o nome, e sem população oficial avisa em vez de mostrar zero', () => {
+    const camada = montar({ nome_qualificado: undefined, nome: 'Maranhão', populacao: undefined });
 
     const popup = elementoDe(camada.bindPopup);
     expect(popup.querySelector('strong')?.textContent).toBe('Maranhão');
-    expect(popup.textContent).not.toContain('Estimativa de');
+    expect(popup.textContent).toContain('População indisponível nesta consulta');
   });
 
   it('quando o clique navega para o nível de baixo não há popup (disputaria o gesto)', () => {
@@ -406,7 +442,7 @@ describe('ChoroplethLayer — popup', () => {
 });
 
 describe('ChoroplethLayer — interação', () => {
-  const ligar = (o: Partial<React.ComponentProps<typeof ChoroplethLayer>> = {}, props: Partial<VulnerabilidadePropertiesAPI> = {}) => {
+  const ligar = (o: Partial<React.ComponentProps<typeof ChoroplethLayer>> = {}, props: SobrescreverFeicao = {}) => {
     const resultado = renderCamada(o);
     const f = feicao(props);
     const { camada, handlers } = camadaFalsa();
@@ -424,7 +460,7 @@ describe('ChoroplethLayer — interação', () => {
   });
 
   it('tirar o mouse volta ao estilo calculado (e não a um fixo)', () => {
-    const { camada, handlers } = ligar({ codigoSelecionado: '21', faixaDestacada: 'baixa' }, { codigo_ibge: '21', faixa: 'alta' });
+    const { camada, handlers } = ligar({ codigoSelecionado: '21', faixaDestacada: 'baixa' }, { codigo_ibge: '21', faixa_atencao: 'alta' });
 
     handlers.mouseout();
 

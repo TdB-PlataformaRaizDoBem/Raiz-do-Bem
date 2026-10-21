@@ -1,97 +1,48 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  toColecaoViewModel,
-  toRegiaoViewModel,
-} from '../../domain/mappers/VulnerabilidadeMapper';
+import { toColecaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
 import { COLUNAS_CSV, ordenarRegioes } from '../../domain/tabelaRegioes';
-import { ANALISE_COLECAO, feature, propsUF } from '../../test/vulnerabilidadeFixtures';
+import { feature, propsUF } from '../../test/vulnerabilidadeFixtures';
 import { escaparCelula, gerarCsv } from '../../utils/csvUtils';
 
-describe('mapper da análise', () => {
-  it('traduz posição, comparativo e sensibilidade para camelCase', () => {
-    const r = toRegiaoViewModel(feature(propsUF()));
-    expect(r.analise?.posicaoPrioridade).toBe(1);
-    expect(r.analise?.comparativo[0]).toMatchObject({
-      chave: 'taxa_pobreza',
-      label: 'Pobreza',
-      referencia: 28.59,
-      desfavoravel: true,
-    });
-    expect(r.analise?.comparativo[0].formatar(53.8)).toBe('53,8%');
-    expect(r.analise?.sensibilidade).toEqual({
-      reducaoPor100Voluntarios: 0.0372,
-      voluntariosParaFaixaInferior: 54,
-      faixaInferior: 'media',
-    });
-  });
-
-  it('degrada para null num back-end que ainda não envia `analise`', () => {
-    const r = toRegiaoViewModel(feature(propsUF({ analise: undefined })));
-    expect(r.analise).toBeNull();
-    const c = toColecaoViewModel({ type: 'FeatureCollection', features: [] });
-    expect(c.analise).toBeNull();
-    expect(c.metodoScore).toBeNull();
-  });
-
-  it('ignora indicador desconhecido em vez de quebrar a tela', () => {
-    const base = propsUF();
-    const r = toRegiaoViewModel(
-      feature({
-        ...base,
-        analise: {
-          ...base.analise!,
-          comparativo: [
-            // @ts-expect-error — simula um indicador que o back-end passou a enviar
-            { indicador: 'novo_indicador', valor: 1, referencia_nacional: 1, desfavoravel: false },
-          ],
-        },
-      }),
-    );
-    expect(r.analise?.comparativo).toEqual([]);
-  });
-
-  it('mapeia a análise da coleção e os metadados', () => {
-    const c = toColecaoViewModel({
-      type: 'FeatureCollection',
-      features: [feature(propsUF())],
-      analise: ANALISE_COLECAO,
-      metadados: {
-        nivel: 'uf',
-        fonte: 'mock',
-        referencia_temporal: 'Censo 2022',
-        crs: 'EPSG:4326',
-        metodo_score: 'v1',
-        cache_hit: false,
-        gerado_em: '2026-10-04T12:00:00+00:00',
-      },
-    });
-    expect(c.analise?.referencia.scoreMedio).toBe(0.2981);
-    expect(c.analise?.capacidade?.unidadesSimuladas).toBe(1);
-    expect(c.analise?.parametros.modelo.faixaPopulacaoTreino).toEqual([5000, 3_000_000]);
-    expect(c.geradoEm).toBe('2026-10-04T12:00:00+00:00');
-  });
-});
+/** Uma única feição, já passada pelo ranking de renda (que, com N=1, cai
+ *  sempre no meio da escala — ver `domain/rankingRenda.ts`). */
+const regiaoUnica = (sobrescrever: Parameters<typeof propsUF>[0] = {}) =>
+  toColecaoViewModel({
+    type: 'FeatureCollection',
+    features: [feature(propsUF(sobrescrever))],
+  }).regioes[0];
 
 describe('ordenarRegioes', () => {
-  const regioes = [
-    toRegiaoViewModel(feature(propsUF({ codigo_ibge: '21', nome: 'Maranhão', indice_prioridade: 0.6 }))),
-    toRegiaoViewModel(feature(propsUF({ codigo_ibge: '35', nome: 'São Paulo', indice_prioridade: 0.2, simulacao: null }))),
-    toRegiaoViewModel(feature(propsUF({ codigo_ibge: '12', nome: 'Acre', indice_prioridade: 0.4 }))),
-  ];
+  const regioes = toColecaoViewModel({
+    type: 'FeatureCollection',
+    features: [
+      feature(propsUF({ codigo_ibge: '21', nome: 'Maranhão', indicadores: { renda_media: 900 } })),
+      feature(propsUF({ codigo_ibge: '35', nome: 'São Paulo', indicadores: { renda_media: 2600 } })),
+      feature(propsUF({ codigo_ibge: '12', nome: 'Acre', indicadores: { renda_media: 1500 } })),
+    ],
+  }).regioes;
 
   it('ordena nas duas direções sem mutar a entrada', () => {
     const copia = [...regioes];
-    const desc = ordenarRegioes(regioes, (r) => r.indicePrioridade, 'desc');
+    // Menor renda = maior atenção: Maranhão (900) > Acre (1500) > SP (2600).
+    const desc = ordenarRegioes(regioes, (r) => r.indiceAtencao, 'desc');
     expect(desc.map((r) => r.codigoIbge)).toEqual(['21', '12', '35']);
     expect(regioes).toEqual(copia);
-    const asc = ordenarRegioes(regioes, (r) => r.indicePrioridade, 'asc');
+    const asc = ordenarRegioes(regioes, (r) => r.indiceAtencao, 'asc');
     expect(asc.map((r) => r.codigoIbge)).toEqual(['35', '12', '21']);
   });
 
   it('manda valores ausentes para o fim nas duas direções', () => {
-    const chave = (r: (typeof regioes)[number]) => r.simulacao?.coberturaPercent ?? null;
-    expect(ordenarRegioes(regioes, chave, 'asc').at(-1)?.codigoIbge).toBe('35');
-    expect(ordenarRegioes(regioes, chave, 'desc').at(-1)?.codigoIbge).toBe('35');
+    const comAusente = toColecaoViewModel({
+      type: 'FeatureCollection',
+      features: [
+        ...regioes.map((r) => feature(propsUF({ codigo_ibge: r.codigoIbge, indicadores: { renda_media: r.indicadores.rendaMedia } }))),
+        feature(propsUF({ codigo_ibge: '99', indicadores: { renda_media: -1 } })), // inválida -> sem ranking
+      ],
+    }).regioes;
+    const chave = (r: (typeof comAusente)[number]) => r.indiceAtencao;
+    expect(ordenarRegioes(comAusente, chave, 'asc').at(-1)?.codigoIbge).toBe('99');
+    expect(ordenarRegioes(comAusente, chave, 'desc').at(-1)?.codigoIbge).toBe('99');
   });
 
   it('compara texto com acentuação do pt-BR e desempata pelo código', () => {
@@ -131,20 +82,22 @@ describe('CSV', () => {
     expect(csv).toBe('a;b\r\n1;x');
   });
 
-  it('o layout exportado carrega indicador, referência e desvio', () => {
-    const regiao = toRegiaoViewModel(feature(propsUF()));
+  it('o layout exportado carrega renda, fonte e procedência — nada de score ou simulação', () => {
+    const regiao = regiaoUnica();
     const csv = gerarCsv([regiao], COLUNAS_CSV);
     const [cabecalho, linha] = csv.split('\r\n');
     const colunas = cabecalho.split(';');
     const valores = linha.split(';');
     const valor = (nome: string) => valores[colunas.indexOf(nome)];
 
+    expect(colunas).not.toContain('score_vulnerabilidade');
+    expect(colunas).not.toContain('indice_prioridade');
+    expect(colunas).not.toContain('demanda_bruta_ano');
     expect(valor('codigo_ibge')).toBe('21');
-    expect(valor('taxa_pobreza')).toBe('53,8');
-    expect(valor('taxa_pobreza_brasil')).toBe('28,59');
-    expect(valor('idh_desvio_pct')).toBe('-10,43');
-    expect(valor('voluntarios_para_faixa_inferior')).toBe('54');
-    expect(valor('renda_media')).toBe(''); // não veio no comparativo
+    expect(valor('renda_media')).toBe('872');
+    expect(valor('renda_media_fonte')).toBe('ibge:pnad-continua-2024-rendimento-domiciliar-per-capita');
+    expect(valor('populacao')).toBe('6776699');
+    expect(valor('fonte_geometria')).toBe('ibge:malhas/v4');
   });
 });
 

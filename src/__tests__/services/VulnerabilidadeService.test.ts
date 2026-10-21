@@ -26,22 +26,10 @@ describe('getVulnerabilidadeBrasil', () => {
     expect(colecao).toEqual(COLECAO);
   });
 
-  it('envia o cenário de voluntários na query (formato UF:qtd,UF:qtd)', async () => {
-    await getVulnerabilidadeBrasil('MA:900,SP:4200');
-
-    expect(fetchMock.mock.calls[0][0]).toBe(
-      `${BASE}?incluir_geometria=false&voluntarios_por_uf=MA%3A900%2CSP%3A4200`,
-    );
-  });
-
-  it('cacheia por cenário: repetir a consulta não refaz a requisição', async () => {
-    await getVulnerabilidadeBrasil('MA:900');
-    await getVulnerabilidadeBrasil('MA:900');
+  it('cacheia: repetir a consulta não refaz a requisição', async () => {
+    await getVulnerabilidadeBrasil();
+    await getVulnerabilidadeBrasil();
     expect(fetchMock).toHaveBeenCalledTimes(1);
-
-    await getVulnerabilidadeBrasil('SP:10'); // outro cenário
-    await getVulnerabilidadeBrasil(); // sem cenário
-    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('limparCacheGeo força uma nova requisição', async () => {

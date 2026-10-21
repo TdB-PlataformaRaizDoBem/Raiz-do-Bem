@@ -37,8 +37,7 @@ function adiado<T>() {
   return { promessa, resolver, rejeitar };
 }
 
-const montar = (cenario = '') =>
-  renderHook(({ cenario }) => useVulnerabilidadeMapa(cenario), { initialProps: { cenario } });
+const montar = () => renderHook(() => useVulnerabilidadeMapa());
 
 beforeEach(() => {
   consulta.mockReset().mockImplementation(async () => colecao());
@@ -57,14 +56,6 @@ describe('carga', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('pede os indicadores do cenário informado', async () => {
-    const { result } = montar('MA:900');
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
-
-    expect(consulta).toHaveBeenCalledWith('MA:900');
-  });
-
   it('se a malha falhar, o mapa carrega mesmo assim, sem contorno', async () => {
     malha.mockRejectedValue(new Error('sem malha'));
 
@@ -75,13 +66,13 @@ describe('carga', () => {
     expect(result.current.origemGeometria).toBe('nenhuma');
   });
 
-  it('trocar de cenário volta a carregar sem apagar o que está na tela', async () => {
-    const { result, rerender } = montar('');
+  it('refetch volta a carregar sem apagar o que está na tela', async () => {
+    const { result } = montar();
     await waitFor(() => expect(result.current.loading).toBe(false));
     const lento = adiado<ColecaoVulnerabilidadeAPI>();
     consulta.mockReturnValueOnce(lento.promessa);
 
-    rerender({ cenario: 'SP:10' });
+    act(() => result.current.refetch());
 
     expect(result.current.loading).toBe(true);
     expect(result.current.colecao).not.toBeNull();
@@ -112,11 +103,11 @@ describe('falhas', () => {
   });
 
   it('uma falha depois de uma carga boa preserva a coleção anterior', async () => {
-    const { result, rerender } = montar('');
+    const { result } = montar();
     await waitFor(() => expect(result.current.loading).toBe(false));
     consulta.mockRejectedValueOnce(new Error('timeout'));
 
-    rerender({ cenario: 'SP:10' });
+    act(() => result.current.refetch());
 
     await waitFor(() => expect(result.current.error).toBe('timeout'));
     expect(result.current.colecao?.regioes).toHaveLength(1);
@@ -205,19 +196,19 @@ describe('seleção', () => {
     expect(result.current.selecionada).toBeNull();
   });
 
-  it('a seleção acompanha o novo cenário (mostra os números atuais, não os do clique)', async () => {
-    const { result, rerender } = montar('');
+  it('a seleção acompanha a nova carga (mostra os números atuais, não os do clique)', async () => {
+    const { result } = montar();
     await waitFor(() => expect(result.current.loading).toBe(false));
     act(() => result.current.selecionar(props('21')));
     const antes = result.current.selecionada;
     consulta.mockImplementation(async () => ({
       type: 'FeatureCollection',
-      features: [feature(propsUF({ codigo_ibge: '21', indice_prioridade: 0.1 }))],
+      features: [feature(propsUF({ codigo_ibge: '21', populacao: 42 }))],
     }));
 
-    rerender({ cenario: 'MA:900' });
+    act(() => result.current.refetch());
 
-    await waitFor(() => expect(result.current.selecionada?.indicePrioridade).toBe(0.1));
+    await waitFor(() => expect(result.current.selecionada?.populacao).toBe(42));
     expect(result.current.selecionada).not.toBe(antes);
   });
 });

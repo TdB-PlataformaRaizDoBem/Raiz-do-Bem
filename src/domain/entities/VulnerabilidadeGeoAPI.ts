@@ -48,20 +48,27 @@ export interface MultiPolygonGeometry {
 
 export type Geometry = PointGeometry | PolygonGeometry | MultiPolygonGeometry;
 
-export interface IndicadoresCensoAPI {
-  populacao: number;
-  renda_media: number;
-  idh: number;
-  dentistas_por_1000: number;
-  taxa_pobreza: number;
-  acesso_saude_pct: number;
-}
+/**
+ * Indicadores oficiais de uma UF (card RDB-2).
+ *
+ * `renda_media` é a única grandeza sempre presente — tabela anual versionada
+ * (PNAD Contínua), nunca consultada em tempo real. `populacao` vem do SIDRA
+ * quando o IBGE responde; ausente (não `null` dentro do objeto, a CHAVE some
+ * do JSON por `response_model_exclude_none`) quando não.
+ *
+ * idh, taxa_pobreza, acesso_saude_pct e dentistas_por_1000 NÃO são campos
+ * aqui: não têm fonte oficial versionada ainda, e o contrato é "campo
+ * ausente", não `null` nem zero. Ver docs/PROCEDENCIA.md da API.
+ */
+export interface IndicadoresOficiaisAPI {
+  populacao?: number | null;
+  populacao_fonte?: string | null;
+  populacao_periodo?: string | null;
 
-export interface ComponentesScoreAPI {
-  pobreza: number;
-  idh_invertido: number;
-  acesso_saude_invertido: number;
-  pesos: Record<string, number>;
+  renda_media: number;
+  renda_media_fonte: string;
+  renda_media_ano: number;
+  renda_media_coletado_em: string;
 }
 
 export interface VulnerabilidadePropertiesAPI {
@@ -75,112 +82,24 @@ export interface VulnerabilidadePropertiesAPI {
   uf_nome?: string | null;
   nome_qualificado?: string | null;
 
-  populacao: number;
-  score_vulnerabilidade: number;
-  faixa: FaixaVulnerabilidade;
-  componentes?: ComponentesScoreAPI | null;
-  indicadores?: IndicadoresCensoAPI | null;
+  /**
+   * OPCIONAL de propósito: `null` quando o IBGE/SIDRA está indisponível — a
+   * chave some do JSON (`response_model_exclude_none`). NUNCA um valor de
+   * referência: UF sem dado é desenhada em cinza, nunca como zero.
+   */
+  populacao?: number | null;
+  indicadores?: IndicadoresOficiaisAPI | null;
 
-  demanda_atendimentos_prevista?: number | null;
   /** [longitude, latitude] — enviado mesmo com incluir_geometria=false. */
   centroide?: [number, number] | null;
-  demanda_por_1000_hab?: number | null;
-  predicao_fora_da_distribuicao?: boolean | null;
-
-  /** Resultado da simulação de dentistas voluntários. */
-  simulacao?: SimulacaoAPI | null;
-  /**
-   * Índice que COLORE o mapa e ordena o ranking.
-   * = score_vulnerabilidade × (demanda_residual / demanda_do_público_alvo).
-   * Com zero voluntários é idêntico ao score de vulnerabilidade.
-   */
-  indice_prioridade: number;
-
-  /** Contexto nacional e sensibilidade. Ausente com incluir_indicadores=false
-   *  ou num back-end anterior a este campo — a UI degrada sem ele. */
-  analise?: AnaliseUnidadeAPI | null;
 
   fonte_geometria?: string;
+  /**
+   * Procedência dos indicadores. Nunca carrega o prefixo `mock:` (card
+   * RDB-2): o que não tem fonte oficial não aparece "estimado", simplesmente
+   * não aparece.
+   */
   fonte_indicadores?: string;
-}
-
-export type IndicadorComparavel =
-  | "taxa_pobreza"
-  | "idh"
-  | "acesso_saude_pct"
-  | "dentistas_por_1000"
-  | "renda_media";
-
-export interface ComparativoIndicadorAPI {
-  indicador: IndicadorComparavel;
-  valor: number;
-  /** Média das 27 UFs ponderada por população. */
-  referencia_nacional: number;
-  desvio_relativo_pct?: number | null;
-  /** True quando o desvio vai na direção que agrava a vulnerabilidade. */
-  desfavoravel: boolean;
-}
-
-export interface SensibilidadeAPI {
-  /** Queda do índice de prioridade (0–1) com +100 voluntários. */
-  reducao_prioridade_por_100_voluntarios: number;
-  /** Voluntários ADICIONAIS ao cenário para descer uma faixa. */
-  voluntarios_para_faixa_inferior?: number | null;
-  faixa_inferior?: FaixaVulnerabilidade | null;
-}
-
-export interface AnaliseUnidadeAPI {
-  posicao_prioridade: number;
-  posicao_vulnerabilidade: number;
-  total_unidades: number;
-  percentil_vulnerabilidade: number;
-  comparativo: ComparativoIndicadorAPI[];
-  sensibilidade?: SensibilidadeAPI | null;
-}
-
-export interface AnaliseColecaoAPI {
-  universo: number;
-  referencia_nacional: {
-    populacao: number;
-    score_vulnerabilidade_medio: number;
-    indice_prioridade_medio: number;
-    indicadores: Record<IndicadorComparavel, number>;
-  };
-  capacidade?: {
-    demanda_publico_alvo: number;
-    capacidade_simulada: number;
-    demanda_residual: number;
-    cobertura_percent: number;
-    voluntarios_aplicados: number;
-    voluntarios_faltantes: number;
-    unidades_simuladas: number;
-  } | null;
-  parametros: {
-    pesos_score: Record<string, number>;
-    limiares_faixa: Record<FaixaVulnerabilidade, number>;
-    capacidade_anual_por_dentista: number;
-    fracao_publico_alvo: number;
-    densidade_referencia_dentistas: number;
-    periodo: string;
-    modelo: {
-      disponivel: boolean;
-      tipo?: string | null;
-      faixa_populacao_treino: [number, number];
-      unidades_extrapoladas: number;
-    };
-  };
-}
-
-export interface SimulacaoAPI {
-  /** Atendimentos/ano para o público da ONG: 9–17 anos + mulheres 9+. */
-  demanda_publico_alvo: number;
-  capacidade_simulada: number;
-  demanda_residual: number;
-  cobertura_percent: number;
-  voluntarios_aplicados: number;
-  voluntarios_faltantes: number;
-  /** False quando o estado não tem cenário — mostra a vulnerabilidade real. */
-  simulado: boolean;
 }
 
 export interface FeatureAPI {
@@ -225,27 +144,15 @@ export interface ColecaoVulnerabilidadeAPI {
   bbox?: [number, number, number, number] | null;
   paginacao?: PaginacaoAPI | null;
   metadados?: MetadadosAPI | null;
-  /** Foreign member: referência nacional, totais e parâmetros do cálculo. */
-  analise?: AnaliseColecaoAPI | null;
 }
 
-/** Parâmetros de consulta aceitos pelos três endpoints geográficos. */
+/** Parâmetros de consulta aceitos pelo endpoint geográfico. */
 export interface ConsultaGeoParams {
   limit?: number;
   offset?: number;
-  ordenar_por?:
-    | "prioridade_desc"
-    | "prioridade_asc"
-    | "populacao_desc"
-    | "nome_asc"
-    | "residual_desc";
+  ordenar_por?: "populacao_desc" | "nome_asc";
   /** Tolerância de simplificação em graus decimais. Deve acompanhar o zoom. */
   tolerancia?: number;
   incluir_geometria?: boolean;
   incluir_indicadores?: boolean;
-  faixa_minima?: FaixaVulnerabilidade;
-  periodo?: "mensal" | "trimestral" | "anual";
-  /** Cenário por estado, no formato `MA:900,SP:4200`. */
-  voluntarios_por_uf?: string;
-  capacidade_anual_por_dentista?: number;
 }

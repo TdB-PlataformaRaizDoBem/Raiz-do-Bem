@@ -57,7 +57,10 @@ export function useFiltrosMapa(regioes: RegiaoViewModel[]): FiltrosMapa {
 
   const regioesFiltradas = useMemo(() => {
     return regioes.filter((regiao) => {
-      if (faixas.size > 0 && !faixas.has(regiao.faixa)) return false;
+      // UF sem renda válida (faixa null) não pertence a nenhum filtro de faixa.
+      if (faixas.size > 0 && (regiao.faixa === null || !faixas.has(regiao.faixa))) {
+        return false;
+      }
       if (termoNormalizado.length === 0) return true;
       return (
         normalizarBusca(regiao.nome).includes(termoNormalizado) ||
@@ -78,7 +81,7 @@ export function useFiltrosMapa(regioes: RegiaoViewModel[]): FiltrosMapa {
         const aComeca = normalizarBusca(a.nome).startsWith(termoNormalizado);
         const bComeca = normalizarBusca(b.nome).startsWith(termoNormalizado);
         if (aComeca !== bComeca) return aComeca ? -1 : 1;
-        return b.indicePrioridade - a.indicePrioridade;
+        return (b.indiceAtencao ?? -1) - (a.indiceAtencao ?? -1);
       })
       .slice(0, MAX_SUGESTOES);
   }, [regioesFiltradas, termoNormalizado]);

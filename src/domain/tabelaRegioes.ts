@@ -4,11 +4,7 @@
  */
 
 import { baixarCsv, gerarCsv, type ColunaCsv } from "../utils/csvUtils";
-import {
-  METADADOS_INDICADOR,
-  ROTULO_FAIXA,
-  type RegiaoViewModel,
-} from "./mappers/VulnerabilidadeMapper";
+import { ROTULO_FAIXA, type RegiaoViewModel } from "./mappers/VulnerabilidadeMapper";
 
 export type Direcao = "asc" | "desc";
 export type ValorOrdenavel = number | string | null;
@@ -38,53 +34,34 @@ export function ordenarRegioes(
   });
 }
 
-const indicador = (r: RegiaoViewModel, chave: keyof typeof METADADOS_INDICADOR) =>
-  r.analise?.comparativo.find((c) => c.chave === chave);
-
-/** CSV completo: tudo que a tela mostra e mais o que ela resume. Nomes de
- *  coluna em snake_case, iguais aos do contrato da API — quem cruzar a
- *  planilha com o /docs não precisa de dicionário. */
+/**
+ * CSV completo: tudo que a tela mostra e mais o que ela resume. Nomes de
+ * coluna em snake_case, iguais aos do contrato da API — quem cruzar a
+ * planilha com o /docs não precisa de dicionário.
+ *
+ * Card RDB-2: as colunas de score, simulação e análise saíram — o back-end
+ * não as calcula mais. `indice_atencao`/`faixa_atencao` são calculados no
+ * cliente a partir do ranking relativo de renda (`domain/rankingRenda.ts`),
+ * não um dado vindo do servidor.
+ */
 export const COLUNAS_CSV: ColunaCsv<RegiaoViewModel>[] = [
   { cabecalho: "codigo_ibge", valor: (r) => r.codigoIbge },
   { cabecalho: "uf", valor: (r) => r.ufSigla },
   { cabecalho: "nome", valor: (r) => r.nome },
   { cabecalho: "regiao", valor: (r) => r.regiao },
-  { cabecalho: "indice_prioridade", valor: (r) => r.indicePrioridade },
-  { cabecalho: "faixa", valor: (r) => ROTULO_FAIXA[r.faixa] },
-  { cabecalho: "score_vulnerabilidade", valor: (r) => r.score },
-  { cabecalho: "posicao_prioridade", valor: (r) => r.analise?.posicaoPrioridade },
-  { cabecalho: "posicao_vulnerabilidade", valor: (r) => r.analise?.posicaoVulnerabilidade },
-  { cabecalho: "percentil_vulnerabilidade", valor: (r) => r.analise?.percentilVulnerabilidade },
+  { cabecalho: "indice_atencao", valor: (r) => r.indiceAtencao },
+  { cabecalho: "faixa_atencao", valor: (r) => (r.faixa ? ROTULO_FAIXA[r.faixa] : null) },
+  { cabecalho: "posicao_ranking_renda", valor: (r) => r.posicaoRenda },
   { cabecalho: "populacao", valor: (r) => r.populacao },
-  ...(Object.keys(METADADOS_INDICADOR) as (keyof typeof METADADOS_INDICADOR)[]).flatMap(
-    (chave): ColunaCsv<RegiaoViewModel>[] => [
-      { cabecalho: chave, valor: (r) => indicador(r, chave)?.valor },
-      { cabecalho: `${chave}_brasil`, valor: (r) => indicador(r, chave)?.referencia },
-      { cabecalho: `${chave}_desvio_pct`, valor: (r) => indicador(r, chave)?.desvioPercent },
-    ],
-  ),
-  { cabecalho: "demanda_bruta_ano", valor: (r) => r.demandaPrevista },
-  { cabecalho: "demanda_publico_alvo_ano", valor: (r) => r.simulacao?.demandaPublicoAlvo },
-  { cabecalho: "voluntarios_cenario", valor: (r) => r.simulacao?.voluntariosAplicados },
-  { cabecalho: "capacidade_simulada_ano", valor: (r) => r.simulacao?.capacidadeSimulada },
-  { cabecalho: "demanda_residual_ano", valor: (r) => r.simulacao?.demandaResidual },
-  { cabecalho: "cobertura_pct", valor: (r) => r.simulacao?.coberturaPercent },
-  { cabecalho: "voluntarios_para_zerar", valor: (r) => r.simulacao?.voluntariosFaltantes },
-  {
-    cabecalho: "reducao_prioridade_100_vol",
-    valor: (r) => r.analise?.sensibilidade?.reducaoPor100Voluntarios,
-  },
-  {
-    cabecalho: "voluntarios_para_faixa_inferior",
-    valor: (r) => r.analise?.sensibilidade?.voluntariosParaFaixaInferior,
-  },
-  { cabecalho: "predicao_extrapolada", valor: (r) => (r.extrapolado ? "sim" : "nao") },
+  { cabecalho: "populacao_fonte", valor: (r) => r.indicadores.populacaoFonte },
+  { cabecalho: "renda_media", valor: (r) => r.indicadores.rendaMedia },
+  { cabecalho: "renda_media_fonte", valor: (r) => r.indicadores.rendaFonte },
+  { cabecalho: "renda_media_ano", valor: (r) => r.indicadores.rendaAno },
   { cabecalho: "fonte_geometria", valor: (r) => r.fonteGeometria },
   { cabecalho: "fonte_indicadores", valor: (r) => r.fonteIndicadores },
 ];
 
-export function exportarRegioesCsv(regioes: RegiaoViewModel[], cenario: string): void {
+export function exportarRegioesCsv(regioes: RegiaoViewModel[]): void {
   const data = new Date().toISOString().slice(0, 10);
-  const sufixo = cenario ? "cenario" : "real";
-  baixarCsv(`vulnerabilidade-uf-${sufixo}-${data}.csv`, gerarCsv(regioes, COLUNAS_CSV));
+  baixarCsv(`vulnerabilidade-uf-${data}.csv`, gerarCsv(regioes, COLUNAS_CSV));
 }

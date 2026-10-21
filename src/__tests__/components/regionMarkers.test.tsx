@@ -4,9 +4,8 @@ import L from 'leaflet';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RegionMarkers } from '../../components/vulnerabilityMap/RegionMarkers';
 import type { Geometry } from '../../domain/entities/VulnerabilidadeGeoAPI';
-import { toRegiaoViewModel, type RegiaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
+import type { RegiaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
 import { useEscalaVulnerabilidade } from '../../hooks/useEscalaVulnerabilidade';
-import { feature, propsUF } from '../../test/vulnerabilidadeFixtures';
 
 /** Mapa e Marker falsos: a lógica sob teste é a de posicionamento e supressão, não a do Leaflet. */
 const { mapa, eventoLeaflet, ultimosIcones } = vi.hoisted(() => ({
@@ -60,20 +59,35 @@ function regiao(o: {
   prioridade: number;
   centroide: [number, number] | null;
   ufSigla?: string | null;
-  simulado?: boolean;
 }): RegiaoViewModel {
   contador += 1;
-  const base = toRegiaoViewModel(
-    feature(
-      propsUF({
-        codigo_ibge: `9${contador}`,
-        nome: o.nome ?? `Região ${contador}`,
-        indice_prioridade: o.prioridade,
-        simulacao: { ...propsUF().simulacao!, simulado: o.simulado ?? false },
-      }),
-    ),
-  );
-  return { ...base, centroide: o.centroide, ufSigla: o.ufSigla === undefined ? 'MA' : o.ufSigla };
+  const codigo = `9${contador}`;
+  return {
+    codigoIbge: codigo,
+    nome: o.nome ?? `Região ${contador}`,
+    nomeQualificado: o.nome ?? `Região ${contador}`,
+    nivel: 'uf',
+    ufSigla: o.ufSigla === undefined ? 'MA' : o.ufSigla,
+    ufNome: null,
+    regiao: null,
+    populacao: 1_000_000,
+    indicadores: {
+      populacao: 1_000_000,
+      populacaoFonte: 'ibge:sidra/4709-v93',
+      populacaoPeriodo: '2022',
+      rendaMedia: 1500,
+      rendaFonte: 'ibge:pnad-continua-2024-rendimento-domiciliar-per-capita',
+      rendaAno: 2024,
+      rendaColetadoEm: '2026-10-20',
+    },
+    centroide: o.centroide,
+    faixa: 'alta',
+    indiceAtencao: o.prioridade,
+    posicaoRenda: 1,
+    totalRanking: 1,
+    fonteGeometria: 'ibge:malhas/v4',
+    fonteIndicadores: 'ibge:pnad-continua-2024-rendimento-domiciliar-per-capita',
+  };
 }
 
 const poligono = (lon0: number, lat0: number, lon1: number, lat1: number): Geometry => ({
@@ -245,14 +259,6 @@ describe('RegionMarkers — aparência do rótulo', () => {
 
   it('rótulo comum não tem a classe de ativo', () => {
     expect(html(regiao({ prioridade: 0.5, centroide: [-10, -50] }))).not.toContain('mapa-badge--ativo');
-  });
-
-  it('um ponto marca o estado com cenário simulado', () => {
-    expect(html(regiao({ prioridade: 0.5, centroide: [-10, -50], simulado: true }))).toContain('mapa-badge__marca');
-  });
-
-  it('estado sem cenário não tem o ponto', () => {
-    expect(html(regiao({ prioridade: 0.5, centroide: [-11, -51], simulado: false }))).not.toContain('mapa-badge__marca');
   });
 
   it('usa a cor da escala para o índice da região', () => {

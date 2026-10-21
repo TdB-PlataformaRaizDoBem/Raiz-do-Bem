@@ -2,162 +2,105 @@ import { render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { RegionInsightPanel } from '../../components/vulnerabilityMap/RegionInsightPanel';
-import type { AnaliseUnidadeAPI, SimulacaoAPI } from '../../domain/entities/VulnerabilidadeGeoAPI';
-import { toColecaoViewModel, toRegiaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
+import { toColecaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
 import { useEscalaVulnerabilidade } from '../../hooks/useEscalaVulnerabilidade';
-import { ANALISE_COLECAO, feature, propsUF } from '../../test/vulnerabilidadeFixtures';
+import { feature, propsUF } from '../../test/vulnerabilidadeFixtures';
 
 const escala = renderHook(() => useEscalaVulnerabilidade()).result.current;
-const referencia = toColecaoViewModel({ type: 'FeatureCollection', features: [], analise: ANALISE_COLECAO }).analise;
 
-type Sobrescritas = {
-  simulacao?: Partial<SimulacaoAPI> | null;
-  sensibilidade?: Partial<NonNullable<AnaliseUnidadeAPI['sensibilidade']>> | null;
-  dentistasPor1000?: number;
-  semAnalise?: boolean;
-};
+const regiaoDe = (features: ReturnType<typeof feature>[], codigo = '21') =>
+  toColecaoViewModel({ type: 'FeatureCollection', features }).regioes.find((r) => r.codigoIbge === codigo)!;
 
-function regiao({ simulacao, sensibilidade, dentistasPor1000, semAnalise }: Sobrescritas = {}) {
-  const base = propsUF();
-  return toRegiaoViewModel(
-    feature(
-      propsUF({
-        simulacao: simulacao === null ? null : { ...base.simulacao!, ...simulacao },
-        analise: semAnalise
-          ? null
-          : {
-              ...base.analise!,
-              sensibilidade:
-                sensibilidade === null ? null : { ...base.analise!.sensibilidade!, ...sensibilidade },
-            },
-        indicadores:
-          dentistasPor1000 === undefined ? base.indicadores : { ...base.indicadores!, dentistas_por_1000: dentistasPor1000 },
-      }),
-    ),
-  );
-}
+describe('RegionInsightPanel', () => {
+  it('mostra a renda com a fonte e o ano, e a população com a fonte', () => {
+    const regiao = regiaoDe([
+      feature(
+        propsUF({
+          codigo_ibge: '21',
+          nome: 'Maranhão',
+          populacao: 6_776_699,
+          indicadores: {
+            renda_media: 872,
+            renda_media_fonte: 'ibge:pnad-continua-2024-rendimento-domiciliar-per-capita',
+            renda_media_ano: 2024,
+            populacao_fonte: 'ibge:sidra/4709-v93',
+            populacao_periodo: '2022',
+          },
+        }),
+      ),
+    ]);
 
-function renderPainel(
-  r = regiao(),
-  o: { modeloIndisponivel?: boolean; semReferencia?: boolean; onFechar?: () => void } = {},
-) {
-  const onFechar = o.onFechar ?? vi.fn();
-  render(
-    <RegionInsightPanel
-      regiao={r}
-      escala={escala}
-      referencia={o.semReferencia ? null : referencia}
-      modeloIndisponivel={o.modeloIndisponivel ?? false}
-      onFechar={onFechar}
-    />,
-  );
-  return { onFechar };
-}
+    const { container } = render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={vi.fn()} />);
+    const texto = container.textContent ?? '';
 
-/** A linha (rótulo + valor) que contém o rótulo informado. */
-const linha = (rotulo: string) => screen.getByText(rotulo).closest('div')!;
+    expect(texto).toMatch(/R\$\s*872/);
+    expect(texto).toContain('PNAD Contínua 2024');
+    expect(texto).toContain('fonte ibge:pnad-continua-2024-rendimento-domiciliar-per-capita (2024)');
+    expect(texto).toContain('6.776.699');
+    expect(texto).toContain('Censo oficial, 2022');
+  });
 
-describe('RegionInsightPanel — cabeçalho', () => {
-  it('identifica a região, mostra a procedência e fecha pelo botão', async () => {
-    const { onFechar } = renderPainel();
+  it('sem população oficial, mostra "indisponível" — nunca zero', () => {
+    const regiao = regiaoDe([
+      feature(propsUF({ codigo_ibge: '21', populacao: undefined, indicadores: { populacao: undefined, populacao_fonte: undefined } })),
+    ]);
 
-    expect(screen.getByRole('heading', { name: 'Maranhão (MA)' })).toBeInTheDocument();
-    expect(screen.getByText(/Código IBGE 21/)).toBeInTheDocument();
-    expect(screen.getByText(/Contornos: ibge:malhas\/v4/)).toBeInTheDocument();
+    render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={vi.fn()} />);
+
+    expect(screen.getByText('indisponível')).toBeInTheDocument();
+    expect(screen.getByText(/IBGE indisponível nesta consulta/)).toBeInTheDocument();
+    expect(screen.queryByText('0')).not.toBeInTheDocument();
+  });
+
+  it('mostra a posição no ranking de renda entre as UFs da coleção', () => {
+    const regiao = regiaoDe([
+      feature(propsUF({ codigo_ibge: '21', indicadores: { renda_media: 900 } })),
+      feature(propsUF({ codigo_ibge: '35', indicadores: { renda_media: 2600 } })),
+      feature(propsUF({ codigo_ibge: '12', indicadores: { renda_media: 1500 } })),
+    ]);
+
+    const { container } = render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={vi.fn()} />);
+
+    expect(container.textContent).toContain('1º de 3');
+    expect(screen.getByText('(1º = menor renda)')).toBeInTheDocument();
+  });
+
+  it('UF sem renda válida não mostra posição no ranking', () => {
+    const regiao = regiaoDe([feature(propsUF({ codigo_ibge: '21', indicadores: { renda_media: -1 } }))]);
+
+    render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={vi.fn()} />);
+
+    expect(screen.getByText('Sem renda válida para calcular a posição no ranking.')).toBeInTheDocument();
+  });
+
+  it('nunca mostra score, simulação ou demanda', () => {
+    const regiao = regiaoDe([feature(propsUF({ codigo_ibge: '21' }))]);
+
+    render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={vi.fn()} />);
+
+    expect(screen.queryByText(/score/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/simula/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/demanda/i)).not.toBeInTheDocument();
+  });
+
+  it('fechar aciona o callback', async () => {
+    const onFechar = vi.fn();
+    const regiao = regiaoDe([feature(propsUF({ codigo_ibge: '21' }))]);
+    render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={onFechar} />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Fechar detalhe e voltar ao resumo' }));
 
-    expect(onFechar).toHaveBeenCalledTimes(1);
+    expect(onFechar).toHaveBeenCalled();
   });
 
-  it('mostra a média nacional na régua quando o back-end a envia', () => {
-    renderPainel();
+  it('declara a procedência de geometria e indicadores no rodapé', () => {
+    const regiao = regiaoDe([
+      feature(propsUF({ codigo_ibge: '21', fonte_geometria: 'mock:sintetico', fonte_indicadores: 'ibge:pnad-continua-2024' })),
+    ]);
 
-    expect(screen.getByText(/Média Brasil 30%/)).toBeInTheDocument();
-  });
+    render(<RegionInsightPanel regiao={regiao} escala={escala} onFechar={vi.fn()} />);
 
-  it('sem a média nacional (back-end antigo) ainda desenha a régua, sem a marca do Brasil', () => {
-    renderPainel(regiao(), { semReferencia: true });
-
-    expect(screen.getByRole('heading', { name: 'Maranhão (MA)' })).toBeInTheDocument();
-    expect(screen.queryByText(/Média Brasil/)).not.toBeInTheDocument();
-  });
-
-  it('sem análise da unidade, os blocos comparativos não aparecem', () => {
-    renderPainel(regiao({ semAnalise: true }));
-
-    expect(screen.queryByText('Percentil')).not.toBeInTheDocument();
-  });
-});
-
-describe('RegionInsightPanel — necessidade de atendimento', () => {
-  it('modelo indisponível: explica e diz que o resto funciona', () => {
-    renderPainel(regiao(), { modeloIndisponivel: true });
-
-    expect(screen.getByText(/o modelo preditivo não foi carregado no servidor/)).toBeInTheDocument();
-    expect(screen.getByText(/O restante do painel funciona normalmente/)).toBeInTheDocument();
-    expect(screen.queryByText('Demanda do público-alvo')).not.toBeInTheDocument();
-  });
-
-  it('sem simulação para o estado: avisa que não há estimativa', () => {
-    renderPainel(regiao({ simulacao: null }));
-
-    expect(screen.getByText('Sem estimativa para este estado.')).toBeInTheDocument();
-  });
-
-  it('sem voluntários no cenário mostra "nenhum"', () => {
-    renderPainel(regiao({ simulacao: { voluntarios_aplicados: 0 } }));
-
-    expect(linha('Voluntários no cenário')).toHaveTextContent('nenhum');
-  });
-
-  it('com voluntários no cenário mostra a quantidade', () => {
-    renderPainel(regiao({ simulacao: { voluntarios_aplicados: 1500, capacidade_simulada: 180_000, simulado: true } }));
-
-    expect(linha('Voluntários no cenário')).toHaveTextContent('1.500');
-    expect(linha('Capacidade simulada')).toHaveTextContent('180.000 / ano');
-  });
-});
-
-describe('RegionInsightPanel — sensibilidade ao cenário', () => {
-  const cardDescer = () => screen.getByText('Para descer de faixa').parentElement!;
-
-  it('mostra quantos voluntários a mais descem a faixa e para qual', () => {
-    renderPainel(regiao({ sensibilidade: { voluntarios_para_faixa_inferior: 54, faixa_inferior: 'media' } }));
-
-    expect(cardDescer()).toHaveTextContent('+54');
-    expect(cardDescer()).toHaveTextContent('até atenção moderada');
-  });
-
-  it('sem número calculado mostra o travessão', () => {
-    renderPainel(regiao({ sensibilidade: { voluntarios_para_faixa_inferior: undefined, faixa_inferior: 'media' } }));
-
-    expect(cardDescer()).toHaveTextContent('—');
-  });
-
-  it('já na faixa mais baixa não há para onde descer', () => {
-    renderPainel(regiao({ sensibilidade: { voluntarios_para_faixa_inferior: undefined, faixa_inferior: undefined } }));
-
-    expect(cardDescer()).toHaveTextContent('já na faixa mais baixa');
-  });
-
-  it('sem sensibilidade o bloco não aparece', () => {
-    renderPainel(regiao({ sensibilidade: null }));
-
-    expect(screen.queryByText('Para descer de faixa')).not.toBeInTheDocument();
-  });
-});
-
-describe('RegionInsightPanel — indicadores', () => {
-  it('estado abaixo da referência mostra quantos dentistas por mil faltam', () => {
-    renderPainel(regiao({ dentistasPor1000: 0.61 }));
-
-    expect(linha('Faltam para o patamar de referência')).toHaveTextContent('1,39');
-  });
-
-  it('estado que já atinge a referência mostra "Nenhum"', () => {
-    renderPainel(regiao({ dentistasPor1000: 2.5 }));
-
-    expect(linha('Faltam para o patamar de referência')).toHaveTextContent('Nenhum');
+    expect(screen.getByText(/Contornos: mock:sintetico/)).toBeInTheDocument();
+    expect(screen.getByText(/Indicadores: ibge:pnad-continua-2024/)).toBeInTheDocument();
   });
 });

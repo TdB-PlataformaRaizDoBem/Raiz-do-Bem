@@ -24,13 +24,17 @@
  *                                procedência declarada pelo servidor. Pesada
  *                                (megabytes), estática, cacheada.
  *
- *   getVulnerabilidadeBrasil()   A CADA mudança no simulador, com
+ *   getVulnerabilidadeBrasil()   Indicadores oficiais, com
  *                                `incluir_geometria=false`. Leve (KB).
  *
  * Pedir geometria junto com os indicadores baixaria a malha inteira a cada
- * dentista digitado no simulador. A separação é a mesma que já existia quando a
- * malha vinha do IBGE pelo navegador — o que mudou é a ORIGEM preferencial, que
- * passou a ser esta API (ver MalhaGeograficaService).
+ * consulta. A separação é a mesma que já existia quando a malha vinha do IBGE
+ * pelo navegador — o que mudou é a ORIGEM preferencial, que passou a ser esta
+ * API (ver MalhaGeograficaService).
+ *
+ * CARD RDB-2: o back-end não calcula mais score/simulação/análise, então este
+ * serviço não envia mais `voluntarios_por_uf` nem os demais parâmetros que
+ * dependiam deles — o endpoint os ignoraria.
  */
 
 import type {
@@ -93,23 +97,14 @@ async function buscarColecao(
 // ---------------------------------------------------------------------------
 
 /**
- * GET /brasil — indicadores das 27 UFs, SEM geometria.
- *
- * `cenarioVoluntarios` no formato `MA:900,SP:4200`. Estados ausentes não são
- * simulados: mantêm a vulnerabilidade real. A string entra na chave de cache,
- * então voltar a um cenário já consultado é instantâneo — o que importa quando
- * o usuário está montando o cenário estado a estado e comparando.
+ * GET /brasil — indicadores oficiais das 27 UFs, SEM geometria.
  *
  * `incluir_geometria=false` mantém esta resposta em poucos KB. As `properties`
  * continuam trazendo `fonte_geometria`: o veredito do servidor sobre a
  * procedência do contorno viaja mesmo sem o contorno, e é ele que decide o selo.
  */
-export function getVulnerabilidadeBrasil(
-  cenarioVoluntarios = "",
-): Promise<ColecaoVulnerabilidadeAPI> {
-  const params: ConsultaGeoParams = { incluir_geometria: false };
-  if (cenarioVoluntarios) params.voluntarios_por_uf = cenarioVoluntarios;
-  return buscarColecao("/brasil", params);
+export function getVulnerabilidadeBrasil(): Promise<ColecaoVulnerabilidadeAPI> {
+  return buscarColecao("/brasil", { incluir_geometria: false });
 }
 
 /**

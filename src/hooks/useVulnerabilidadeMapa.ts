@@ -18,15 +18,15 @@ import {
 import { getVulnerabilidadeBrasil } from "../services/VulnerabilidadeService";
 
 interface ResultadoCarga {
-  /** Cenário a que este resultado pertence. Vazio = nenhuma carga concluída. */
-  chave: string;
+  /** Nº da tentativa a que este resultado pertence. -1 = nenhuma carga concluída. */
+  tentativa: number;
   colecao: ColecaoViewModel | null;
   erro: string | null;
   origemGeometria: OrigemMalha;
 }
 
 const RESULTADO_INICIAL: ResultadoCarga = {
-  chave: " ", // sentinela: nunca igual a um cenário real
+  tentativa: -1,
   colecao: null,
   erro: null,
   origemGeometria: "nenhuma",
@@ -44,13 +44,8 @@ export interface UseVulnerabilidadeMapa {
   selecionar: (props: VulnerabilidadePropertiesAPI | null) => void;
 }
 
-/** Carrega as 27 UFs para o cenário informado (`MA:900,SP:4200`) e controla a seleção. */
-export function useVulnerabilidadeMapa(
-  cenarioVoluntarios: string,
-): UseVulnerabilidadeMapa {
-  // Guarda só o CÓDIGO. Guardar o ViewModel congelava o painel no cenário do
-  // clique: o usuário selecionava o Maranhão, digitava 900 voluntários no
-  // simulador e o detalhe seguia mostrando "nenhum voluntário, cobertura 0%".
+/** Carrega as 27 UFs e controla a seleção do estado em destaque. */
+export function useVulnerabilidadeMapa(): UseVulnerabilidadeMapa {
   const [codigoSelecionado, setCodigoSelecionado] = useState<string | null>(null);
   const [tentativa, setTentativa] = useState(0);
   const [resultado, setResultado] = useState<ResultadoCarga>(RESULTADO_INICIAL);
@@ -58,20 +53,19 @@ export function useVulnerabilidadeMapa(
   useEffect(() => {
     let cancelado = false;
     const controle = new AbortController();
-    const chave = cenarioVoluntarios;
 
     // Indicadores e contornos em paralelo: serviços independentes, e encadeá-los
     // somaria as latências sem necessidade. A malha é cacheada, então só a
     // primeira carga paga por ela.
     Promise.all([
-      getVulnerabilidadeBrasil(cenarioVoluntarios),
+      getVulnerabilidadeBrasil(),
       carregarMalha(controle.signal).catch(() => null),
     ])
       .then(([dados, malha]) => {
         if (cancelado) return;
         const { colecao, origem } = juntarGeometria(dados, malha);
         setResultado({
-          chave,
+          tentativa,
           colecao: toColecaoViewModel(colecao),
           erro: null,
           origemGeometria: origem,
@@ -82,17 +76,17 @@ export function useVulnerabilidadeMapa(
         const mensagem = err instanceof Error ? err.message : "Falha ao carregar o mapa";
         // Preserva a malha anterior: melhor um dado desatualizado e sinalizado
         // do que uma tela em branco quando a API oscila.
-        setResultado((anterior) => ({ ...anterior, chave, erro: mensagem }));
+        setResultado((anterior) => ({ ...anterior, tentativa, erro: mensagem }));
       });
 
     return () => {
       cancelado = true;
       controle.abort();
     };
-  }, [cenarioVoluntarios, tentativa]);
+  }, [tentativa]);
 
-  const loading = resultado.chave !== cenarioVoluntarios;
-  const error = resultado.chave === cenarioVoluntarios ? resultado.erro : null;
+  const loading = resultado.tentativa !== tentativa;
+  const error = resultado.tentativa === tentativa ? resultado.erro : null;
 
   const refetch = useCallback(() => setTentativa((n) => n + 1), []);
 

@@ -1,14 +1,47 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { FaixaVulnerabilidade } from '../../domain/entities/VulnerabilidadeGeoAPI';
-import { toRegiaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
+import type { RegiaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
 import { FAIXAS_ORDENADAS, useFiltrosMapa } from '../../hooks/useFiltrosMapa';
-import { feature, propsUF } from '../../test/vulnerabilidadeFixtures';
 
-const regiao = (codigo: string, nome: string, faixa: FaixaVulnerabilidade, prioridade: number) =>
-  toRegiaoViewModel(
-    feature(propsUF({ codigo_ibge: codigo, nome, faixa, indice_prioridade: prioridade })),
-  );
+/**
+ * Constrói o ViewModel diretamente — `useFiltrosMapa` opera sobre
+ * `RegiaoViewModel[]`, e `faixa`/`indiceAtencao` são calculados por
+ * `domain/rankingRenda.ts` sobre o CONJUNTO, não um valor que se define por
+ * região isolada. Fixar os dois aqui é o jeito correto de testar o filtro em
+ * si, sem depender do ranking.
+ */
+const regiao = (
+  codigo: string,
+  nome: string,
+  faixa: FaixaVulnerabilidade,
+  indiceAtencao: number,
+): RegiaoViewModel => ({
+  codigoIbge: codigo,
+  nome,
+  nomeQualificado: nome,
+  nivel: 'uf',
+  ufSigla: null,
+  ufNome: null,
+  regiao: null,
+  populacao: 1_000_000,
+  indicadores: {
+    populacao: 1_000_000,
+    populacaoFonte: 'ibge:sidra/4709-v93',
+    populacaoPeriodo: '2022',
+    rendaMedia: 1500,
+    rendaFonte: 'ibge:pnad-continua-2024-rendimento-domiciliar-per-capita',
+    rendaAno: 2024,
+    rendaColetadoEm: '2026-10-20',
+  },
+  centroide: null,
+  faixa,
+  indiceAtencao,
+  posicaoRenda: 1,
+  totalRanking: 4,
+  fonteGeometria: 'ibge:malhas/v4',
+  fonteIndicadores: 'ibge:pnad-continua-2024-rendimento-domiciliar-per-capita',
+});
 
 const MA = regiao('21', 'Maranhão', 'alta', 0.62);
 const SP = regiao('35', 'São Paulo', 'baixa', 0.12);

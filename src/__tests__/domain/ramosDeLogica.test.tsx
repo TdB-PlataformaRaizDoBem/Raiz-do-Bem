@@ -3,10 +3,9 @@ import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mapDentista } from '../../domain/mappers/DentistaMapper';
 import { mapPedido } from '../../domain/mappers/PedidoMapper';
-import { toRegiaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
+import { toColecaoViewModel } from '../../domain/mappers/VulnerabilidadeMapper';
 import { ordenarRegioes } from '../../domain/tabelaRegioes';
 import { dentistaFilterConfig } from '../../hooks/pageFilterConfigs';
-import { useCenarioVoluntarios } from '../../hooks/useCenarioVoluntarios';
 import { useColaborador } from '../../hooks/useColaboradores';
 import { lerCorDoTema, useEscalaVulnerabilidade } from '../../hooks/useEscalaVulnerabilidade';
 import { useImpactStats } from '../../hooks/useImpactStats';
@@ -72,8 +71,11 @@ describe('formatDate', () => {
 
 describe('ordenarRegioes — empate entre ausentes', () => {
   it('dois sem valor ficam em ordem de código IBGE, nas duas direções', () => {
-    const a = toRegiaoViewModel(feature(propsUF({ codigo_ibge: '35' })));
-    const b = toRegiaoViewModel(feature(propsUF({ codigo_ibge: '21' })));
+    const regioes = toColecaoViewModel({
+      type: 'FeatureCollection',
+      features: [feature(propsUF({ codigo_ibge: '35' })), feature(propsUF({ codigo_ibge: '21' }))],
+    }).regioes;
+    const [a, b] = regioes;
     const semValor = () => null;
 
     expect(ordenarRegioes([a, b], semValor, 'asc').map((r) => r.codigoIbge)).toEqual(['21', '35']);
@@ -123,16 +125,6 @@ describe('hooks de dados', () => {
 });
 
 describe('renderização sem navegador (SSR)', () => {
-  it('useCenarioVoluntarios começa vazio sem window', () => {
-    vi.stubGlobal('window', undefined);
-    function Teste() {
-      const { totalEstados } = useCenarioVoluntarios();
-      return <p>{totalEstados}</p>;
-    }
-
-    expect(renderToString(<Teste />)).toContain('0');
-  });
-
   it('useVoiceSearch informa que não há suporte sem window', () => {
     vi.stubGlobal('window', undefined);
     function Teste() {
