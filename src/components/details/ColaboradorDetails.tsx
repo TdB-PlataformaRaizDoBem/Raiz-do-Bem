@@ -21,8 +21,8 @@ export const ColaboradorDetails = ({
   onUpdated,
 }: ColaboradorDetailsProps) => (
   <UserInformation>
-    <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
-      <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex flex-col flex-1 min-h-0 w-full">
+      <div className="flex-1 overflow-y-auto pb-6 p-1 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
         <div className="flex justify-between items-start mb-6 pb-5 border-b border-gray-100">
           <div>

@@ -394,7 +394,7 @@ export const SECOES: Secao[] = [
           "Clique em **Analisar Pedido** no cartão da pessoa.",
           "Leia as informações: situação, data do envio, CPF, data de nascimento, a descrição do problema, os contatos, o endereço e o dentista responsável (se já houver).",
           "Se precisar falar com a família, clique em **Abrir chat de atendimento**, no quadro do telefone. A conversa abre na área de Conversas.",
-          "Para guardar ou imprimir o pedido, clique em **Imprimir Relatório**. Na janela de impressão você também pode escolher salvar como PDF.",
+          "Para guardar o pedido, clique em **Imprimir Relatório**: um arquivo PDF já formatado é baixado direto no seu computador.",
           "Quando terminar, clique em **Fechar**.",
         ],
       },

@@ -82,7 +82,7 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('px-4', 'py-1.5');
 
     rerender(<Button size="md">x</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-10');
+    expect(screen.getByRole('button')).toHaveClass('min-h-10');
   });
 
   it('respeita disabled e className extra', () => {
