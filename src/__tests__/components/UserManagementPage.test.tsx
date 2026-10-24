@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { UserManagementPage } from '../../components/UserManagement/UserManagementPage';
-import { useDesktopViewport } from '../../test/viewport';
+import { setupDesktopViewport } from '../../test/viewport';
 import type { PageFilterConfig } from '../../components/UserManagement/FilterConfig';
 
 interface Item {
@@ -123,7 +123,7 @@ describe('UserManagementPage — mobile/tablet', () => {
 });
 
 describe('UserManagementPage — cards e tabela (desktop)', () => {
-  useDesktopViewport();
+  setupDesktopViewport();
 
   it('sem renderTableRow não existe alternância de visualização', () => {
     renderPage();

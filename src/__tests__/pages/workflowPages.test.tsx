@@ -14,7 +14,7 @@ import {
   dentistaApi,
   pedidoApi,
 } from '../../test/factories';
-import { useDesktopViewport } from '../../test/viewport';
+import { setupDesktopViewport } from '../../test/viewport';
 import { fakeResponse, installFetch, type FetchMock } from '../../test/http';
 
 let fetchMock: FetchMock;
@@ -44,7 +44,7 @@ const chamadas = (metodo: string) => fetchMock.mock.calls.filter(([, init]) => i
 const corpoDe = (metodo: string) => JSON.parse(String(chamadas(metodo)[0][1]?.body));
 
 // A visualização em tabela só existe em desktop (>= 1024px).
-useDesktopViewport();
+setupDesktopViewport();
 
 beforeEach(() => {
   fetchMock = installFetch();
