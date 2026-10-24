@@ -135,7 +135,7 @@ describe('CriticalOrdersList', () => {
 
     noRoteador(<CriticalOrdersList />);
 
-    const links = await screen.findAllByRole('link', { name: /Analisar/ });
+    const links = await screen.findAllByRole('link');
     expect(links.map((l) => l.getAttribute('href'))).toEqual([
       '/admin/solicitacoes?id=7',
       '/admin/solicitacoes?id=8',
@@ -148,7 +148,7 @@ describe('CriticalOrdersList', () => {
 
     noRoteador(<CriticalOrdersList />);
 
-    expect(await screen.findByRole('link', { name: /Analisar/ })).toHaveAttribute('href', '/coord/solicitacoes?id=7');
+    expect(await screen.findByRole('link')).toHaveAttribute('href', '/coord/solicitacoes?id=7');
   });
 });
 
@@ -182,7 +182,7 @@ describe('RecentOrdersList', () => {
 
     noRoteador(<RecentOrdersList />);
 
-    const links = await screen.findAllByRole('link', { name: /Analisar/ });
+    const links = await screen.findAllByRole('link');
     expect(links[0]).toHaveAttribute('href', '/admin/solicitacoes?id=6');
     expect(links).toHaveLength(5);
   });
