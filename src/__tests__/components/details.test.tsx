@@ -23,6 +23,9 @@ import { mapDentista } from '../../domain/mappers/DentistaMapper';
 import { mapPedido } from '../../domain/mappers/PedidoMapper';
 import { atendimentoApi, beneficiarioApi, colaboradorApi, dentistaApi, pedidoApi } from '../../test/factories';
 import { fakeResponse, installFetch, routeFetch, type FetchMock } from '../../test/http';
+import { gerarRelatorioPedidoPDF } from '../../utils/pedidoReport';
+
+vi.mock('../../utils/pedidoReport', () => ({ gerarRelatorioPedidoPDF: vi.fn() }));
 
 let fetchMock: FetchMock;
 
@@ -407,17 +410,15 @@ describe('PedidoDetails', () => {
     expect(screen.getByTestId('local')).toHaveTextContent('/coord/chat/%2B55');
   });
 
-  it('Imprimir chama window.print e Fechar chama onClose', async () => {
-    const print = vi.spyOn(window, 'print').mockImplementation(() => {});
+  it('Imprimir gera o PDF do pedido e Fechar chama onClose', async () => {
     const p = props();
     renderCompleto(<PedidoDetails {...p} />);
 
     await userEvent.click(screen.getByRole('button', { name: 'Imprimir Relatório' }));
     await userEvent.click(screen.getByRole('button', { name: 'Fechar' }));
 
-    expect(print).toHaveBeenCalled();
+    expect(gerarRelatorioPedidoPDF).toHaveBeenCalledWith(p.data);
     expect(p.onClose).toHaveBeenCalled();
-    print.mockRestore();
   });
 });
 

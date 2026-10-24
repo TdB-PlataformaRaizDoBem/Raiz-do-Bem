@@ -40,8 +40,8 @@ export const BeneficiarioDesignacaoDetails = ({
 
   return (
     <UserInformation>
-      <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
-        <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 scrollbar-none">
+      <div className="flex flex-col flex-1 min-h-0 w-full">
+        <div className="flex-1 overflow-y-auto pb-6 p-1 pr-2 scrollbar-none">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">
@@ -223,8 +223,8 @@ export const AtendimentoDetails = ({
 
   return (
     <UserInformation>
-      <div className="flex flex-col max-h-[90vh] md:max-h-[85vh] w-full">
-        <div className="flex-1 overflow-y-auto pb-24 p-1 pr-2 scrollbar-none">
+      <div className="flex flex-col flex-1 min-h-0 w-full">
+        <div className="flex-1 overflow-y-auto pb-6 p-1 pr-2 scrollbar-none">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-3xl font-bold text-darkgray font-fredoka">
