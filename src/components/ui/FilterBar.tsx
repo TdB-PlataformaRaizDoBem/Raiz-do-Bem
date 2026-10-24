@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface FilterBarProps {
   children: React.ReactNode;
@@ -7,14 +7,31 @@ interface FilterBarProps {
 export const FilterBar = ({
   children,
 }: FilterBarProps) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  /** Fecha ao clicar fora (botão ou dropdown) — inclusive no mobile, onde o
+   * dropdown é `fixed` e some visualmente do botão, mas continua dentro
+   * deste contêiner no DOM. */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const aoClicarFora = (evento: MouseEvent) => {
+      if (!containerRef.current?.contains(evento.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", aoClicarFora);
+    return () => document.removeEventListener("mousedown", aoClicarFora);
+  }, [isOpen]);
 
   if (!React.Children.count(children)) {
     return null;
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       {/* Botão */}
       <button
         type="button"
@@ -66,16 +83,15 @@ export const FilterBar = ({
       {isOpen && (
         <div
           className="
-            absolute
-            top-12
-            left-0
-            z-50
-            w-[320px]
+            fixed left-1/2 top-21 z-50 w-[calc(100vw-2rem)] max-w-[320px] -translate-x-1/2
+
+            md:absolute md:top-12 md:left-0 md:translate-x-0 md:w-[320px] md:max-w-none
+
             bg-white
             border border-gray-200
             rounded-md
             shadow-md
-            p-4 
+            p-4
             flex flex-col
             gap-4
           "

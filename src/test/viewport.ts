@@ -15,7 +15,7 @@ export function restoreViewport() {
 }
 
 /** Registra beforeEach/afterEach que colocam o bloco de testes atual em viewport desktop. */
-export function useDesktopViewport() {
+export function setupDesktopViewport() {
   beforeEach(mockDesktop);
   afterEach(restoreViewport);
 }
