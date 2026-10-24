@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { Counter } from '../../components/animation/Counter';
 import { Reveal } from '../../components/animation/Reveal';
 import { StoryScroller, type StoryPanel } from '../../components/animation/StoryScroller';
@@ -8,11 +9,17 @@ import { SlideCarousel } from '../../components/carousel/SlideCarousel';
 import ImpactChart from '../../components/impactChart/ImpactChart';
 import { OrdersStatusBarChart } from '../../components/orderStatusBarChart/OrderStatusBarChart';
 import { CriticalOrdersList } from '../../components/pendingOrdersList/PendingOrdersList';
+import { RecentOrdersList } from '../../components/pendingOrdersList/RecentOrdersList';
 import { StateRanking } from '../../components/StateRanking/StateRanking';
 import { gsap, motionQuery, ScrollTrigger } from '../../lib/gsap';
 import { beneficiarioApi, pedidoApi } from '../../test/factories';
 import { resetGsapMock, runMatchMedia } from '../../test/gsapMock';
 import { installFetch, routeFetch } from '../../test/http';
+
+const sessao = vi.hoisted(() => ({ role: 'ADMIN' as 'ADMIN' | 'COLABORADOR' }));
+vi.mock('../../hooks/useUser', () => ({
+  useUser: () => ({ email: 'a@x.com', nome: 'Ana', role: sessao.role, exp: 0 }),
+}));
 
 vi.mock('../../lib/gsap', () => import('../../test/gsapMock'));
 vi.mock('@gsap/react', async () => ({ useGSAP: (await import('../../test/gsapMock')).useGSAP }));
@@ -27,7 +34,10 @@ const painel = (n: number): StoryPanel => ({
 
 beforeEach(() => {
   resetGsapMock();
+  sessao.role = 'ADMIN';
 });
+
+const noRoteador = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
 /* ───────────── gráficos do dashboard ───────────── */
 
@@ -104,7 +114,7 @@ describe('CriticalOrdersList', () => {
       ],
     });
 
-    render(<CriticalOrdersList />);
+    noRoteador(<CriticalOrdersList />);
 
     await screen.findByText('Antigo');
     const nomes = screen.getAllByText(/^(Antigo|Recente)$/).map((n) => n.textContent);
@@ -113,6 +123,77 @@ describe('CriticalOrdersList', () => {
     expect(screen.getByText('Dente quebrado')).toBeInTheDocument();
     expect(screen.getByText('02/01/2026')).toBeInTheDocument();
     expect(screen.queryByText('Aprovado')).not.toBeInTheDocument();
+  });
+
+  it('cada pedido é um link para a tela de pedidos com o modal dele aberto', async () => {
+    routeFetch(installFetch(), {
+      '/pedido-ajuda': [
+        pedidoApi({ id: 7, nomeCompleto: 'Joana', status: 'PENDENTE', dataPedido: '2026-01-02' }),
+        pedidoApi({ id: 8, nomeCompleto: 'Pedro', status: 'PENDENTE', dataPedido: '2026-01-03' }),
+      ],
+    });
+
+    noRoteador(<CriticalOrdersList />);
+
+    const links = await screen.findAllByRole('link', { name: /Analisar/ });
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '/admin/solicitacoes?id=7',
+      '/admin/solicitacoes?id=8',
+    ]);
+  });
+
+  it('para o coordenador o link usa o caminho /coord', async () => {
+    sessao.role = 'COLABORADOR';
+    routeFetch(installFetch(), { '/pedido-ajuda': [pedidoApi({ id: 7, status: 'PENDENTE' })] });
+
+    noRoteador(<CriticalOrdersList />);
+
+    expect(await screen.findByRole('link', { name: /Analisar/ })).toHaveAttribute('href', '/coord/solicitacoes?id=7');
+  });
+});
+
+describe('RecentOrdersList', () => {
+  const seis = () => [
+    pedidoApi({ id: 1, nomeCompleto: 'Pedido Um', status: 'PENDENTE', dataPedido: '2026-03-01' }),
+    pedidoApi({ id: 2, nomeCompleto: 'Pedido Dois', status: 'APROVADO', dataPedido: '2026-03-02' }),
+    pedidoApi({ id: 3, nomeCompleto: 'Pedido Tres', status: 'REJEITADO', dataPedido: '2026-03-03' }),
+    pedidoApi({ id: 4, nomeCompleto: 'Pedido Quatro', status: 'PENDENTE', dataPedido: '2026-03-04' }),
+    pedidoApi({ id: 5, nomeCompleto: 'Pedido Cinco', status: 'PENDENTE', dataPedido: '2026-03-05' }),
+    pedidoApi({ id: 6, nomeCompleto: 'Pedido Seis', status: 'APROVADO', dataPedido: '2026-03-06' }),
+  ];
+
+  it('mostra os 5 mais recentes, do mais novo para o mais antigo, com data e status', async () => {
+    routeFetch(installFetch(), { '/pedido-ajuda': seis() });
+
+    noRoteador(<RecentOrdersList />);
+
+    await screen.findByText('Pedido Seis');
+    const nomes = screen.getAllByText(/^Pedido /).map((n) => n.textContent);
+    expect(nomes).toEqual(['Pedido Seis', 'Pedido Cinco', 'Pedido Quatro', 'Pedido Tres', 'Pedido Dois']);
+    expect(screen.queryByText('Pedido Um')).not.toBeInTheDocument();
+    expect(screen.getByText('06/03/2026')).toBeInTheDocument();
+    expect(screen.getByText('Negado')).toBeInTheDocument();
+    expect(screen.getAllByText('Aprovado')).toHaveLength(2);
+    expect(screen.getByText('Últimos 5 recebidos')).toBeInTheDocument();
+  });
+
+  it('cada pedido é um link para a tela de pedidos com o modal dele aberto', async () => {
+    routeFetch(installFetch(), { '/pedido-ajuda': seis() });
+
+    noRoteador(<RecentOrdersList />);
+
+    const links = await screen.findAllByRole('link', { name: /Analisar/ });
+    expect(links[0]).toHaveAttribute('href', '/admin/solicitacoes?id=6');
+    expect(links).toHaveLength(5);
+  });
+
+  it('sem pedidos mostra uma mensagem em vez de uma lista vazia', async () => {
+    routeFetch(installFetch(), { '/pedido-ajuda': [] });
+
+    noRoteador(<RecentOrdersList />);
+
+    expect(await screen.findByText('Nenhum pedido recebido ainda.')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 });
 

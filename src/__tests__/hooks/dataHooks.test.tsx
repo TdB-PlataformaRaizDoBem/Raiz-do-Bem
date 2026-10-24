@@ -209,13 +209,53 @@ describe('useOrderStats', () => {
     expect(result.current.pedidosCriticos[0].dataPedidoISO).toBe('2026-03-01'); // mais antigo primeiro
   });
 
+  it('devolve os 5 pedidos mais recentes, de qualquer status, do mais novo para o mais antigo', async () => {
+    routeFetch(fetchMock, {
+      '/pedido-ajuda': [
+        pedidoApi({ id: 1, status: 'PENDENTE', dataPedido: '2026-03-01' }),
+        pedidoApi({ id: 2, status: 'APROVADO', dataPedido: '2026-03-05' }),
+        pedidoApi({ id: 3, status: 'REJEITADO', dataPedido: '2026-03-09' }),
+        pedidoApi({ id: 4, status: 'PENDENTE', dataPedido: '2026-03-09' }), // mesmo dia do 3: chegou depois
+        pedidoApi({ id: 5, status: 'PENDENTE', dataPedido: '2026-02-10' }),
+        pedidoApi({ id: 6, status: 'APROVADO', dataPedido: '2026-03-07' }),
+        pedidoApi({ id: 7, status: 'PENDENTE', dataPedido: '2026-01-15' }),
+      ],
+    });
+
+    const { result } = renderHook(() => useOrderStats());
+
+    await waitFor(() => expect(result.current.total).toBe(7));
+    expect(result.current.pedidosRecentes.map((p) => p.id)).toEqual([4, 3, 6, 2, 1]);
+  });
+
+  it('empate de data entre pendentes antigos se desfaz pela ordem de chegada (id menor primeiro)', async () => {
+    routeFetch(fetchMock, {
+      '/pedido-ajuda': [
+        pedidoApi({ id: 9, status: 'PENDENTE', dataPedido: '2026-01-01' }),
+        pedidoApi({ id: 8, status: 'PENDENTE', dataPedido: '2026-01-01' }),
+      ],
+    });
+
+    const { result } = renderHook(() => useOrderStats());
+
+    await waitFor(() => expect(result.current.total).toBe(2));
+    expect(result.current.pedidosCriticos.map((p) => p.id)).toEqual([8, 9]);
+  });
+
   it('em caso de erro volta ao estado vazio', async () => {
     routeFetch(fetchMock, { '/pedido-ajuda': fakeResponse({ status: 500 }) });
 
     const { result } = renderHook(() => useOrderStats());
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    expect(result.current).toEqual({ pendentes: 0, aprovados: 0, negados: 0, total: 0, pedidosCriticos: [] });
+    expect(result.current).toEqual({
+      pendentes: 0,
+      aprovados: 0,
+      negados: 0,
+      total: 0,
+      pedidosCriticos: [],
+      pedidosRecentes: [],
+    });
   });
 });
 

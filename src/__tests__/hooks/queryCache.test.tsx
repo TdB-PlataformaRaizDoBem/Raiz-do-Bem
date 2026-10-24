@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import { act, render, renderHook, screen, waitFor } from '../../test/rtl';
 import { createQueryClient, queryClient as clienteDoApp } from '../../lib/queryClient';
 import { useBeneficiarios } from '../../hooks/useBeneficiarios';
@@ -15,6 +16,11 @@ import Dashboard from '../../pages/dashboard/Dashboard';
 import { atendimentoApi, beneficiarioApi, colaboradorApi, dentistaApi, pedidoApi } from '../../test/factories';
 import { fakeResponse, installFetch, routeFetch, type FetchMock } from '../../test/http';
 import { createTestQueryClient } from '../../test/queryClient';
+
+// As listas do painel têm links que dependem do perfil logado; aqui só importa quantas requisições saem.
+vi.mock('../../hooks/useUser', () => ({
+  useUser: () => ({ email: 'a@x.com', nome: 'Ana', role: 'ADMIN', exp: 0 }),
+}));
 
 let fetchMock: FetchMock;
 
@@ -62,7 +68,11 @@ describe('requisições compartilhadas entre hooks', () => {
       '/dentista': [dentistaApi()],
     });
 
-    render(<Dashboard />);
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>,
+    );
 
     await waitFor(() => expect(screen.getByText('6h')).toBeInTheDocument());
     await esperar();

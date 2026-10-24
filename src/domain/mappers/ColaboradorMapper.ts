@@ -7,6 +7,8 @@ export interface ColaboradorViewModel {
   nomeCompleto: string;
   dataNascimento: string;
   dataContratacao: string;
+  /** Data de contratação como veio da API (YYYY-MM-DD), para ordenar. */
+  dataContratacaoISO: string;
   email: string;
 }
 
@@ -17,6 +19,7 @@ export function mapColaborador(api: ColaboradorAPI): ColaboradorViewModel {
     nomeCompleto: api.nomeCompleto ?? "—",
     dataNascimento: formatDate(api.dataNascimento),
     dataContratacao: formatDate(api.dataContratacao),
+    dataContratacaoISO: api.dataContratacao ?? "",
     email: api.email ?? "—",
     // nivelAcesso: omitido intencionalmente — aguarda implementação de JWT
   };

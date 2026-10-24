@@ -1,16 +1,30 @@
 /** Configs de filtro por página, para `useSmartFilter`. */
 
-import type { PageFilterConfig } from "../components/UserManagement/FilterConfig";
+import type { PageFilterConfig, SortOption } from "../components/UserManagement/FilterConfig";
 import { normalizeText } from "./useSmartFilter";
+import { comparadorPorData } from "../utils/sortUtils";
 import type { BeneficiarioViewModel } from "../domain/mappers/Beneficiariomapper";
 import type { DentistaViewModel } from "../domain/mappers/DentistaMapper";
 import type { ColaboradorViewModel } from "../domain/mappers/ColaboradorMapper";
 import type { PedidoViewModel } from "../domain/mappers/PedidoMapper";
 import type { AtendimentoViewModel } from "../domain/mappers/AtendimentoMapper";
 
+/** Par de ordenações "mais recentes / mais antigos" para um campo de data ISO. */
+function ordenacaoPorData<T>(
+  getData: (item: T) => string | null | undefined,
+  getId: (item: T) => number,
+  rotulos: { recentes: string; antigos: string },
+): SortOption<T>[] {
+  return [
+    { label: rotulos.recentes, value: "recentes", compare: comparadorPorData(getData, getId, "recentes") },
+    { label: rotulos.antigos, value: "antigos", compare: comparadorPorData(getData, getId, "antigos") },
+  ];
+}
+
 /*
    COLABORADORES
    Filtros: Nível de acesso
+   Ordenação: data de contratação
    Busca: nome, e-mail
    */
 export const colaboradorFilterConfig: PageFilterConfig<ColaboradorViewModel> = {
@@ -24,6 +38,10 @@ export const colaboradorFilterConfig: PageFilterConfig<ColaboradorViewModel> = {
       ],
     },
   ],
+  sorts: ordenacaoPorData<ColaboradorViewModel>((c) => c.dataContratacaoISO, (c) => c.id, {
+    recentes: "Contratação mais recente",
+    antigos: "Contratação mais antiga",
+  }),
   predicate(item, _activeFilters, searchText) {
     // Filtro de nível (nivelAcesso não disponível no ColaboradorViewModel)
     // Busca por texto
@@ -128,7 +146,8 @@ export const dentistaFilterConfig: PageFilterConfig<DentistaViewModel> = {
 
 /* 
    PEDIDOS DE AJUDA
-   Filtros: Status
+   Filtros: Status, Dentista
+   Ordenação: data do envio (mais recentes / mais antigos)
    Busca: nome, CPF, protocolo (id), cidade, descrição do problema
  */
 export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
@@ -151,6 +170,10 @@ export const pedidoFilterConfig: PageFilterConfig<PedidoViewModel> = {
       ],
     },
   ],
+  sorts: ordenacaoPorData<PedidoViewModel>((p) => p.dataPedidoISO, (p) => p.id, {
+    recentes: "Mais recentes",
+    antigos: "Mais antigos",
+  }),
   predicate(item, activeFilters, searchText) {
     // Filtro de status
     const status = activeFilters["status"];
@@ -193,10 +216,15 @@ export const designacaoFilterConfig: PageFilterConfig<BeneficiarioViewModel> = {
 
 /*
    DESIGNAÇÃO — abas EM_ATENDIMENTO, CONCLUIDO e TODOS (Atendimentos)
+   Ordenação: data de início do atendimento
    Busca: nome do beneficiário, nome do dentista, prontuário, id do atendimento.
 */
 export const atendimentoFilterConfig: PageFilterConfig<AtendimentoViewModel> = {
   groups: [],
+  sorts: ordenacaoPorData<AtendimentoViewModel>((a) => a.dataInicialISO, (a) => a.id, {
+    recentes: "Início mais recente",
+    antigos: "Início mais antigo",
+  }),
   predicate(item, _activeFilters, searchText) {
     if (searchText) {
       const haystack = normalizeText(
