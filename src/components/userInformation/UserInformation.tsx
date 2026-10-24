@@ -12,7 +12,7 @@ const UserInformation = ({ children }: InformationProps) => {
       w-full
       border-t-4 border-lightgreen
       bg-lightgray
-      p-4 sm:p-6 pb-0
+      p-4 sm:p-6 pb-0 sm:pb-0
       relative
       rounded-2xl
       lg:rounded-lg
