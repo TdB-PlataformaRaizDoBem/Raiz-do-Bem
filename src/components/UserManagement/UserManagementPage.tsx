@@ -121,10 +121,13 @@ function FilterGroupSelect({
   group,
   activeValue,
   onToggle,
+  emptyLabel = "Todos",
 }: {
   group: FilterGroup;
   activeValue: string;
   onToggle: (value: string) => void;
+  /** Texto da opção sem seleção ("Todos" nos filtros, "Padrão" na ordenação). */
+  emptyLabel?: string;
 }) {
   return (
     <div className="flex flex-col gap-2 min-w-[220px]">
@@ -132,6 +135,7 @@ function FilterGroupSelect({
 
       <div className="relative">
         <select
+          aria-label={group.label}
           value={activeValue}
           onChange={(e) => onToggle(e.target.value)}
           className="
@@ -149,7 +153,7 @@ function FilterGroupSelect({
             focus:border-gray-500
           "
         >
-          <option value="">Todos</option>
+          <option value="">{emptyLabel}</option>
 
           {group.options.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -348,6 +352,9 @@ export function UserManagementPage<T>({
     [],
   );
   const config = filterConfig ?? defaultConfig;
+  const sorts = config.sorts;
+  const temOrdenacao = !!sorts?.length;
+  const [sortValue, setSortValue] = React.useState("");
 
   const {
     filteredItems,
@@ -359,8 +366,14 @@ export function UserManagementPage<T>({
     hasActiveFilters,
   } = useSmartFilter(users, config);
 
+  // Ordena depois de filtrar e antes de paginar, para a ordem valer em todas as páginas.
+  const sortedItems = React.useMemo(() => {
+    const opcao = sorts?.find((s) => s.value === sortValue);
+    return opcao ? [...filteredItems].sort(opcao.compare) : filteredItems;
+  }, [filteredItems, sorts, sortValue]);
+
   // Volta para a página 1 quando a busca ou algum filtro muda.
-  const paginationResetKey = JSON.stringify([searchText, activeFilters]);
+  const paginationResetKey = JSON.stringify([searchText, activeFilters, sortValue]);
   const {
     page,
     setPage,
@@ -369,7 +382,7 @@ export function UserManagementPage<T>({
     pageItems,
     from,
     to,
-  } = usePagination(filteredItems, undefined, paginationResetKey);
+  } = usePagination(sortedItems, undefined, paginationResetKey);
 
   const listTopRef = React.useRef<HTMLDivElement>(null);
   const handlePageChange = React.useCallback(
@@ -434,7 +447,7 @@ export function UserManagementPage<T>({
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full px-4 lg:px-8">
       <Toolbar
-        hasFilters={config.groups.length > 0}
+        hasFilters={config.groups.length > 0 || temOrdenacao}
         search={
           <Search
             placeholder={`Pesquisar ${title.toLowerCase()}...`}
@@ -467,6 +480,19 @@ export function UserManagementPage<T>({
             onToggle={(val) => toggleFilter(group.key, val)}
           />
         ))}
+
+        {temOrdenacao && sorts && (
+          <FilterGroupSelect
+            group={{
+              label: "Ordenar por",
+              key: "ordenacao",
+              options: sorts.map(({ label, value }) => ({ label, value })),
+            }}
+            activeValue={sortValue}
+            onToggle={setSortValue}
+            emptyLabel="Padrão"
+          />
+        )}
 
         {hasActiveFilters && (
           <div className="flex flex-col justify-end pb-0.5">

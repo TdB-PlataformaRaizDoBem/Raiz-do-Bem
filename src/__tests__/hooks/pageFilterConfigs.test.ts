@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { SortOption } from '../../components/UserManagement/FilterConfig';
 import {
   atendimentoFilterConfig,
   beneficiarioFilterConfig,
@@ -175,5 +176,59 @@ describe('atendimentoFilterConfig', () => {
   it('sem correspondência e sem busca', () => {
     expect(p(a, {}, busca('zzz'))).toBe(false);
     expect(p(a, {}, '')).toBe(true);
+  });
+});
+
+describe('ordenações por data', () => {
+  const ordenar = <T,>(lista: T[], sorts: SortOption<T>[] | undefined, valor: string) => {
+    const opcao = sorts?.find((s) => s.value === valor);
+    if (!opcao) throw new Error(`ordenação ${valor} não existe`);
+    return [...lista].sort(opcao.compare);
+  };
+
+  it('pedidos: "Mais recentes" e "Mais antigos" pela data do envio, empate pelo id', () => {
+    const pedidos = [
+      mapPedido(pedidoApi({ id: 1, dataPedido: '2026-03-01' })),
+      mapPedido(pedidoApi({ id: 2, dataPedido: '2026-03-09' })),
+      mapPedido(pedidoApi({ id: 3, dataPedido: '2026-03-09' })),
+      mapPedido(pedidoApi({ id: 4, dataPedido: '2026-02-01' })),
+    ];
+
+    expect(pedidoFilterConfig.sorts?.map((s) => s.label)).toEqual(['Mais recentes', 'Mais antigos']);
+    expect(ordenar(pedidos, pedidoFilterConfig.sorts, 'recentes').map((x) => x.id)).toEqual([3, 2, 1, 4]);
+    expect(ordenar(pedidos, pedidoFilterConfig.sorts, 'antigos').map((x) => x.id)).toEqual([4, 1, 2, 3]);
+  });
+
+  it('atendimentos: pela data de início, e os sem data ficam no fim', () => {
+    const atendimentos = [
+      mapAtendimento(atendimentoApi({ id: 1, dataInicial: '2026-02-10' })),
+      mapAtendimento(atendimentoApi({ id: 2, dataInicial: null as unknown as string })),
+      mapAtendimento(atendimentoApi({ id: 3, dataInicial: '2026-04-01' })),
+    ];
+
+    expect(atendimentoFilterConfig.sorts?.map((s) => s.label)).toEqual(['Início mais recente', 'Início mais antigo']);
+    expect(ordenar(atendimentos, atendimentoFilterConfig.sorts, 'recentes').map((x) => x.id)).toEqual([3, 1, 2]);
+    expect(ordenar(atendimentos, atendimentoFilterConfig.sorts, 'antigos').map((x) => x.id)).toEqual([1, 3, 2]);
+  });
+
+  it('colaboradores: pela data de contratação', () => {
+    const colaboradores = [
+      mapColaborador(colaboradorApi({ id: 1, dataContratacao: '2021-05-01' })),
+      mapColaborador(colaboradorApi({ id: 2, dataContratacao: '2024-01-15' })),
+      mapColaborador(colaboradorApi({ id: 3, dataContratacao: '2019-09-30' })),
+    ];
+
+    expect(colaboradorFilterConfig.sorts?.map((s) => s.label)).toEqual([
+      'Contratação mais recente',
+      'Contratação mais antiga',
+    ]);
+    expect(ordenar(colaboradores, colaboradorFilterConfig.sorts, 'recentes').map((x) => x.id)).toEqual([2, 1, 3]);
+    expect(ordenar(colaboradores, colaboradorFilterConfig.sorts, 'antigos').map((x) => x.id)).toEqual([3, 1, 2]);
+  });
+
+  it('beneficiários, dentistas e a aba de pendentes da designação não têm ordenação por data', () => {
+    expect(beneficiarioFilterConfig.sorts).toBeUndefined();
+    expect(dentistaFilterConfig.sorts).toBeUndefined();
+    expect(designacaoFilterConfig.sorts).toBeUndefined();
   });
 });

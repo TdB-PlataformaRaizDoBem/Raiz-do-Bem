@@ -416,3 +416,98 @@ describe('UserManagementPage — paginação', () => {
     expect(screen.getByText('detalhes de Pessoa 25')).toBeInTheDocument();
   });
 });
+
+describe('UserManagementPage — ordenação', () => {
+  const comOrdenacao: PageFilterConfig<Item> = {
+    groups: [],
+    sorts: [
+      { label: 'Nome (Z-A)', value: 'za', compare: (a, b) => b.nome.localeCompare(a.nome) },
+      { label: 'Nome (A-Z)', value: 'az', compare: (a, b) => a.nome.localeCompare(b.nome) },
+    ],
+    predicate: (item, _filtros, busca) => !busca || item.nome.toLowerCase().includes(busca),
+  };
+
+  const nomes = () => screen.getAllByRole('button', { name: /^card/ }).map((b) => b.textContent);
+  const abrirFiltros = () => userEvent.click(screen.getByRole('button', { name: /Filtros/ }));
+  const ordenarPor = (valor: string) =>
+    userEvent.selectOptions(screen.getByRole('combobox', { name: 'Ordenar por' }), valor);
+
+  beforeEach(() => {
+    window.HTMLElement.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('só com ordenação (sem grupos de filtro) o botão "Filtros" aparece e traz "Ordenar por"', async () => {
+    renderPage({ users: itens(3), filterConfig: comOrdenacao });
+
+    await abrirFiltros();
+
+    const seletor = screen.getByRole('combobox', { name: 'Ordenar por' });
+    expect(within(seletor).getAllByRole('option').map((o) => o.textContent)).toEqual([
+      'Padrão',
+      'Nome (Z-A)',
+      'Nome (A-Z)',
+    ]);
+  });
+
+  it('sem ordenação configurada não existe o seletor', async () => {
+    renderPage({ users: itens(3), filterConfig: filtro });
+
+    await abrirFiltros();
+
+    expect(screen.queryByRole('combobox', { name: 'Ordenar por' })).not.toBeInTheDocument();
+  });
+
+  it('reordena a lista e "Padrão" devolve a ordem original', async () => {
+    renderPage({ users: itens(3), filterConfig: comOrdenacao });
+    expect(nomes()).toEqual(['card Pessoa 01', 'card Pessoa 02', 'card Pessoa 03']);
+
+    await abrirFiltros();
+    await ordenarPor('za');
+    expect(nomes()).toEqual(['card Pessoa 03', 'card Pessoa 02', 'card Pessoa 01']);
+
+    await ordenarPor('');
+    expect(nomes()).toEqual(['card Pessoa 01', 'card Pessoa 02', 'card Pessoa 03']);
+  });
+
+  it('ordena a lista inteira antes de paginar', async () => {
+    renderPage({ users: itens(30), filterConfig: comOrdenacao });
+
+    await abrirFiltros();
+    await ordenarPor('za');
+
+    expect(nomes()[0]).toBe('card Pessoa 30');
+    expect(nomes()).toHaveLength(12);
+  });
+
+  it('trocar a ordenação volta para a primeira página', async () => {
+    renderPage({ users: itens(30), filterConfig: comOrdenacao });
+    await userEvent.click(screen.getByRole('button', { name: 'Página 2' }));
+    expect(screen.getByText('Mostrando 13–24 de 30')).toBeInTheDocument();
+
+    await abrirFiltros();
+    await ordenarPor('za');
+
+    expect(screen.getByText('Mostrando 1–12 de 30')).toBeInTheDocument();
+  });
+
+  it('a ordenação convive com a busca', async () => {
+    renderPage({ users: itens(30), filterConfig: comOrdenacao });
+    await abrirFiltros();
+    await ordenarPor('za');
+
+    await userEvent.type(screen.getByLabelText('Pesquisar pessoas...'), 'pessoa 2');
+
+    expect(nomes()).toEqual([
+      'card Pessoa 29',
+      'card Pessoa 28',
+      'card Pessoa 27',
+      'card Pessoa 26',
+      'card Pessoa 25',
+      'card Pessoa 24',
+      'card Pessoa 23',
+      'card Pessoa 22',
+      'card Pessoa 21',
+      'card Pessoa 20',
+    ]);
+  });
+});

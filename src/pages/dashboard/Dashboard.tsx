@@ -9,6 +9,7 @@ import { OrdersStatusBarChart } from "../../components/orderStatusBarChart/Order
 import ImpactChart from "../../components/impactChart/ImpactChart";
 import { StateRanking } from "../../components/StateRanking/StateRanking";
 import { CriticalOrdersList } from "../../components/pendingOrdersList/PendingOrdersList";
+import { RecentOrdersList } from "../../components/pendingOrdersList/RecentOrdersList";
 
 function SectionLabel({ id, children }: { id: string; children: string }) {
   return (
@@ -64,6 +65,11 @@ const Dashboard = () => {
           <OrdersStatusBarChart />
           <StateRanking rankingEstado={impact.rankingEstado} />
         </div>
+      </section>
+
+      <section aria-labelledby="heading-pedidos-recentes">
+        <SectionLabel id="heading-pedidos-recentes">Pedidos Recentes</SectionLabel>
+        <RecentOrdersList />
       </section>
 
       <section aria-labelledby="heading-pedidos-criticos">

@@ -176,6 +176,7 @@ describe('mapColaborador', () => {
       nomeCompleto: 'Ana Admin',
       dataNascimento: '31/01/1990',
       dataContratacao: '01/02/2020',
+      dataContratacaoISO: '2020-02-01',
       email: 'ana@x.com',
     });
   });
